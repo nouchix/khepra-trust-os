@@ -62,17 +62,20 @@ export const Route = createFileRoute("/api/public/aeo")({
           severity: n.severity ?? null,
           val: n.val,
           ts: n.ts ?? new Date().toISOString(),
-          payload: n.payload,
+          payload: n.payload as never,
           sig: n.sig ?? null,
-        }));
+        })) as never;
         const { data: inserted, error: nErr } = await supabaseAdmin
           .from("aeos").upsert(nodeRows, { onConflict: "session_id,external_id" }).select("id, external_id");
         if (nErr) return Response.json({ error: nErr.message }, { status: 500 });
 
-        const idByExternal = new Map(inserted?.map((r) => [r.external_id, r.id]));
-        const linkRows = parsed.links
-          .map((l) => ({ tenant_id: tenant.id, parent_id: idByExternal.get(l.source), child_id: idByExternal.get(l.target), weight: l.w }))
-          .filter((r) => r.parent_id && r.child_id);
+        const idByExternal = new Map((inserted ?? []).map((r) => [r.external_id as string | null, r.id]));
+        const linkRows: { tenant_id: string; parent_id: string; child_id: string; weight: number }[] = [];
+        for (const l of parsed.links) {
+          const p = idByExternal.get(l.source);
+          const c = idByExternal.get(l.target);
+          if (p && c) linkRows.push({ tenant_id: tenant.id, parent_id: p, child_id: c, weight: l.w });
+        }
         if (linkRows.length) {
           const { error: lErr } = await supabaseAdmin.from("aeo_links").upsert(linkRows, { onConflict: "parent_id,child_id" });
           if (lErr) return Response.json({ error: lErr.message }, { status: 500 });
