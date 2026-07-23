@@ -26,6 +26,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProductsSouhimbouRouteImport } from './routes/products.souhimbou'
 import { Route as ProductsAdinkhepraRouteImport } from './routes/products.adinkhepra'
 import { Route as AuthenticatedConsoleRouteRouteImport } from './routes/_authenticated/console/route'
+import { Route as ApiPublicAeoRouteImport } from './routes/api/public/aeo'
 import { Route as AuthenticatedConsoleTimelineRouteImport } from './routes/_authenticated/console/timeline'
 import { Route as AuthenticatedConsoleRulepacksRouteImport } from './routes/_authenticated/console/rulepacks'
 import { Route as AuthenticatedConsoleFindingsRouteImport } from './routes/_authenticated/console/findings'
@@ -117,6 +118,11 @@ const AuthenticatedConsoleRouteRoute =
     path: '/console',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const ApiPublicAeoRoute = ApiPublicAeoRouteImport.update({
+  id: '/api/public/aeo',
+  path: '/api/public/aeo',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedConsoleTimelineRoute =
   AuthenticatedConsoleTimelineRouteImport.update({
     id: '/timeline',
@@ -170,6 +176,7 @@ export interface FileRoutesByFullPath {
   '/console/findings': typeof AuthenticatedConsoleFindingsRoute
   '/console/rulepacks': typeof AuthenticatedConsoleRulepacksRoute
   '/console/timeline': typeof AuthenticatedConsoleTimelineRoute
+  '/api/public/aeo': typeof ApiPublicAeoRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -193,6 +200,7 @@ export interface FileRoutesByTo {
   '/console/findings': typeof AuthenticatedConsoleFindingsRoute
   '/console/rulepacks': typeof AuthenticatedConsoleRulepacksRoute
   '/console/timeline': typeof AuthenticatedConsoleTimelineRoute
+  '/api/public/aeo': typeof ApiPublicAeoRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -218,6 +226,7 @@ export interface FileRoutesById {
   '/_authenticated/console/findings': typeof AuthenticatedConsoleFindingsRoute
   '/_authenticated/console/rulepacks': typeof AuthenticatedConsoleRulepacksRoute
   '/_authenticated/console/timeline': typeof AuthenticatedConsoleTimelineRoute
+  '/api/public/aeo': typeof ApiPublicAeoRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -243,6 +252,7 @@ export interface FileRouteTypes {
     | '/console/findings'
     | '/console/rulepacks'
     | '/console/timeline'
+    | '/api/public/aeo'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -266,6 +276,7 @@ export interface FileRouteTypes {
     | '/console/findings'
     | '/console/rulepacks'
     | '/console/timeline'
+    | '/api/public/aeo'
   id:
     | '__root__'
     | '/'
@@ -290,6 +301,7 @@ export interface FileRouteTypes {
     | '/_authenticated/console/findings'
     | '/_authenticated/console/rulepacks'
     | '/_authenticated/console/timeline'
+    | '/api/public/aeo'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -309,6 +321,7 @@ export interface RootRouteChildren {
   TrustNetworkRoute: typeof TrustNetworkRoute
   ProductsAdinkhepraRoute: typeof ProductsAdinkhepraRoute
   ProductsSouhimbouRoute: typeof ProductsSouhimbouRoute
+  ApiPublicAeoRoute: typeof ApiPublicAeoRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -432,6 +445,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedConsoleRouteRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/public/aeo': {
+      id: '/api/public/aeo'
+      path: '/api/public/aeo'
+      fullPath: '/api/public/aeo'
+      preLoaderRoute: typeof ApiPublicAeoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/console/timeline': {
       id: '/_authenticated/console/timeline'
       path: '/timeline'
@@ -520,6 +540,7 @@ const rootRouteChildren: RootRouteChildren = {
   TrustNetworkRoute: TrustNetworkRoute,
   ProductsAdinkhepraRoute: ProductsAdinkhepraRoute,
   ProductsSouhimbouRoute: ProductsSouhimbouRoute,
+  ApiPublicAeoRoute: ApiPublicAeoRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
