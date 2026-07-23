@@ -30,6 +30,7 @@ import { Route as AuthenticatedConsoleAgentsRouteImport } from './routes/_authen
 import { Route as AuthenticatedConsoleControlsRouteImport } from './routes/_authenticated/console/controls'
 import { Route as AuthenticatedConsoleFindingsRouteImport } from './routes/_authenticated/console/findings'
 import { Route as AuthenticatedConsoleRulepacksRouteImport } from './routes/_authenticated/console/rulepacks'
+import { Route as AuthenticatedConsoleStigRouteImport } from './routes/_authenticated/console/stig'
 import { Route as AuthenticatedConsoleTimelineRouteImport } from './routes/_authenticated/console/timeline'
 import { Route as ApiPublicAeoRouteImport } from './routes/api/public/aeo'
 
@@ -142,6 +143,12 @@ const AuthenticatedConsoleRulepacksRoute =
     path: '/rulepacks',
     getParentRoute: () => AuthenticatedConsoleRouteRoute,
   } as any)
+const AuthenticatedConsoleStigRoute =
+  AuthenticatedConsoleStigRouteImport.update({
+    id: '/stig',
+    path: '/stig',
+    getParentRoute: () => AuthenticatedConsoleRouteRoute,
+  } as any)
 const AuthenticatedConsoleTimelineRoute =
   AuthenticatedConsoleTimelineRouteImport.update({
     id: '/timeline',
@@ -175,6 +182,7 @@ export interface FileRoutesByFullPath {
   '/console/controls': typeof AuthenticatedConsoleControlsRoute
   '/console/findings': typeof AuthenticatedConsoleFindingsRoute
   '/console/rulepacks': typeof AuthenticatedConsoleRulepacksRoute
+  '/console/stig': typeof AuthenticatedConsoleStigRoute
   '/console/timeline': typeof AuthenticatedConsoleTimelineRoute
   '/api/public/aeo': typeof ApiPublicAeoRoute
 }
@@ -199,6 +207,7 @@ export interface FileRoutesByTo {
   '/console/controls': typeof AuthenticatedConsoleControlsRoute
   '/console/findings': typeof AuthenticatedConsoleFindingsRoute
   '/console/rulepacks': typeof AuthenticatedConsoleRulepacksRoute
+  '/console/stig': typeof AuthenticatedConsoleStigRoute
   '/console/timeline': typeof AuthenticatedConsoleTimelineRoute
   '/api/public/aeo': typeof ApiPublicAeoRoute
 }
@@ -225,6 +234,7 @@ export interface FileRoutesById {
   '/_authenticated/console/controls': typeof AuthenticatedConsoleControlsRoute
   '/_authenticated/console/findings': typeof AuthenticatedConsoleFindingsRoute
   '/_authenticated/console/rulepacks': typeof AuthenticatedConsoleRulepacksRoute
+  '/_authenticated/console/stig': typeof AuthenticatedConsoleStigRoute
   '/_authenticated/console/timeline': typeof AuthenticatedConsoleTimelineRoute
   '/api/public/aeo': typeof ApiPublicAeoRoute
 }
@@ -251,6 +261,7 @@ export interface FileRouteTypes {
     | '/console/controls'
     | '/console/findings'
     | '/console/rulepacks'
+    | '/console/stig'
     | '/console/timeline'
     | '/api/public/aeo'
   fileRoutesByTo: FileRoutesByTo
@@ -275,6 +286,7 @@ export interface FileRouteTypes {
     | '/console/controls'
     | '/console/findings'
     | '/console/rulepacks'
+    | '/console/stig'
     | '/console/timeline'
     | '/api/public/aeo'
   id:
@@ -300,6 +312,7 @@ export interface FileRouteTypes {
     | '/_authenticated/console/controls'
     | '/_authenticated/console/findings'
     | '/_authenticated/console/rulepacks'
+    | '/_authenticated/console/stig'
     | '/_authenticated/console/timeline'
     | '/api/public/aeo'
   fileRoutesById: FileRoutesById
@@ -473,6 +486,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedConsoleRulepacksRouteImport
       parentRoute: typeof AuthenticatedConsoleRouteRoute
     }
+    '/_authenticated/console/stig': {
+      id: '/_authenticated/console/stig'
+      path: '/stig'
+      fullPath: '/console/stig'
+      preLoaderRoute: typeof AuthenticatedConsoleStigRouteImport
+      parentRoute: typeof AuthenticatedConsoleRouteRoute
+    }
     '/_authenticated/console/timeline': {
       id: '/_authenticated/console/timeline'
       path: '/timeline'
@@ -495,6 +515,7 @@ interface AuthenticatedConsoleRouteRouteChildren {
   AuthenticatedConsoleControlsRoute: typeof AuthenticatedConsoleControlsRoute
   AuthenticatedConsoleFindingsRoute: typeof AuthenticatedConsoleFindingsRoute
   AuthenticatedConsoleRulepacksRoute: typeof AuthenticatedConsoleRulepacksRoute
+  AuthenticatedConsoleStigRoute: typeof AuthenticatedConsoleStigRoute
   AuthenticatedConsoleTimelineRoute: typeof AuthenticatedConsoleTimelineRoute
 }
 
@@ -504,6 +525,7 @@ const AuthenticatedConsoleRouteRouteChildren: AuthenticatedConsoleRouteRouteChil
     AuthenticatedConsoleControlsRoute: AuthenticatedConsoleControlsRoute,
     AuthenticatedConsoleFindingsRoute: AuthenticatedConsoleFindingsRoute,
     AuthenticatedConsoleRulepacksRoute: AuthenticatedConsoleRulepacksRoute,
+    AuthenticatedConsoleStigRoute: AuthenticatedConsoleStigRoute,
     AuthenticatedConsoleTimelineRoute: AuthenticatedConsoleTimelineRoute,
   }
 
