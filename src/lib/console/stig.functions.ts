@@ -432,11 +432,10 @@ export const stigExportSession = createServerFn({ method: "POST" })
 
     return {
       session_ref: sess?.session_ref ?? data.sessionId,
-      cklb,
       cklb_json: cklbJson,
       cklb_sha256: cklbSha,
-      manifest,
       manifest_json: manifestJson,
       manifest_sha256: manifestSha,
+      counts: manifest.counts,
     };
   });
