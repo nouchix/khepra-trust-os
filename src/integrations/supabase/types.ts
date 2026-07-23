@@ -61,6 +61,7 @@ export type Database = {
         Row: {
           agent_id: string | null
           description: string | null
+          external_id: string | null
           hash: string | null
           id: string
           label: string
@@ -78,8 +79,9 @@ export type Database = {
         Insert: {
           agent_id?: string | null
           description?: string | null
+          external_id?: string | null
           hash?: string | null
-          id: string
+          id?: string
           label: string
           parent_hash?: string | null
           payload?: Json
@@ -95,6 +97,7 @@ export type Database = {
         Update: {
           agent_id?: string | null
           description?: string | null
+          external_id?: string | null
           hash?: string | null
           id?: string
           label?: string
