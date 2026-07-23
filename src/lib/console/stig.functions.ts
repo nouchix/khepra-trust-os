@@ -363,7 +363,7 @@ export const stigExportSession = createServerFn({ method: "POST" })
       context.supabase.from("findings").select("id, aeo_id, severity, status, label").eq("tenant_id", tenantId),
     ]);
     if (aeoErr) throw new Error(aeoErr.message);
-    const aeos = (aeosRaw ?? []) as (AeoRow & { external_id: string; sig: unknown })[];
+    const aeos = (aeosRaw ?? []) as unknown as Array<Record<string, unknown> & { id: string; type: string }>;
     const nodeIds = new Set(aeos.map((n) => n.id));
 
     const { data: linksRaw } = await context.supabase
@@ -403,8 +403,8 @@ export const stigExportSession = createServerFn({ method: "POST" })
         finding: aeos.filter((a) => a.type === "finding").length,
         links: links.length,
       },
-      aeos,
-      links,
+      aeos: aeos as unknown as Record<string, unknown>[],
+      links: links as unknown as Record<string, unknown>[],
       cklb_sha256: cklbSha,
     };
     const manifestJson = JSON.stringify(manifest, null, 2);
