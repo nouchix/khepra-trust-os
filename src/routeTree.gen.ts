@@ -9,83 +9,37 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as TrustNetworkRouteImport } from './routes/trust-network'
-import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
-import { Route as RoadmapRouteImport } from './routes/roadmap'
-import { Route as ProtocolRouteImport } from './routes/protocol'
-import { Route as PricingRouteImport } from './routes/pricing'
-import { Route as DocsRouteImport } from './routes/docs'
-import { Route as DevelopersRouteImport } from './routes/developers'
-import { Route as ContactRouteImport } from './routes/contact'
-import { Route as ConnectorsRouteImport } from './routes/connectors'
-import { Route as AuthRouteImport } from './routes/auth'
-import { Route as AsafRouteImport } from './routes/asaf'
-import { Route as AboutRouteImport } from './routes/about'
-import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as ProductsSouhimbouRouteImport } from './routes/products.souhimbou'
-import { Route as ProductsAdinkhepraRouteImport } from './routes/products.adinkhepra'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AboutRouteImport } from './routes/about'
+import { Route as AsafRouteImport } from './routes/asaf'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as ConnectorsRouteImport } from './routes/connectors'
+import { Route as ContactRouteImport } from './routes/contact'
+import { Route as DevelopersRouteImport } from './routes/developers'
+import { Route as DocsRouteImport } from './routes/docs'
+import { Route as PricingRouteImport } from './routes/pricing'
+import { Route as ProtocolRouteImport } from './routes/protocol'
+import { Route as RoadmapRouteImport } from './routes/roadmap'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as TrustNetworkRouteImport } from './routes/trust-network'
 import { Route as AuthenticatedConsoleRouteRouteImport } from './routes/_authenticated/console/route'
-import { Route as ApiPublicAeoRouteImport } from './routes/api/public/aeo'
-import { Route as AuthenticatedConsoleTimelineRouteImport } from './routes/_authenticated/console/timeline'
-import { Route as AuthenticatedConsoleRulepacksRouteImport } from './routes/_authenticated/console/rulepacks'
-import { Route as AuthenticatedConsoleFindingsRouteImport } from './routes/_authenticated/console/findings'
-import { Route as AuthenticatedConsoleControlsRouteImport } from './routes/_authenticated/console/controls'
+import { Route as ProductsAdinkhepraRouteImport } from './routes/products.adinkhepra'
+import { Route as ProductsSouhimbouRouteImport } from './routes/products.souhimbou'
 import { Route as AuthenticatedConsoleAgentsRouteImport } from './routes/_authenticated/console/agents'
+import { Route as AuthenticatedConsoleControlsRouteImport } from './routes/_authenticated/console/controls'
+import { Route as AuthenticatedConsoleFindingsRouteImport } from './routes/_authenticated/console/findings'
+import { Route as AuthenticatedConsoleRulepacksRouteImport } from './routes/_authenticated/console/rulepacks'
+import { Route as AuthenticatedConsoleTimelineRouteImport } from './routes/_authenticated/console/timeline'
+import { Route as ApiPublicAeoRouteImport } from './routes/api/public/aeo'
 
-const TrustNetworkRoute = TrustNetworkRouteImport.update({
-  id: '/trust-network',
-  path: '/trust-network',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
-  id: '/sitemap.xml',
-  path: '/sitemap.xml',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RoadmapRoute = RoadmapRouteImport.update({
-  id: '/roadmap',
-  path: '/roadmap',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ProtocolRoute = ProtocolRouteImport.update({
-  id: '/protocol',
-  path: '/protocol',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PricingRoute = PricingRouteImport.update({
-  id: '/pricing',
-  path: '/pricing',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DocsRoute = DocsRouteImport.update({
-  id: '/docs',
-  path: '/docs',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DevelopersRoute = DevelopersRouteImport.update({
-  id: '/developers',
-  path: '/developers',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ContactRoute = ContactRouteImport.update({
-  id: '/contact',
-  path: '/contact',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ConnectorsRoute = ConnectorsRouteImport.update({
-  id: '/connectors',
-  path: '/connectors',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthRoute = AuthRouteImport.update({
-  id: '/auth',
-  path: '/auth',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AsafRoute = AsafRouteImport.update({
-  id: '/asaf',
-  path: '/asaf',
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -93,23 +47,59 @@ const AboutRoute = AboutRouteImport.update({
   path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
-  id: '/_authenticated',
+const AsafRoute = AsafRouteImport.update({
+  id: '/asaf',
+  path: '/asaf',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ProductsSouhimbouRoute = ProductsSouhimbouRouteImport.update({
-  id: '/products/souhimbou',
-  path: '/products/souhimbou',
+const ConnectorsRoute = ConnectorsRouteImport.update({
+  id: '/connectors',
+  path: '/connectors',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ProductsAdinkhepraRoute = ProductsAdinkhepraRouteImport.update({
-  id: '/products/adinkhepra',
-  path: '/products/adinkhepra',
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DevelopersRoute = DevelopersRouteImport.update({
+  id: '/developers',
+  path: '/developers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DocsRoute = DocsRouteImport.update({
+  id: '/docs',
+  path: '/docs',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PricingRoute = PricingRouteImport.update({
+  id: '/pricing',
+  path: '/pricing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProtocolRoute = ProtocolRouteImport.update({
+  id: '/protocol',
+  path: '/protocol',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RoadmapRoute = RoadmapRouteImport.update({
+  id: '/roadmap',
+  path: '/roadmap',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TrustNetworkRoute = TrustNetworkRouteImport.update({
+  id: '/trust-network',
+  path: '/trust-network',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedConsoleRouteRoute =
@@ -118,27 +108,20 @@ const AuthenticatedConsoleRouteRoute =
     path: '/console',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const ApiPublicAeoRoute = ApiPublicAeoRouteImport.update({
-  id: '/api/public/aeo',
-  path: '/api/public/aeo',
+const ProductsAdinkhepraRoute = ProductsAdinkhepraRouteImport.update({
+  id: '/products/adinkhepra',
+  path: '/products/adinkhepra',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedConsoleTimelineRoute =
-  AuthenticatedConsoleTimelineRouteImport.update({
-    id: '/timeline',
-    path: '/timeline',
-    getParentRoute: () => AuthenticatedConsoleRouteRoute,
-  } as any)
-const AuthenticatedConsoleRulepacksRoute =
-  AuthenticatedConsoleRulepacksRouteImport.update({
-    id: '/rulepacks',
-    path: '/rulepacks',
-    getParentRoute: () => AuthenticatedConsoleRouteRoute,
-  } as any)
-const AuthenticatedConsoleFindingsRoute =
-  AuthenticatedConsoleFindingsRouteImport.update({
-    id: '/findings',
-    path: '/findings',
+const ProductsSouhimbouRoute = ProductsSouhimbouRouteImport.update({
+  id: '/products/souhimbou',
+  path: '/products/souhimbou',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedConsoleAgentsRoute =
+  AuthenticatedConsoleAgentsRouteImport.update({
+    id: '/agents',
+    path: '/agents',
     getParentRoute: () => AuthenticatedConsoleRouteRoute,
   } as any)
 const AuthenticatedConsoleControlsRoute =
@@ -147,12 +130,29 @@ const AuthenticatedConsoleControlsRoute =
     path: '/controls',
     getParentRoute: () => AuthenticatedConsoleRouteRoute,
   } as any)
-const AuthenticatedConsoleAgentsRoute =
-  AuthenticatedConsoleAgentsRouteImport.update({
-    id: '/agents',
-    path: '/agents',
+const AuthenticatedConsoleFindingsRoute =
+  AuthenticatedConsoleFindingsRouteImport.update({
+    id: '/findings',
+    path: '/findings',
     getParentRoute: () => AuthenticatedConsoleRouteRoute,
   } as any)
+const AuthenticatedConsoleRulepacksRoute =
+  AuthenticatedConsoleRulepacksRouteImport.update({
+    id: '/rulepacks',
+    path: '/rulepacks',
+    getParentRoute: () => AuthenticatedConsoleRouteRoute,
+  } as any)
+const AuthenticatedConsoleTimelineRoute =
+  AuthenticatedConsoleTimelineRouteImport.update({
+    id: '/timeline',
+    path: '/timeline',
+    getParentRoute: () => AuthenticatedConsoleRouteRoute,
+  } as any)
+const ApiPublicAeoRoute = ApiPublicAeoRouteImport.update({
+  id: '/api/public/aeo',
+  path: '/api/public/aeo',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -326,88 +326,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/trust-network': {
-      id: '/trust-network'
-      path: '/trust-network'
-      fullPath: '/trust-network'
-      preLoaderRoute: typeof TrustNetworkRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sitemap.xml': {
-      id: '/sitemap.xml'
-      path: '/sitemap.xml'
-      fullPath: '/sitemap.xml'
-      preLoaderRoute: typeof SitemapDotxmlRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/roadmap': {
-      id: '/roadmap'
-      path: '/roadmap'
-      fullPath: '/roadmap'
-      preLoaderRoute: typeof RoadmapRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/protocol': {
-      id: '/protocol'
-      path: '/protocol'
-      fullPath: '/protocol'
-      preLoaderRoute: typeof ProtocolRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/pricing': {
-      id: '/pricing'
-      path: '/pricing'
-      fullPath: '/pricing'
-      preLoaderRoute: typeof PricingRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/docs': {
-      id: '/docs'
-      path: '/docs'
-      fullPath: '/docs'
-      preLoaderRoute: typeof DocsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/developers': {
-      id: '/developers'
-      path: '/developers'
-      fullPath: '/developers'
-      preLoaderRoute: typeof DevelopersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/contact': {
-      id: '/contact'
-      path: '/contact'
-      fullPath: '/contact'
-      preLoaderRoute: typeof ContactRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/connectors': {
-      id: '/connectors'
-      path: '/connectors'
-      fullPath: '/connectors'
-      preLoaderRoute: typeof ConnectorsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth': {
-      id: '/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/asaf': {
-      id: '/asaf'
-      path: '/asaf'
-      fullPath: '/asaf'
-      preLoaderRoute: typeof AsafRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/about': {
-      id: '/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof AboutRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated': {
@@ -417,25 +340,88 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/products/souhimbou': {
-      id: '/products/souhimbou'
-      path: '/products/souhimbou'
-      fullPath: '/products/souhimbou'
-      preLoaderRoute: typeof ProductsSouhimbouRouteImport
+    '/asaf': {
+      id: '/asaf'
+      path: '/asaf'
+      fullPath: '/asaf'
+      preLoaderRoute: typeof AsafRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/products/adinkhepra': {
-      id: '/products/adinkhepra'
-      path: '/products/adinkhepra'
-      fullPath: '/products/adinkhepra'
-      preLoaderRoute: typeof ProductsAdinkhepraRouteImport
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/connectors': {
+      id: '/connectors'
+      path: '/connectors'
+      fullPath: '/connectors'
+      preLoaderRoute: typeof ConnectorsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/developers': {
+      id: '/developers'
+      path: '/developers'
+      fullPath: '/developers'
+      preLoaderRoute: typeof DevelopersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/docs': {
+      id: '/docs'
+      path: '/docs'
+      fullPath: '/docs'
+      preLoaderRoute: typeof DocsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pricing': {
+      id: '/pricing'
+      path: '/pricing'
+      fullPath: '/pricing'
+      preLoaderRoute: typeof PricingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/protocol': {
+      id: '/protocol'
+      path: '/protocol'
+      fullPath: '/protocol'
+      preLoaderRoute: typeof ProtocolRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/roadmap': {
+      id: '/roadmap'
+      path: '/roadmap'
+      fullPath: '/roadmap'
+      preLoaderRoute: typeof RoadmapRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/trust-network': {
+      id: '/trust-network'
+      path: '/trust-network'
+      fullPath: '/trust-network'
+      preLoaderRoute: typeof TrustNetworkRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/console': {
@@ -445,32 +431,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedConsoleRouteRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/api/public/aeo': {
-      id: '/api/public/aeo'
-      path: '/api/public/aeo'
-      fullPath: '/api/public/aeo'
-      preLoaderRoute: typeof ApiPublicAeoRouteImport
+    '/products/adinkhepra': {
+      id: '/products/adinkhepra'
+      path: '/products/adinkhepra'
+      fullPath: '/products/adinkhepra'
+      preLoaderRoute: typeof ProductsAdinkhepraRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/console/timeline': {
-      id: '/_authenticated/console/timeline'
-      path: '/timeline'
-      fullPath: '/console/timeline'
-      preLoaderRoute: typeof AuthenticatedConsoleTimelineRouteImport
-      parentRoute: typeof AuthenticatedConsoleRouteRoute
+    '/products/souhimbou': {
+      id: '/products/souhimbou'
+      path: '/products/souhimbou'
+      fullPath: '/products/souhimbou'
+      preLoaderRoute: typeof ProductsSouhimbouRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/console/rulepacks': {
-      id: '/_authenticated/console/rulepacks'
-      path: '/rulepacks'
-      fullPath: '/console/rulepacks'
-      preLoaderRoute: typeof AuthenticatedConsoleRulepacksRouteImport
-      parentRoute: typeof AuthenticatedConsoleRouteRoute
-    }
-    '/_authenticated/console/findings': {
-      id: '/_authenticated/console/findings'
-      path: '/findings'
-      fullPath: '/console/findings'
-      preLoaderRoute: typeof AuthenticatedConsoleFindingsRouteImport
+    '/_authenticated/console/agents': {
+      id: '/_authenticated/console/agents'
+      path: '/agents'
+      fullPath: '/console/agents'
+      preLoaderRoute: typeof AuthenticatedConsoleAgentsRouteImport
       parentRoute: typeof AuthenticatedConsoleRouteRoute
     }
     '/_authenticated/console/controls': {
@@ -480,12 +459,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedConsoleControlsRouteImport
       parentRoute: typeof AuthenticatedConsoleRouteRoute
     }
-    '/_authenticated/console/agents': {
-      id: '/_authenticated/console/agents'
-      path: '/agents'
-      fullPath: '/console/agents'
-      preLoaderRoute: typeof AuthenticatedConsoleAgentsRouteImport
+    '/_authenticated/console/findings': {
+      id: '/_authenticated/console/findings'
+      path: '/findings'
+      fullPath: '/console/findings'
+      preLoaderRoute: typeof AuthenticatedConsoleFindingsRouteImport
       parentRoute: typeof AuthenticatedConsoleRouteRoute
+    }
+    '/_authenticated/console/rulepacks': {
+      id: '/_authenticated/console/rulepacks'
+      path: '/rulepacks'
+      fullPath: '/console/rulepacks'
+      preLoaderRoute: typeof AuthenticatedConsoleRulepacksRouteImport
+      parentRoute: typeof AuthenticatedConsoleRouteRoute
+    }
+    '/_authenticated/console/timeline': {
+      id: '/_authenticated/console/timeline'
+      path: '/timeline'
+      fullPath: '/console/timeline'
+      preLoaderRoute: typeof AuthenticatedConsoleTimelineRouteImport
+      parentRoute: typeof AuthenticatedConsoleRouteRoute
+    }
+    '/api/public/aeo': {
+      id: '/api/public/aeo'
+      path: '/api/public/aeo'
+      fullPath: '/api/public/aeo'
+      preLoaderRoute: typeof ApiPublicAeoRouteImport
+      parentRoute: typeof rootRouteImport
     }
   }
 }
