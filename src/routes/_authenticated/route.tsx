@@ -1,5 +1,5 @@
-import { createFileRoute, Outlet, useNavigate, useRouterState } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
+import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_authenticated")({
@@ -8,8 +8,6 @@ export const Route = createFileRoute("/_authenticated")({
 
 function AuthenticatedGate() {
   const navigate = useNavigate();
-  const pathname = useRouterState({ select: (state) => state.location.pathname });
-  const intendedPathRef = useRef(pathname);
   const [status, setStatus] = useState<"checking" | "allowed">("checking");
 
   useEffect(() => {
@@ -18,8 +16,11 @@ function AuthenticatedGate() {
     supabase.auth.getUser().then(({ data, error }) => {
       if (!active) return;
       if (error || !data.user) {
+        const intendedPath = window.location.pathname.startsWith("/console")
+          ? `${window.location.pathname}${window.location.search}`
+          : "/console/timeline";
         window.setTimeout(() => {
-          navigate({ to: "/auth", search: { redirect: intendedPathRef.current }, replace: true });
+          navigate({ to: "/auth", search: { redirect: intendedPath }, replace: true });
         }, 0);
         return;
       }
