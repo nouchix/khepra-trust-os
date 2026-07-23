@@ -194,3 +194,50 @@
 @utility glow-ring {
   box-shadow: var(--shadow-glow);
 }
+
+/* ============= CONSOLE SHELL (dag-viewer aesthetic) ============= */
+.console-shell {
+  --nx-navy: #050c16;
+  --nx-bg: #050c16;
+  --nx-bg2: #080f1c;
+  --nx-bg3: #0d1728;
+  --nx-bg4: #112039;
+  --nx-blue: #1a9fe8;
+  --nx-blue-dim: #0e5a8a;
+  --nx-blue-glow: rgba(26, 159, 232, 0.25);
+  --nx-border: rgba(26, 159, 232, 0.18);
+  --nx-border2: rgba(26, 159, 232, 0.35);
+  --ak-gold: #e5a54b;
+  --ak-gold-glow: rgba(229, 165, 75, 0.25);
+  --sb-cyan: #06b6d4;
+  --sb-cyan-glow: rgba(6, 182, 212, 0.25);
+  --cat1: #cc2a36;
+  --cat2: #f97316;
+  --cat3: #22c55e;
+  --nx-text: #e0eaf5;
+  --nx-text2: #6b8aaa;
+  --nx-muted: #3d5a78;
+  --console-mono: "JetBrains Mono", ui-monospace, monospace;
+  --console-sans: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+
+  background: var(--nx-bg);
+  color: var(--nx-text);
+  font-family: var(--console-sans);
+  background-image: none;
+}
+.console-shell .cs-mono { font-family: var(--console-mono); }
+.console-shell .cs-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 8px; border-radius: 4px; font-size: 9px;
+  font-weight: 600; letter-spacing: 0.8px; font-family: var(--console-mono);
+}
+.console-shell .cs-b-prompt  { background: rgba(129,140,248,.12); color: #a5b4fc; border: 1px solid rgba(129,140,248,.35); }
+.console-shell .cs-b-tool    { background: var(--ak-gold-glow);   color: var(--ak-gold); border: 1px solid rgba(229,165,75,.4); }
+.console-shell .cs-b-finding { background: rgba(204,42,54,.18);   color: #f87171;        border: 1px solid rgba(204,42,54,.4); }
+.console-shell .cs-b-control { background: rgba(34,197,94,.15);   color: #4ade80;        border: 1px solid rgba(34,197,94,.4); }
+.console-shell .cs-b-attest  { background: var(--sb-cyan-glow);   color: var(--sb-cyan); border: 1px solid rgba(6,182,212,.4); }
+.console-shell .cs-b-cat1    { background: rgba(204,42,54,.18);   color: #fca5a5;        border: 1px solid var(--cat1); }
+.console-shell .cs-b-cat2    { background: rgba(249,115,22,.15);  color: #fdba74;        border: 1px solid var(--cat2); }
+.console-shell .cs-b-cat3    { background: rgba(34,197,94,.15);   color: #4ade80;        border: 1px solid var(--cat3); }
+@keyframes cs-pulse { 0%,100% { opacity: 1 } 50% { opacity: 0.4 } }
+.console-shell .cs-pulse { animation: cs-pulse 2s infinite; }
