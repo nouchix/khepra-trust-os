@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 const links = [
   { to: "/protocol", label: "Protocol" },
@@ -15,6 +16,12 @@ const links = [
 
 export function SiteNav() {
   const [open, setOpen] = useState(false);
+  const [authed, setAuthed] = useState(false);
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => setAuthed(!!data.session));
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => setAuthed(!!s));
+    return () => sub.subscription.unsubscribe();
+  }, []);
   return (
     <header className="sticky top-0 z-40 border-b border-border/60 bg-background/70 backdrop-blur-xl">
       <div className="container-x flex h-16 items-center justify-between">
@@ -47,12 +54,21 @@ export function SiteNav() {
           >
             Contact
           </a>
-          <Link
-            to="/developers"
-            className="inline-flex items-center rounded-md bg-primary px-3.5 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
-          >
-            Request Access
-          </Link>
+          {authed ? (
+            <Link
+              to="/console/timeline"
+              className="inline-flex items-center rounded-md bg-primary px-3.5 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
+            >
+              Open Console
+            </Link>
+          ) : (
+            <Link
+              to="/auth"
+              className="inline-flex items-center rounded-md bg-primary px-3.5 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
+            >
+              Sign In
+            </Link>
+          )}
         </div>
 
         <button
