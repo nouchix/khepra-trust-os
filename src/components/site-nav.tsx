@@ -4,10 +4,12 @@ import { Menu, X } from "lucide-react";
 
 const links = [
   { to: "/protocol", label: "Protocol" },
-  { to: "/platform", label: "Platform" },
+  { to: "/asaf", label: "ASAF" },
+  { to: "/trust-network", label: "Trust Network" },
   { to: "/products/adinkhepra", label: "AdinKhepra" },
   { to: "/products/souhimbou", label: "SouHimBou" },
-  { to: "/roadmap", label: "Roadmap" },
+  { to: "/connectors", label: "Connectors" },
+  { to: "/docs", label: "Docs" },
   { to: "/developers", label: "Developers" },
 ] as const;
 
