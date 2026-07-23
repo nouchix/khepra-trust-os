@@ -10,8 +10,8 @@ export const Route = createFileRoute("/")({
     meta: [
       { title: "KHEPRA Trust Network — Trust OS for Autonomous Work" },
       { name: "description", content: "Protocol-first cryptographic identity, policy enforcement, provenance, and immutable attestation for AI agents and enterprise systems." },
-      { property: "og:title", content: "KHEPRA Trust Network" },
-      { property: "og:description", content: "The Trust Operating System for Autonomous Work." },
+      { property: "og:title", content: "KHEPRA Trust Network — Trust OS for Autonomous Work" },
+      { property: "og:description", content: "Protocol-first cryptographic identity, policy enforcement, provenance, and immutable attestation for AI agents and enterprise systems." },
     ],
   }),
   component: Home,
