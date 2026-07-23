@@ -26,6 +26,8 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProductsSouhimbouRouteImport } from './routes/products.souhimbou'
 import { Route as ProductsAdinkhepraRouteImport } from './routes/products.adinkhepra'
 import { Route as AuthenticatedConsoleRouteRouteImport } from './routes/_authenticated/console/route'
+import { Route as AuthenticatedConsoleTimelineRouteImport } from './routes/_authenticated/console/timeline'
+import { Route as AuthenticatedConsoleAgentsRouteImport } from './routes/_authenticated/console/agents'
 
 const TrustNetworkRoute = TrustNetworkRouteImport.update({
   id: '/trust-network',
@@ -112,6 +114,18 @@ const AuthenticatedConsoleRouteRoute =
     path: '/console',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedConsoleTimelineRoute =
+  AuthenticatedConsoleTimelineRouteImport.update({
+    id: '/timeline',
+    path: '/timeline',
+    getParentRoute: () => AuthenticatedConsoleRouteRoute,
+  } as any)
+const AuthenticatedConsoleAgentsRoute =
+  AuthenticatedConsoleAgentsRouteImport.update({
+    id: '/agents',
+    path: '/agents',
+    getParentRoute: () => AuthenticatedConsoleRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -127,9 +141,11 @@ export interface FileRoutesByFullPath {
   '/roadmap': typeof RoadmapRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/trust-network': typeof TrustNetworkRoute
-  '/console': typeof AuthenticatedConsoleRouteRoute
+  '/console': typeof AuthenticatedConsoleRouteRouteWithChildren
   '/products/adinkhepra': typeof ProductsAdinkhepraRoute
   '/products/souhimbou': typeof ProductsSouhimbouRoute
+  '/console/agents': typeof AuthenticatedConsoleAgentsRoute
+  '/console/timeline': typeof AuthenticatedConsoleTimelineRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -145,9 +161,11 @@ export interface FileRoutesByTo {
   '/roadmap': typeof RoadmapRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/trust-network': typeof TrustNetworkRoute
-  '/console': typeof AuthenticatedConsoleRouteRoute
+  '/console': typeof AuthenticatedConsoleRouteRouteWithChildren
   '/products/adinkhepra': typeof ProductsAdinkhepraRoute
   '/products/souhimbou': typeof ProductsSouhimbouRoute
+  '/console/agents': typeof AuthenticatedConsoleAgentsRoute
+  '/console/timeline': typeof AuthenticatedConsoleTimelineRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -165,9 +183,11 @@ export interface FileRoutesById {
   '/roadmap': typeof RoadmapRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/trust-network': typeof TrustNetworkRoute
-  '/_authenticated/console': typeof AuthenticatedConsoleRouteRoute
+  '/_authenticated/console': typeof AuthenticatedConsoleRouteRouteWithChildren
   '/products/adinkhepra': typeof ProductsAdinkhepraRoute
   '/products/souhimbou': typeof ProductsSouhimbouRoute
+  '/_authenticated/console/agents': typeof AuthenticatedConsoleAgentsRoute
+  '/_authenticated/console/timeline': typeof AuthenticatedConsoleTimelineRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -188,6 +208,8 @@ export interface FileRouteTypes {
     | '/console'
     | '/products/adinkhepra'
     | '/products/souhimbou'
+    | '/console/agents'
+    | '/console/timeline'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -206,6 +228,8 @@ export interface FileRouteTypes {
     | '/console'
     | '/products/adinkhepra'
     | '/products/souhimbou'
+    | '/console/agents'
+    | '/console/timeline'
   id:
     | '__root__'
     | '/'
@@ -225,6 +249,8 @@ export interface FileRouteTypes {
     | '/_authenticated/console'
     | '/products/adinkhepra'
     | '/products/souhimbou'
+    | '/_authenticated/console/agents'
+    | '/_authenticated/console/timeline'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -367,15 +393,45 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedConsoleRouteRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/console/timeline': {
+      id: '/_authenticated/console/timeline'
+      path: '/timeline'
+      fullPath: '/console/timeline'
+      preLoaderRoute: typeof AuthenticatedConsoleTimelineRouteImport
+      parentRoute: typeof AuthenticatedConsoleRouteRoute
+    }
+    '/_authenticated/console/agents': {
+      id: '/_authenticated/console/agents'
+      path: '/agents'
+      fullPath: '/console/agents'
+      preLoaderRoute: typeof AuthenticatedConsoleAgentsRouteImport
+      parentRoute: typeof AuthenticatedConsoleRouteRoute
+    }
   }
 }
 
+interface AuthenticatedConsoleRouteRouteChildren {
+  AuthenticatedConsoleAgentsRoute: typeof AuthenticatedConsoleAgentsRoute
+  AuthenticatedConsoleTimelineRoute: typeof AuthenticatedConsoleTimelineRoute
+}
+
+const AuthenticatedConsoleRouteRouteChildren: AuthenticatedConsoleRouteRouteChildren =
+  {
+    AuthenticatedConsoleAgentsRoute: AuthenticatedConsoleAgentsRoute,
+    AuthenticatedConsoleTimelineRoute: AuthenticatedConsoleTimelineRoute,
+  }
+
+const AuthenticatedConsoleRouteRouteWithChildren =
+  AuthenticatedConsoleRouteRoute._addFileChildren(
+    AuthenticatedConsoleRouteRouteChildren,
+  )
+
 interface AuthenticatedRouteRouteChildren {
-  AuthenticatedConsoleRouteRoute: typeof AuthenticatedConsoleRouteRoute
+  AuthenticatedConsoleRouteRoute: typeof AuthenticatedConsoleRouteRouteWithChildren
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
-  AuthenticatedConsoleRouteRoute: AuthenticatedConsoleRouteRoute,
+  AuthenticatedConsoleRouteRoute: AuthenticatedConsoleRouteRouteWithChildren,
 }
 
 const AuthenticatedRouteRouteWithChildren =
