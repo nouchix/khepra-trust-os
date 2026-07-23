@@ -18,11 +18,14 @@ import { Route as DocsRouteImport } from './routes/docs'
 import { Route as DevelopersRouteImport } from './routes/developers'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as ConnectorsRouteImport } from './routes/connectors'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AsafRouteImport } from './routes/asaf'
 import { Route as AboutRouteImport } from './routes/about'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProductsSouhimbouRouteImport } from './routes/products.souhimbou'
 import { Route as ProductsAdinkhepraRouteImport } from './routes/products.adinkhepra'
+import { Route as AuthenticatedConsoleRouteRouteImport } from './routes/_authenticated/console/route'
 
 const TrustNetworkRoute = TrustNetworkRouteImport.update({
   id: '/trust-network',
@@ -69,6 +72,11 @@ const ConnectorsRoute = ConnectorsRouteImport.update({
   path: '/connectors',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AsafRoute = AsafRouteImport.update({
   id: '/asaf',
   path: '/asaf',
@@ -77,6 +85,10 @@ const AsafRoute = AsafRouteImport.update({
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -94,11 +106,18 @@ const ProductsAdinkhepraRoute = ProductsAdinkhepraRouteImport.update({
   path: '/products/adinkhepra',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedConsoleRouteRoute =
+  AuthenticatedConsoleRouteRouteImport.update({
+    id: '/console',
+    path: '/console',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/asaf': typeof AsafRoute
+  '/auth': typeof AuthRoute
   '/connectors': typeof ConnectorsRoute
   '/contact': typeof ContactRoute
   '/developers': typeof DevelopersRoute
@@ -108,6 +127,7 @@ export interface FileRoutesByFullPath {
   '/roadmap': typeof RoadmapRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/trust-network': typeof TrustNetworkRoute
+  '/console': typeof AuthenticatedConsoleRouteRoute
   '/products/adinkhepra': typeof ProductsAdinkhepraRoute
   '/products/souhimbou': typeof ProductsSouhimbouRoute
 }
@@ -115,6 +135,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/asaf': typeof AsafRoute
+  '/auth': typeof AuthRoute
   '/connectors': typeof ConnectorsRoute
   '/contact': typeof ContactRoute
   '/developers': typeof DevelopersRoute
@@ -124,14 +145,17 @@ export interface FileRoutesByTo {
   '/roadmap': typeof RoadmapRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/trust-network': typeof TrustNetworkRoute
+  '/console': typeof AuthenticatedConsoleRouteRoute
   '/products/adinkhepra': typeof ProductsAdinkhepraRoute
   '/products/souhimbou': typeof ProductsSouhimbouRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/about': typeof AboutRoute
   '/asaf': typeof AsafRoute
+  '/auth': typeof AuthRoute
   '/connectors': typeof ConnectorsRoute
   '/contact': typeof ContactRoute
   '/developers': typeof DevelopersRoute
@@ -141,6 +165,7 @@ export interface FileRoutesById {
   '/roadmap': typeof RoadmapRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/trust-network': typeof TrustNetworkRoute
+  '/_authenticated/console': typeof AuthenticatedConsoleRouteRoute
   '/products/adinkhepra': typeof ProductsAdinkhepraRoute
   '/products/souhimbou': typeof ProductsSouhimbouRoute
 }
@@ -150,6 +175,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/asaf'
+    | '/auth'
     | '/connectors'
     | '/contact'
     | '/developers'
@@ -159,6 +185,7 @@ export interface FileRouteTypes {
     | '/roadmap'
     | '/sitemap.xml'
     | '/trust-network'
+    | '/console'
     | '/products/adinkhepra'
     | '/products/souhimbou'
   fileRoutesByTo: FileRoutesByTo
@@ -166,6 +193,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/asaf'
+    | '/auth'
     | '/connectors'
     | '/contact'
     | '/developers'
@@ -175,13 +203,16 @@ export interface FileRouteTypes {
     | '/roadmap'
     | '/sitemap.xml'
     | '/trust-network'
+    | '/console'
     | '/products/adinkhepra'
     | '/products/souhimbou'
   id:
     | '__root__'
     | '/'
+    | '/_authenticated'
     | '/about'
     | '/asaf'
+    | '/auth'
     | '/connectors'
     | '/contact'
     | '/developers'
@@ -191,14 +222,17 @@ export interface FileRouteTypes {
     | '/roadmap'
     | '/sitemap.xml'
     | '/trust-network'
+    | '/_authenticated/console'
     | '/products/adinkhepra'
     | '/products/souhimbou'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AboutRoute: typeof AboutRoute
   AsafRoute: typeof AsafRoute
+  AuthRoute: typeof AuthRoute
   ConnectorsRoute: typeof ConnectorsRoute
   ContactRoute: typeof ContactRoute
   DevelopersRoute: typeof DevelopersRoute
@@ -277,6 +311,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConnectorsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/asaf': {
       id: '/asaf'
       path: '/asaf'
@@ -289,6 +330,13 @@ declare module '@tanstack/react-router' {
       path: '/about'
       fullPath: '/about'
       preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -312,13 +360,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProductsAdinkhepraRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/console': {
+      id: '/_authenticated/console'
+      path: '/console'
+      fullPath: '/console'
+      preLoaderRoute: typeof AuthenticatedConsoleRouteRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedConsoleRouteRoute: typeof AuthenticatedConsoleRouteRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedConsoleRouteRoute: AuthenticatedConsoleRouteRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AboutRoute: AboutRoute,
   AsafRoute: AsafRoute,
+  AuthRoute: AuthRoute,
   ConnectorsRoute: ConnectorsRoute,
   ContactRoute: ContactRoute,
   DevelopersRoute: DevelopersRoute,
