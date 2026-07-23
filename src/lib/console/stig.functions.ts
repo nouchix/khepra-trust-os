@@ -239,3 +239,204 @@ async function sha256Hex(input: string): Promise<string> {
   const digest = await crypto.subtle.digest("SHA-256", bytes);
   return Array.from(new Uint8Array(digest)).map((b) => b.toString(16).padStart(2, "0")).join("");
 }
+
+// ---------- Replay + Export ----------
+
+interface AeoRow {
+  id: string;
+  label: string;
+  type: string;
+  description: string | null;
+  severity: string | null;
+  val: number;
+  ts: string;
+  payload: Record<string, unknown> | null;
+}
+
+export const stigReplaySession = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: { sessionId: string }) => data)
+  .handler(async ({ data, context }) => {
+    const tenantId = await getTenantId(context as never, context.userId);
+    const { data: aeosRaw, error } = await context.supabase
+      .from("aeos")
+      .select("id,label,type,description,severity,val,ts,payload")
+      .eq("session_id", data.sessionId)
+      .order("ts", { ascending: true });
+    if (error) throw new Error(error.message);
+    const aeos = (aeosRaw ?? []) as AeoRow[];
+
+    const { data: linksRaw } = await context.supabase
+      .from("aeo_links")
+      .select("parent_id, child_id");
+    const childrenByParent = new Map<string, string[]>();
+    for (const l of linksRaw ?? []) {
+      const arr = childrenByParent.get(l.parent_id) ?? [];
+      arr.push(l.child_id);
+      childrenByParent.set(l.parent_id, arr);
+    }
+    const byId = new Map(aeos.map((n) => [n.id, n]));
+
+    const replaySessionId = await ensureEvidenceSession(tenantId);
+    const replayRootId = await recordEvidence({
+      tenantId, sessionId: replaySessionId,
+      label: `REPLAY session ${data.sessionId.slice(0, 8)}`,
+      type: "tool",
+      description: `Deterministic replay of ${aeos.filter((a) => a.type === "tool").length} tool calls`,
+      verdict: "ok",
+      payload: { source_session: data.sessionId, at: new Date().toISOString() },
+    });
+
+    const comparisons: Array<{
+      original_id: string;
+      label: string;
+      endpoint: string | null;
+      original_sha256: string | null;
+      replay_sha256: string | null;
+      status: number | null;
+      match: boolean;
+    }> = [];
+
+    for (const n of aeos) {
+      if (n.type !== "tool") continue;
+      const endpoint = (n.payload?.endpoint as string | undefined) ?? null;
+      if (!endpoint || !endpoint.startsWith("/")) continue;
+
+      // find the attest child's sha256 for the original
+      const attestKids = (childrenByParent.get(n.id) ?? [])
+        .map((cid) => byId.get(cid))
+        .filter((k): k is AeoRow => !!k && k.type === "attest");
+      const originalSha = (attestKids[0]?.payload?.sha256 as string | undefined) ?? null;
+
+      const res = await stigFetch(endpoint);
+      const text = await res.text();
+      const replaySha = await sha256Hex(text);
+      const match = !!originalSha && originalSha === replaySha;
+
+      comparisons.push({
+        original_id: n.id,
+        label: n.label,
+        endpoint,
+        original_sha256: originalSha,
+        replay_sha256: replaySha,
+        status: res.status,
+        match,
+      });
+
+      await recordEvidence({
+        tenantId, sessionId: replaySessionId,
+        label: `REPLAY ${n.label}`,
+        type: "attest",
+        description: match
+          ? "Anchors match original run"
+          : originalSha
+            ? "Anchor drift detected"
+            : "No original anchor to compare",
+        verdict: match ? "ok" : "error",
+        payload: { endpoint, original_sha256: originalSha, replay_sha256: replaySha, status: res.status, match },
+        parentId: replayRootId,
+      });
+    }
+
+    const matched = comparisons.filter((c) => c.match).length;
+    return {
+      ok: true,
+      source_session: data.sessionId,
+      replay_session: replaySessionId,
+      replay_root: replayRootId,
+      total: comparisons.length,
+      matched,
+      drifted: comparisons.length - matched,
+      comparisons,
+    };
+  });
+
+export const stigExportSession = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: { sessionId: string; slug?: string }) => data)
+  .handler(async ({ data, context }) => {
+    const tenantId = await getTenantId(context as never, context.userId);
+
+    const [{ data: sess }, { data: aeosRaw, error: aeoErr }, { data: findingsRaw }] = await Promise.all([
+      context.supabase.from("sessions").select("id, session_ref, started_at, ended_at, intent").eq("id", data.sessionId).maybeSingle(),
+      context.supabase.from("aeos").select("id,label,type,description,severity,val,ts,payload,sig,external_id").eq("session_id", data.sessionId).order("ts", { ascending: true }),
+      context.supabase.from("findings").select("id, aeo_id, severity, status, label").eq("tenant_id", tenantId),
+    ]);
+    if (aeoErr) throw new Error(aeoErr.message);
+    const aeos = (aeosRaw ?? []) as (AeoRow & { external_id: string; sig: unknown })[];
+    const nodeIds = new Set(aeos.map((n) => n.id));
+
+    const { data: linksRaw } = await context.supabase
+      .from("aeo_links")
+      .select("parent_id, child_id, weight");
+    const links = (linksRaw ?? []).filter((l) => nodeIds.has(l.parent_id) && nodeIds.has(l.child_id));
+
+    const mapStatus = (s: string | null) =>
+      s === "adjudicated" ? "not_a_finding"
+      : s === "dismissed" ? "not_applicable"
+      : s === "open" ? "open"
+      : "not_reviewed";
+
+    const cklb = {
+      title: `KHEPRA ${sess?.session_ref ?? data.sessionId} → ${data.slug ?? "audit"}`,
+      stig: data.slug ?? null,
+      generated_at: new Date().toISOString(),
+      rules: (findingsRaw ?? []).map((f) => ({
+        rule_id: f.aeo_id,
+        severity: f.severity,
+        status: mapStatus(f.status as string | null),
+        finding_details: f.label,
+      })),
+    };
+    const cklbJson = JSON.stringify(cklb, null, 2);
+    const cklbSha = await sha256Hex(cklbJson);
+
+    const manifest = {
+      version: "khepra.evidence.v1",
+      exported_at: new Date().toISOString(),
+      tenant_id: tenantId,
+      session: sess ?? { id: data.sessionId },
+      counts: {
+        aeos: aeos.length,
+        tool: aeos.filter((a) => a.type === "tool").length,
+        attest: aeos.filter((a) => a.type === "attest").length,
+        finding: aeos.filter((a) => a.type === "finding").length,
+        links: links.length,
+      },
+      aeos,
+      links,
+      cklb_sha256: cklbSha,
+    };
+    const manifestJson = JSON.stringify(manifest, null, 2);
+    const manifestSha = await sha256Hex(manifestJson);
+
+    // Attest the export itself so the download is anchored on the DAG.
+    const evidenceSessionId = await ensureEvidenceSession(tenantId);
+    const toolId = await recordEvidence({
+      tenantId, sessionId: evidenceSessionId,
+      label: `EXPORT session ${data.sessionId.slice(0, 8)}`,
+      type: "tool",
+      description: `Audit bundle · ${manifest.counts.aeos} AEOs · ${manifest.counts.links} links`,
+      verdict: "ok",
+      payload: { source_session: data.sessionId, counts: manifest.counts },
+    });
+    await recordEvidence({
+      tenantId, sessionId: evidenceSessionId,
+      label: `ATTEST export:${data.sessionId.slice(0, 8)}`,
+      type: "attest",
+      description: "SHA-256 of CKLB + evidence manifest",
+      verdict: "ok",
+      payload: { cklb_sha256: cklbSha, manifest_sha256: manifestSha },
+      parentId: toolId,
+    });
+
+    return {
+      session_ref: sess?.session_ref ?? data.sessionId,
+      cklb,
+      cklb_json: cklbJson,
+      cklb_sha256: cklbSha,
+      manifest,
+      manifest_json: manifestJson,
+      manifest_sha256: manifestSha,
+    };
+  });
