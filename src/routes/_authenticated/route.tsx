@@ -1,12 +1,46 @@
-import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_authenticated")({
-  ssr: false,
-  beforeLoad: async () => {
-    const { data, error } = await supabase.auth.getUser();
-    if (error || !data.user) throw redirect({ to: "/auth" });
-    return { user: data.user };
-  },
-  component: () => <Outlet />,
+  component: AuthenticatedGate,
 });
+
+function AuthenticatedGate() {
+  const navigate = useNavigate();
+  const [status, setStatus] = useState<"checking" | "allowed">("checking");
+
+  useEffect(() => {
+    let active = true;
+
+    supabase.auth.getUser().then(({ data, error }) => {
+      if (!active) return;
+      if (error || !data.user) {
+        const intendedPath = window.location.pathname.startsWith("/console")
+          ? `${window.location.pathname}${window.location.search}`
+          : "/console/timeline";
+        window.setTimeout(() => {
+          navigate({ to: "/auth", search: { redirect: intendedPath }, replace: true });
+        }, 0);
+        return;
+      }
+      setStatus("allowed");
+    });
+
+    return () => {
+      active = false;
+    };
+  }, [navigate]);
+
+  if (status === "checking") {
+    return (
+      <div className="console-shell flex min-h-[60vh] items-center justify-center" style={{ background: "var(--nx-bg)" }}>
+        <div className="cs-mono uppercase" style={{ color: "var(--nx-text2)", fontSize: 11, letterSpacing: 2 }}>
+          Verifying console access…
+        </div>
+      </div>
+    );
+  }
+
+  return <Outlet />;
+}
