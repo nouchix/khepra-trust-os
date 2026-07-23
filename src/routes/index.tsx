@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Shield, Fingerprint, GitBranch, Camera, Cpu, KeyRound, ScrollText } from "lucide-react";
+import { ArrowRight, Shield, Fingerprint, GitBranch, Camera, Cpu, KeyRound, ScrollText, Activity, ExternalLink } from "lucide-react";
 import heroImg from "@/assets/hero-scarab.jpg";
 import { Eyebrow, SectionHeading, Card } from "@/components/section";
 import { TrustGraph } from "@/components/trust-graph";
@@ -166,6 +166,107 @@ function Home() {
       </section>
 
       {/* PRODUCTS */}
+      {/* LIVE TRACTION — Smithery MCP */}
+      <section className="border-b border-border/60">
+        <div className="container-x py-20 md:py-28">
+          <div className="flex flex-wrap items-end justify-between gap-6">
+            <SectionHeading
+              eyebrow="Live on the network"
+              title={<>Real traction. <br />Real cryptographic evidence.</>}
+              subtitle="KHEPRA's PQC MCP server is deployed on Smithery — the largest public registry for Model Context Protocol tools. Every metric below is measured, not marketed."
+            />
+            <a
+              href="https://smithery.ai/servers/skone/pqc-khepra-mcp#usage"
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-1.5 text-sm text-primary hover:text-primary/80 transition-colors font-mono"
+            >
+              View on Smithery <ExternalLink className="h-3.5 w-3.5" />
+            </a>
+          </div>
+
+          <div className="mt-12 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            {[
+              { k: "93", suffix: "/100", label: "Registry score" },
+              { k: "99.9", suffix: "%", label: "Uptime (30d)" },
+              { k: "418", suffix: "ms", label: "p50 latency" },
+              { k: "72", suffix: "", label: "Tools exposed" },
+              { k: "944", suffix: "", label: "Attested calls" },
+              { k: "2,341", suffix: "", label: "Sessions" },
+            ].map((m) => (
+              <div key={m.label} className="surface-card p-5">
+                <div className="font-mono text-2xl md:text-3xl text-primary tracking-tight">
+                  {m.k}
+                  <span className="text-base text-primary/70">{m.suffix}</span>
+                </div>
+                <div className="mt-2 text-xs text-muted-foreground">{m.label}</div>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-10 grid lg:grid-cols-12 gap-6">
+            <div className="lg:col-span-7 surface-card p-6">
+              <div className="flex items-center justify-between">
+                <Eyebrow>Top attested tools · 30d</Eyebrow>
+                <span className="font-mono text-[11px] text-muted-foreground">source: smithery.ai</span>
+              </div>
+              <div className="mt-5 space-y-2.5">
+                {[
+                  ["khepra_query_stig", 57],
+                  ["discover_assets", 56],
+                  ["nist_map", 49],
+                  ["khepra_get_compliance_score", 49],
+                  ["cmmc_assess", 37],
+                  ["identity_shroud", 34],
+                  ["threat_lookup", 33],
+                  ["ea_risk_summary", 28],
+                ].map(([name, calls]) => {
+                  const pct = ((calls as number) / 57) * 100;
+                  return (
+                    <div key={name as string} className="grid grid-cols-[1fr_60px_50px] items-center gap-3">
+                      <div className="font-mono text-xs text-foreground/90 truncate">{name}</div>
+                      <div className="h-1.5 rounded bg-primary/10 overflow-hidden">
+                        <div
+                          className="h-full bg-primary/70"
+                          style={{ width: `${pct}%` }}
+                        />
+                      </div>
+                      <div className="font-mono text-xs text-primary text-right">{calls}</div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="lg:col-span-5 surface-card p-6 flex flex-col">
+              <Eyebrow>From registry to your console</Eyebrow>
+              <h3 className="mt-3 text-2xl font-semibold tracking-tight">
+                Every call becomes a signed DAG node.
+              </h3>
+              <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
+                The Stargate Console mirrors Smithery traffic into your private trust graph: every
+                MCP tool invocation is anchored with a SHA-256 attestation, one-click replayable,
+                and audit-exportable as CKLB + evidence manifest.
+              </p>
+              <div className="mt-auto pt-6 flex flex-wrap gap-3">
+                <Link
+                  to="/console/mcp"
+                  className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors glow-ring"
+                >
+                  <Activity className="h-4 w-4" /> Open MCP Fabric
+                </Link>
+                <Link
+                  to="/console"
+                  className="inline-flex items-center gap-2 rounded-md border border-border bg-card/60 px-4 py-2.5 text-sm font-medium text-foreground hover:bg-card transition-colors"
+                >
+                  Enter Console <ArrowRight className="h-4 w-4" />
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section className="border-b border-border/60">
         <div className="container-x py-20 md:py-28">
           <SectionHeading
