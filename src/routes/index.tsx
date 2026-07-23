@@ -1,8 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Shield, Fingerprint, GitBranch, Camera, Cpu, Boxes, KeyRound, ScrollText } from "lucide-react";
+import { ArrowRight, Shield, Fingerprint, GitBranch, Camera, Cpu, KeyRound, ScrollText } from "lucide-react";
 import heroImg from "@/assets/hero-scarab.jpg";
-import dagImg from "@/assets/dag.jpg";
 import { Eyebrow, SectionHeading, Card } from "@/components/section";
+import { TrustGraph } from "@/components/trust-graph";
+import { EgyptianDivider } from "@/components/egyptian-divider";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -157,8 +158,8 @@ function Home() {
             </div>
           </div>
           <div className="lg:col-span-6">
-            <div className="surface-card overflow-hidden">
-              <img src={dagImg} alt="Attestation DAG visualization" loading="lazy" width={1400} height={800} className="w-full h-auto" />
+            <div className="surface-card p-4 md:p-6">
+              <TrustGraph />
             </div>
           </div>
         </div>
