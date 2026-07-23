@@ -23,7 +23,8 @@ export function SiteFooter() {
           title="Protocol"
           items={[
             { to: "/protocol", label: "Overview" },
-            { to: "/platform", label: "Architecture" },
+            { to: "/asaf", label: "ASAF Architecture" },
+            { to: "/trust-network", label: "Trust Network" },
             { to: "/roadmap", label: "Roadmap" },
           ]}
         />
@@ -32,14 +33,17 @@ export function SiteFooter() {
           items={[
             { to: "/products/adinkhepra", label: "AdinKhepra" },
             { to: "/products/souhimbou", label: "SouHimBou AI" },
+            { to: "/connectors", label: "Certified Connectors" },
+            { to: "/pricing", label: "Enterprise" },
           ]}
         />
         <FooterCol
           title="Build"
           items={[
             { to: "/developers", label: "Developer Portal" },
-            { to: "/developers", label: "SDKs" },
-            { to: "/developers", label: "Connectors" },
+            { to: "/docs", label: "Documentation" },
+            { to: "/about", label: "About" },
+            { to: "/contact", label: "Contact" },
           ]}
         />
       </div>

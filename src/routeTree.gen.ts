@@ -9,15 +9,26 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TrustNetworkRouteImport } from './routes/trust-network'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as RoadmapRouteImport } from './routes/roadmap'
 import { Route as ProtocolRouteImport } from './routes/protocol'
-import { Route as PlatformRouteImport } from './routes/platform'
+import { Route as PricingRouteImport } from './routes/pricing'
+import { Route as DocsRouteImport } from './routes/docs'
 import { Route as DevelopersRouteImport } from './routes/developers'
+import { Route as ContactRouteImport } from './routes/contact'
+import { Route as ConnectorsRouteImport } from './routes/connectors'
+import { Route as AsafRouteImport } from './routes/asaf'
+import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProductsSouhimbouRouteImport } from './routes/products.souhimbou'
 import { Route as ProductsAdinkhepraRouteImport } from './routes/products.adinkhepra'
 
+const TrustNetworkRoute = TrustNetworkRouteImport.update({
+  id: '/trust-network',
+  path: '/trust-network',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
@@ -33,14 +44,39 @@ const ProtocolRoute = ProtocolRouteImport.update({
   path: '/protocol',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PlatformRoute = PlatformRouteImport.update({
-  id: '/platform',
-  path: '/platform',
+const PricingRoute = PricingRouteImport.update({
+  id: '/pricing',
+  path: '/pricing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DocsRoute = DocsRouteImport.update({
+  id: '/docs',
+  path: '/docs',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DevelopersRoute = DevelopersRouteImport.update({
   id: '/developers',
   path: '/developers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConnectorsRoute = ConnectorsRouteImport.update({
+  id: '/connectors',
+  path: '/connectors',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AsafRoute = AsafRouteImport.update({
+  id: '/asaf',
+  path: '/asaf',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -61,32 +97,50 @@ const ProductsAdinkhepraRoute = ProductsAdinkhepraRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/asaf': typeof AsafRoute
+  '/connectors': typeof ConnectorsRoute
+  '/contact': typeof ContactRoute
   '/developers': typeof DevelopersRoute
-  '/platform': typeof PlatformRoute
+  '/docs': typeof DocsRoute
+  '/pricing': typeof PricingRoute
   '/protocol': typeof ProtocolRoute
   '/roadmap': typeof RoadmapRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/trust-network': typeof TrustNetworkRoute
   '/products/adinkhepra': typeof ProductsAdinkhepraRoute
   '/products/souhimbou': typeof ProductsSouhimbouRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/asaf': typeof AsafRoute
+  '/connectors': typeof ConnectorsRoute
+  '/contact': typeof ContactRoute
   '/developers': typeof DevelopersRoute
-  '/platform': typeof PlatformRoute
+  '/docs': typeof DocsRoute
+  '/pricing': typeof PricingRoute
   '/protocol': typeof ProtocolRoute
   '/roadmap': typeof RoadmapRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/trust-network': typeof TrustNetworkRoute
   '/products/adinkhepra': typeof ProductsAdinkhepraRoute
   '/products/souhimbou': typeof ProductsSouhimbouRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/asaf': typeof AsafRoute
+  '/connectors': typeof ConnectorsRoute
+  '/contact': typeof ContactRoute
   '/developers': typeof DevelopersRoute
-  '/platform': typeof PlatformRoute
+  '/docs': typeof DocsRoute
+  '/pricing': typeof PricingRoute
   '/protocol': typeof ProtocolRoute
   '/roadmap': typeof RoadmapRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/trust-network': typeof TrustNetworkRoute
   '/products/adinkhepra': typeof ProductsAdinkhepraRoute
   '/products/souhimbou': typeof ProductsSouhimbouRoute
 }
@@ -94,48 +148,79 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/about'
+    | '/asaf'
+    | '/connectors'
+    | '/contact'
     | '/developers'
-    | '/platform'
+    | '/docs'
+    | '/pricing'
     | '/protocol'
     | '/roadmap'
     | '/sitemap.xml'
+    | '/trust-network'
     | '/products/adinkhepra'
     | '/products/souhimbou'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/about'
+    | '/asaf'
+    | '/connectors'
+    | '/contact'
     | '/developers'
-    | '/platform'
+    | '/docs'
+    | '/pricing'
     | '/protocol'
     | '/roadmap'
     | '/sitemap.xml'
+    | '/trust-network'
     | '/products/adinkhepra'
     | '/products/souhimbou'
   id:
     | '__root__'
     | '/'
+    | '/about'
+    | '/asaf'
+    | '/connectors'
+    | '/contact'
     | '/developers'
-    | '/platform'
+    | '/docs'
+    | '/pricing'
     | '/protocol'
     | '/roadmap'
     | '/sitemap.xml'
+    | '/trust-network'
     | '/products/adinkhepra'
     | '/products/souhimbou'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AboutRoute: typeof AboutRoute
+  AsafRoute: typeof AsafRoute
+  ConnectorsRoute: typeof ConnectorsRoute
+  ContactRoute: typeof ContactRoute
   DevelopersRoute: typeof DevelopersRoute
-  PlatformRoute: typeof PlatformRoute
+  DocsRoute: typeof DocsRoute
+  PricingRoute: typeof PricingRoute
   ProtocolRoute: typeof ProtocolRoute
   RoadmapRoute: typeof RoadmapRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  TrustNetworkRoute: typeof TrustNetworkRoute
   ProductsAdinkhepraRoute: typeof ProductsAdinkhepraRoute
   ProductsSouhimbouRoute: typeof ProductsSouhimbouRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/trust-network': {
+      id: '/trust-network'
+      path: '/trust-network'
+      fullPath: '/trust-network'
+      preLoaderRoute: typeof TrustNetworkRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sitemap.xml': {
       id: '/sitemap.xml'
       path: '/sitemap.xml'
@@ -157,11 +242,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtocolRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/platform': {
-      id: '/platform'
-      path: '/platform'
-      fullPath: '/platform'
-      preLoaderRoute: typeof PlatformRouteImport
+    '/pricing': {
+      id: '/pricing'
+      path: '/pricing'
+      fullPath: '/pricing'
+      preLoaderRoute: typeof PricingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/docs': {
+      id: '/docs'
+      path: '/docs'
+      fullPath: '/docs'
+      preLoaderRoute: typeof DocsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/developers': {
@@ -169,6 +261,34 @@ declare module '@tanstack/react-router' {
       path: '/developers'
       fullPath: '/developers'
       preLoaderRoute: typeof DevelopersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/connectors': {
+      id: '/connectors'
+      path: '/connectors'
+      fullPath: '/connectors'
+      preLoaderRoute: typeof ConnectorsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/asaf': {
+      id: '/asaf'
+      path: '/asaf'
+      fullPath: '/asaf'
+      preLoaderRoute: typeof AsafRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -197,11 +317,17 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AboutRoute: AboutRoute,
+  AsafRoute: AsafRoute,
+  ConnectorsRoute: ConnectorsRoute,
+  ContactRoute: ContactRoute,
   DevelopersRoute: DevelopersRoute,
-  PlatformRoute: PlatformRoute,
+  DocsRoute: DocsRoute,
+  PricingRoute: PricingRoute,
   ProtocolRoute: ProtocolRoute,
   RoadmapRoute: RoadmapRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  TrustNetworkRoute: TrustNetworkRoute,
   ProductsAdinkhepraRoute: ProductsAdinkhepraRoute,
   ProductsSouhimbouRoute: ProductsSouhimbouRoute,
 }
