@@ -1,0 +1,224 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
+import { ConsoleShell } from "@/components/console/ConsoleShell";
+import { getMyTenant } from "@/lib/console/tenant.functions";
+import { listSessions } from "@/lib/console/aeos.functions";
+import {
+  stigListStigs,
+  stigListControls,
+  stigDownloadCklb,
+  stigPushSessionAsCklb,
+} from "@/lib/console/stig.functions";
+
+export const Route = createFileRoute("/_authenticated/console/stig")({
+  head: () => ({ meta: [{ title: "STIG · KHEPRA Stargate" }, { name: "robots", content: "noindex" }] }),
+  component: StigPage,
+});
+
+type Row = Record<string, unknown>;
+
+function StigPage() {
+  const tenantFn = useServerFn(getMyTenant);
+  const sessionsFn = useServerFn(listSessions);
+  const listStigs = useServerFn(stigListStigs);
+  const listControls = useServerFn(stigListControls);
+  const download = useServerFn(stigDownloadCklb);
+  const push = useServerFn(stigPushSessionAsCklb);
+
+  const qc = useQueryClient();
+  const tenantQ = useQuery({ queryKey: ["tenant"], queryFn: () => tenantFn() });
+  const sessionsQ = useQuery({ queryKey: ["sessions"], queryFn: () => sessionsFn() });
+
+  const [slug, setSlug] = useState("microsoft_windows_server_2022");
+  const [severity, setSeverity] = useState<"high" | "medium" | "low" | "">("high");
+  const [page, setPage] = useState(1);
+
+  const catalogQ = useQuery({
+    queryKey: ["stig-catalog"],
+    queryFn: () => listStigs({ data: { page: 1, limit: 25 } }),
+  });
+
+  const controlsM = useMutation({
+    mutationFn: () => listControls({ data: { slug, page, limit: 10, severity: severity || undefined } }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["sessions"] }),
+  });
+
+  const downloadM = useMutation({
+    mutationFn: (format: "cklb" | "json" | "csv") => download({ data: { slug, format } }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["sessions"] }),
+  });
+
+  const [pushSessionId, setPushSessionId] = useState<string>("");
+  const pushM = useMutation({
+    mutationFn: () => push({ data: { sessionId: pushSessionId, slug } }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["sessions"] }),
+  });
+
+  const controlsRows: Row[] = Array.isArray((controlsM.data as { data?: Row[] })?.data)
+    ? ((controlsM.data as { data: Row[] }).data)
+    : [];
+  const catalogRows: Row[] = Array.isArray((catalogQ.data as { data?: Row[] })?.data)
+    ? ((catalogQ.data as { data: Row[] }).data)
+    : [];
+
+  return (
+    <ConsoleShell
+      tenant={tenantQ.data ? { name: tenantQ.data.name, classification: tenantQ.data.classification, role: tenantQ.data.role } : null}
+      leftPanel={
+        <div className="cs-mono" style={{ fontSize: 11, color: "var(--nx-text2)", lineHeight: 1.6 }}>
+          <div style={{ color: "var(--nx-blue)", fontSize: 10, letterSpacing: 2, textTransform: "uppercase", marginBottom: 8 }}>
+            STIG Viewer Bridge
+          </div>
+          <p>Every call below emits AEO evidence into the <span style={{ color: "var(--ak-gold)" }}>stig-integration</span> session, viewable on the Timeline.</p>
+          <div style={{ marginTop: 12, color: "var(--nx-muted)", fontSize: 10 }}>Endpoint: stigviewer.com/api/v1</div>
+          <div style={{ marginTop: 4, color: "var(--nx-muted)", fontSize: 10 }}>Token: STIGVIEWER_API_TOKEN (server-only)</div>
+        </div>
+      }
+    >
+      <div className="w-full h-full overflow-auto p-5" style={{ color: "var(--nx-text)" }}>
+        {/* Controls bar */}
+        <div className="flex flex-wrap items-end gap-3 mb-5">
+          <label className="flex flex-col gap-1">
+            <span className="cs-mono uppercase" style={{ fontSize: 9, letterSpacing: 1.5, color: "var(--nx-text2)" }}>Slug</span>
+            <input
+              value={slug}
+              onChange={(e) => setSlug(e.target.value)}
+              className="cs-mono px-2 py-1.5 rounded"
+              style={{ background: "var(--nx-bg3)", border: "1px solid var(--nx-border2)", color: "var(--nx-text)", fontSize: 12, minWidth: 340 }}
+            />
+          </label>
+          <label className="flex flex-col gap-1">
+            <span className="cs-mono uppercase" style={{ fontSize: 9, letterSpacing: 1.5, color: "var(--nx-text2)" }}>Severity</span>
+            <select
+              value={severity}
+              onChange={(e) => setSeverity(e.target.value as typeof severity)}
+              className="cs-mono px-2 py-1.5 rounded"
+              style={{ background: "var(--nx-bg3)", border: "1px solid var(--nx-border2)", color: "var(--nx-text)", fontSize: 12 }}
+            >
+              <option value="">any</option>
+              <option value="high">high</option>
+              <option value="medium">medium</option>
+              <option value="low">low</option>
+            </select>
+          </label>
+          <label className="flex flex-col gap-1">
+            <span className="cs-mono uppercase" style={{ fontSize: 9, letterSpacing: 1.5, color: "var(--nx-text2)" }}>Page</span>
+            <input
+              type="number" min={1} value={page}
+              onChange={(e) => setPage(Math.max(1, Number(e.target.value) || 1))}
+              className="cs-mono px-2 py-1.5 rounded" style={{ background: "var(--nx-bg3)", border: "1px solid var(--nx-border2)", color: "var(--nx-text)", fontSize: 12, width: 72 }}
+            />
+          </label>
+
+          <button onClick={() => controlsM.mutate()} className="cs-mono uppercase px-3 py-1.5 rounded"
+            style={{ background: "var(--nx-blue-glow)", border: "1px solid var(--nx-blue)", color: "var(--nx-blue)", fontSize: 10, letterSpacing: 1.5 }}>
+            {controlsM.isPending ? "…" : "Fetch controls"}
+          </button>
+          <button onClick={() => downloadM.mutate("cklb")} className="cs-mono uppercase px-3 py-1.5 rounded"
+            style={{ background: "var(--nx-bg3)", border: "1px solid var(--nx-border2)", color: "var(--ak-gold)", fontSize: 10, letterSpacing: 1.5 }}>
+            {downloadM.isPending ? "…" : "Download CKLB"}
+          </button>
+          <button onClick={() => downloadM.mutate("json")} className="cs-mono uppercase px-3 py-1.5 rounded"
+            style={{ background: "var(--nx-bg3)", border: "1px solid var(--nx-border2)", color: "var(--nx-text2)", fontSize: 10, letterSpacing: 1.5 }}>
+            JSON
+          </button>
+          <button onClick={() => downloadM.mutate("csv")} className="cs-mono uppercase px-3 py-1.5 rounded"
+            style={{ background: "var(--nx-bg3)", border: "1px solid var(--nx-border2)", color: "var(--nx-text2)", fontSize: 10, letterSpacing: 1.5 }}>
+            CSV
+          </button>
+        </div>
+
+        {(controlsM.error || downloadM.error || pushM.error || catalogQ.error) && (
+          <div className="cs-mono mb-4 p-2 rounded" style={{ background: "rgba(204,42,54,.08)", border: "1px solid rgba(204,42,54,.4)", color: "rgba(255,120,130,.9)", fontSize: 11 }}>
+            {String(
+              (controlsM.error as Error)?.message ||
+              (downloadM.error as Error)?.message ||
+              (pushM.error as Error)?.message ||
+              (catalogQ.error as Error)?.message
+            )}
+          </div>
+        )}
+
+        {/* Push CKLB */}
+        <div className="mb-6 p-3 rounded" style={{ background: "var(--nx-bg2)", border: "1px solid var(--nx-border)" }}>
+          <div className="cs-mono uppercase mb-2" style={{ fontSize: 10, letterSpacing: 1.5, color: "var(--ak-gold)" }}>Push session findings → CKLB</div>
+          <div className="flex items-center gap-2 flex-wrap">
+            <select
+              value={pushSessionId}
+              onChange={(e) => setPushSessionId(e.target.value)}
+              className="cs-mono px-2 py-1.5 rounded"
+              style={{ background: "var(--nx-bg3)", border: "1px solid var(--nx-border2)", color: "var(--nx-text)", fontSize: 12, minWidth: 260 }}
+            >
+              <option value="">— select session —</option>
+              {sessionsQ.data?.map((s) => (
+                <option key={s.id} value={s.id}>{s.session_ref}</option>
+              ))}
+            </select>
+            <button
+              disabled={!pushSessionId}
+              onClick={() => pushM.mutate()}
+              className="cs-mono uppercase px-3 py-1.5 rounded disabled:opacity-40"
+              style={{ background: "var(--nx-blue-glow)", border: "1px solid var(--nx-blue)", color: "var(--nx-blue)", fontSize: 10, letterSpacing: 1.5 }}
+            >
+              {pushM.isPending ? "…" : "Build & attest CKLB"}
+            </button>
+          </div>
+          {pushM.data && (
+            <pre className="cs-mono mt-3 p-2 rounded overflow-auto" style={{ background: "var(--nx-bg3)", border: "1px solid var(--nx-border)", color: "var(--nx-text2)", fontSize: 10, maxHeight: 240 }}>
+              {JSON.stringify(pushM.data, null, 2)}
+            </pre>
+          )}
+        </div>
+
+        {/* Controls table */}
+        {controlsRows.length > 0 && (
+          <div className="mb-6">
+            <div className="cs-mono uppercase mb-2" style={{ fontSize: 10, letterSpacing: 1.5, color: "var(--nx-text2)" }}>
+              Controls · {slug}
+            </div>
+            <pre className="cs-mono p-3 rounded overflow-auto" style={{ background: "var(--nx-bg2)", border: "1px solid var(--nx-border)", color: "var(--nx-text2)", fontSize: 10, maxHeight: 360 }}>
+              {JSON.stringify(controlsRows, null, 2)}
+            </pre>
+          </div>
+        )}
+
+        {/* Download preview */}
+        {downloadM.data && (
+          <div className="mb-6">
+            <div className="cs-mono uppercase mb-2" style={{ fontSize: 10, letterSpacing: 1.5, color: "var(--nx-text2)" }}>
+              Baseline preview · {downloadM.data.slug}.{downloadM.data.format} · {(downloadM.data.bytes / 1024).toFixed(1)} KB
+            </div>
+            <pre className="cs-mono p-3 rounded overflow-auto" style={{ background: "var(--nx-bg2)", border: "1px solid var(--nx-border)", color: "var(--nx-text2)", fontSize: 10, maxHeight: 320 }}>
+              {downloadM.data.preview}
+            </pre>
+          </div>
+        )}
+
+        {/* Catalog */}
+        <div>
+          <div className="cs-mono uppercase mb-2" style={{ fontSize: 10, letterSpacing: 1.5, color: "var(--nx-text2)" }}>
+            STIG catalog (page 1) · {catalogRows.length} entries
+          </div>
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-2">
+            {catalogRows.slice(0, 30).map((row, i) => {
+              const rowSlug = (row.slug as string) ?? (row.id as string) ?? "";
+              return (
+                <button
+                  key={i}
+                  onClick={() => rowSlug && setSlug(rowSlug)}
+                  className="cs-mono text-left px-2 py-2 rounded"
+                  style={{ background: "var(--nx-bg2)", border: "1px solid var(--nx-border)", color: "var(--nx-text2)", fontSize: 10 }}
+                >
+                  <div style={{ color: "var(--nx-blue)" }}>{rowSlug}</div>
+                  <div style={{ color: "var(--nx-muted)", fontSize: 9 }}>{(row.title as string) ?? ""}</div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    </ConsoleShell>
+  );
+}
