@@ -191,7 +191,8 @@ export const smitheryListTools = createServerFn({ method: "POST" })
 
     const smithery = await getSmithery();
     const list = await smithery.connections.tools.list(connectionId, { namespace });
-    const tools = (list as { tools?: unknown[] }).tools ?? [];
+    const rawTools = (list as { tools?: unknown[] }).tools ?? [];
+    const tools = JSON.parse(JSON.stringify(rawTools)) as Array<Record<string, unknown>>;
     await recordEvidence({
       tenantId, sessionId,
       label: "list tools",
@@ -232,6 +233,7 @@ export const smitheryCallTool = createServerFn({ method: "POST" })
     }
     const durationMs = Date.now() - startedAt;
     const serialized = JSON.stringify(response ?? { error: errorMessage });
+    const safeResponse = (response == null ? null : JSON.parse(serialized)) as Record<string, unknown> | null;
     const responseSha256 = await sha256Hex(serialized);
 
     const toolId = await recordEvidence({
@@ -256,7 +258,7 @@ export const smitheryCallTool = createServerFn({ method: "POST" })
       verdict,
       durationMs,
       responseSha256,
-      response,
+      response: safeResponse,
       error: errorMessage,
     };
   });
