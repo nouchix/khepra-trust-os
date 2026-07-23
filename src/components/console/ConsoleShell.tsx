@@ -10,6 +10,7 @@ const TABS = [
   { to: "/console/findings", label: "Findings" },
   { to: "/console/controls", label: "Controls" },
   { to: "/console/rulepacks", label: "Rulepacks" },
+  { to: "/console/stig", label: "STIG" },
 ] as const;
 
 export interface ConsoleShellProps {
