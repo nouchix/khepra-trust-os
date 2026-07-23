@@ -6,6 +6,10 @@ const DEFAULT_MCP_URL = "https://server.smithery.ai/skone/pqc-khepra-mcp";
 const DEFAULT_MCP_NAME = "pqc-khepra-mcp";
 
 type Verdict = "ok" | "error";
+type Json = string | number | boolean | null | Json[] | { [k: string]: Json };
+function toJson(v: unknown): Json {
+  return JSON.parse(JSON.stringify(v ?? null)) as Json;
+}
 
 function requireEnv() {
   const apiKey = process.env.SMITHERY_API_KEY;
@@ -192,7 +196,7 @@ export const smitheryListTools = createServerFn({ method: "POST" })
     const smithery = await getSmithery();
     const list = await smithery.connections.tools.list(connectionId, { namespace });
     const rawTools = (list as { tools?: unknown[] }).tools ?? [];
-    const tools = JSON.parse(JSON.stringify(rawTools)) as Array<Record<string, unknown>>;
+    const tools = toJson(rawTools) as Json[];
     await recordEvidence({
       tenantId, sessionId,
       label: "list tools",
@@ -233,7 +237,7 @@ export const smitheryCallTool = createServerFn({ method: "POST" })
     }
     const durationMs = Date.now() - startedAt;
     const serialized = JSON.stringify(response ?? { error: errorMessage });
-    const safeResponse = (response == null ? null : JSON.parse(serialized)) as Record<string, unknown> | null;
+    const safeResponse: Json = response == null ? null : toJson(response);
     const responseSha256 = await sha256Hex(serialized);
 
     const toolId = await recordEvidence({
