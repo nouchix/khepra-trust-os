@@ -1,0 +1,93 @@
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { PageHero, SectionHeading, Card, Eyebrow } from "@/components/section";
+import { ArrowRight, CheckCircle2 } from "lucide-react";
+import souImg from "@/assets/souhimbou.jpg";
+
+export const Route = createFileRoute("/products/souhimbou")({
+  head: () => ({
+    meta: [
+      { title: "SouHimBou AI — Security Camera & Flight Recorder for AI Agents" },
+      { name: "description", content: "Record every prompt, retrieval, tool call, and mutation as a replayable signed timeline. Detect drift, prove intent, reconstruct incidents." },
+      { property: "og:title", content: "SouHimBou AI — Flight Recorder for AI Agents" },
+      { property: "og:description", content: "Cryptographic surveillance for autonomous agents on the KHEPRA Trust Network." },
+    ],
+  }),
+  component: SouHimBouPage,
+});
+
+function SouHimBouPage() {
+  return (
+    <>
+      <PageHero
+        eyebrow="Product 02 · SouHimBou AI"
+        title={<>Security camera & <span className="text-gradient">flight recorder</span> for AI agents.</>}
+        subtitle="SouHimBou records every prompt, retrieval, tool call, and mutation as a signed, replayable timeline — so you can detect drift, prove intent, and reconstruct incidents step by step."
+      />
+
+      <section className="border-b border-border/60">
+        <div className="container-x py-16 grid lg:grid-cols-12 gap-10 items-center">
+          <div className="lg:col-span-6">
+            <Eyebrow>Why it matters</Eyebrow>
+            <h2 className="mt-4 text-3xl md:text-4xl font-semibold tracking-tight">
+              You can't govern what you can't replay.
+            </h2>
+            <ul className="mt-6 space-y-3">
+              {[
+                "Full-fidelity capture: prompts, retrievals, tool I/O, external mutations.",
+                "Signed, tamper-evident timeline on the KHEPRA DAG.",
+                "Drift detection across models, prompts, and tool manifests.",
+                "Incident replay with byte-identical reconstruction of any session.",
+                "Redaction and policy-driven access for evidence review.",
+              ].map((t) => (
+                <li key={t} className="flex items-start gap-3">
+                  <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                  <span className="text-sm text-foreground/90">{t}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="lg:col-span-6 surface-card overflow-hidden">
+            <img src={souImg} alt="SouHimBou AI flight recorder visualization" loading="lazy" width={1400} height={800} className="w-full h-auto" />
+          </div>
+        </div>
+      </section>
+
+      <section className="border-b border-border/60">
+        <div className="container-x py-20">
+          <SectionHeading eyebrow="What gets recorded" title="Every step of the agent, signed." />
+          <div className="mt-10 grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {[
+              ["Session identity", "Actor DID, on-behalf-of chain, policy bundle version, runtime fingerprint."],
+              ["Prompt & context", "Full prompt, system messages, retrieved chunks with source hashes."],
+              ["Tool invocations", "Signed connector calls, arguments, latency, decision, and obligations applied."],
+              ["External effects", "Every downstream mutation with pre/post hashes and reversal metadata."],
+              ["Model responses", "Complete model output, token stream digest, safety classifications."],
+              ["Policy decisions", "Every allow/deny with rule references and applied obligations."],
+              ["Drift signals", "Detected deltas in prompts, tools, or model behavior vs. baseline."],
+              ["Reviewer actions", "Who accessed what evidence, when, and under which authorization."],
+            ].map(([t, d]) => (
+              <Card key={t}>
+                <div className="font-display text-base font-semibold">{t}</div>
+                <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{d}</p>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div className="container-x py-20">
+          <div className="surface-card p-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+            <div>
+              <h3 className="text-2xl font-semibold tracking-tight">Deploying agents to production?</h3>
+              <p className="mt-2 text-sm text-muted-foreground max-w-xl">SouHimBou AI drops into your runtime with SDKs for Python, TS, and gRPC sidecar. Alpha access is open to a limited cohort.</p>
+            </div>
+            <Link to="/developers" className="inline-flex items-center gap-2 rounded-md bg-primary px-5 py-3 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors">
+              Request alpha <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+        </div>
+      </section>
+    </>
+  );
+}

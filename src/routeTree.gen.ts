@@ -9,38 +9,168 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as RoadmapRouteImport } from './routes/roadmap'
+import { Route as ProtocolRouteImport } from './routes/protocol'
+import { Route as PlatformRouteImport } from './routes/platform'
+import { Route as DevelopersRouteImport } from './routes/developers'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ProductsSouhimbouRouteImport } from './routes/products.souhimbou'
+import { Route as ProductsAdinkhepraRouteImport } from './routes/products.adinkhepra'
 
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RoadmapRoute = RoadmapRouteImport.update({
+  id: '/roadmap',
+  path: '/roadmap',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProtocolRoute = ProtocolRouteImport.update({
+  id: '/protocol',
+  path: '/protocol',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlatformRoute = PlatformRouteImport.update({
+  id: '/platform',
+  path: '/platform',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DevelopersRoute = DevelopersRouteImport.update({
+  id: '/developers',
+  path: '/developers',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProductsSouhimbouRoute = ProductsSouhimbouRouteImport.update({
+  id: '/products/souhimbou',
+  path: '/products/souhimbou',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProductsAdinkhepraRoute = ProductsAdinkhepraRouteImport.update({
+  id: '/products/adinkhepra',
+  path: '/products/adinkhepra',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/developers': typeof DevelopersRoute
+  '/platform': typeof PlatformRoute
+  '/protocol': typeof ProtocolRoute
+  '/roadmap': typeof RoadmapRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/products/adinkhepra': typeof ProductsAdinkhepraRoute
+  '/products/souhimbou': typeof ProductsSouhimbouRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/developers': typeof DevelopersRoute
+  '/platform': typeof PlatformRoute
+  '/protocol': typeof ProtocolRoute
+  '/roadmap': typeof RoadmapRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/products/adinkhepra': typeof ProductsAdinkhepraRoute
+  '/products/souhimbou': typeof ProductsSouhimbouRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/developers': typeof DevelopersRoute
+  '/platform': typeof PlatformRoute
+  '/protocol': typeof ProtocolRoute
+  '/roadmap': typeof RoadmapRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/products/adinkhepra': typeof ProductsAdinkhepraRoute
+  '/products/souhimbou': typeof ProductsSouhimbouRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/developers'
+    | '/platform'
+    | '/protocol'
+    | '/roadmap'
+    | '/sitemap.xml'
+    | '/products/adinkhepra'
+    | '/products/souhimbou'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/developers'
+    | '/platform'
+    | '/protocol'
+    | '/roadmap'
+    | '/sitemap.xml'
+    | '/products/adinkhepra'
+    | '/products/souhimbou'
+  id:
+    | '__root__'
+    | '/'
+    | '/developers'
+    | '/platform'
+    | '/protocol'
+    | '/roadmap'
+    | '/sitemap.xml'
+    | '/products/adinkhepra'
+    | '/products/souhimbou'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  DevelopersRoute: typeof DevelopersRoute
+  PlatformRoute: typeof PlatformRoute
+  ProtocolRoute: typeof ProtocolRoute
+  RoadmapRoute: typeof RoadmapRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  ProductsAdinkhepraRoute: typeof ProductsAdinkhepraRoute
+  ProductsSouhimbouRoute: typeof ProductsSouhimbouRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/roadmap': {
+      id: '/roadmap'
+      path: '/roadmap'
+      fullPath: '/roadmap'
+      preLoaderRoute: typeof RoadmapRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/protocol': {
+      id: '/protocol'
+      path: '/protocol'
+      fullPath: '/protocol'
+      preLoaderRoute: typeof ProtocolRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/platform': {
+      id: '/platform'
+      path: '/platform'
+      fullPath: '/platform'
+      preLoaderRoute: typeof PlatformRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/developers': {
+      id: '/developers'
+      path: '/developers'
+      fullPath: '/developers'
+      preLoaderRoute: typeof DevelopersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,22 +178,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/products/souhimbou': {
+      id: '/products/souhimbou'
+      path: '/products/souhimbou'
+      fullPath: '/products/souhimbou'
+      preLoaderRoute: typeof ProductsSouhimbouRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/products/adinkhepra': {
+      id: '/products/adinkhepra'
+      path: '/products/adinkhepra'
+      fullPath: '/products/adinkhepra'
+      preLoaderRoute: typeof ProductsAdinkhepraRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  DevelopersRoute: DevelopersRoute,
+  PlatformRoute: PlatformRoute,
+  ProtocolRoute: ProtocolRoute,
+  RoadmapRoute: RoadmapRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
+  ProductsAdinkhepraRoute: ProductsAdinkhepraRoute,
+  ProductsSouhimbouRoute: ProductsSouhimbouRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

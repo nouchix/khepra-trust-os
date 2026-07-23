@@ -1,0 +1,90 @@
+import { Link } from "@tanstack/react-router";
+import { useState } from "react";
+import { Menu, X } from "lucide-react";
+
+const links = [
+  { to: "/protocol", label: "Protocol" },
+  { to: "/platform", label: "Platform" },
+  { to: "/products/adinkhepra", label: "AdinKhepra" },
+  { to: "/products/souhimbou", label: "SouHimBou" },
+  { to: "/roadmap", label: "Roadmap" },
+  { to: "/developers", label: "Developers" },
+] as const;
+
+export function SiteNav() {
+  const [open, setOpen] = useState(false);
+  return (
+    <header className="sticky top-0 z-40 border-b border-border/60 bg-background/70 backdrop-blur-xl">
+      <div className="container-x flex h-16 items-center justify-between">
+        <Link to="/" className="flex items-center gap-2.5 group">
+          <span className="relative inline-flex h-8 w-8 items-center justify-center rounded-md bg-gradient-to-br from-primary to-primary/70 text-primary-foreground font-mono text-[13px] font-bold shadow-[0_0_20px_-4px_var(--color-primary)]">
+            K
+          </span>
+          <span className="font-display text-[15px] font-semibold tracking-tight">
+            KHEPRA<span className="text-muted-foreground font-normal"> / Trust Network</span>
+          </span>
+        </Link>
+
+        <nav className="hidden lg:flex items-center gap-1">
+          {links.map((l) => (
+            <Link
+              key={l.to}
+              to={l.to}
+              className="px-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+              activeProps={{ className: "text-foreground" }}
+            >
+              {l.label}
+            </Link>
+          ))}
+        </nav>
+
+        <div className="hidden lg:flex items-center gap-2">
+          <a
+            href="mailto:hello@khepra.network"
+            className="text-sm text-muted-foreground hover:text-foreground transition-colors px-3 py-2"
+          >
+            Contact
+          </a>
+          <Link
+            to="/developers"
+            className="inline-flex items-center rounded-md bg-primary px-3.5 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
+          >
+            Request Access
+          </Link>
+        </div>
+
+        <button
+          className="lg:hidden p-2 text-foreground"
+          onClick={() => setOpen((v) => !v)}
+          aria-label="Toggle menu"
+        >
+          {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+        </button>
+      </div>
+      {open && (
+        <div className="lg:hidden border-t border-border/60 bg-background/95">
+          <div className="container-x py-4 flex flex-col gap-1">
+            {links.map((l) => (
+              <Link
+                key={l.to}
+                to={l.to}
+                onClick={() => setOpen(false)}
+                className="py-2 text-sm text-muted-foreground"
+                activeProps={{ className: "text-foreground" }}
+              >
+                {l.label}
+              </Link>
+            ))}
+            <Link
+              to="/developers"
+              onClick={() => setOpen(false)}
+              className="mt-2 inline-flex items-center justify-center rounded-md bg-primary px-3.5 py-2 text-sm font-medium text-primary-foreground"
+            >
+              Request Access
+            </Link>
+          </div>
+        </div>
+      )}
+    </header>
+  );
+}
