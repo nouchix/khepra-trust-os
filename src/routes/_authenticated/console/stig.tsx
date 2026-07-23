@@ -10,6 +10,8 @@ import {
   stigListControls,
   stigDownloadCklb,
   stigPushSessionAsCklb,
+  stigReplaySession,
+  stigExportSession,
 } from "@/lib/console/stig.functions";
 
 export const Route = createFileRoute("/_authenticated/console/stig")({
@@ -26,6 +28,8 @@ function StigPage() {
   const listControls = useServerFn(stigListControls);
   const download = useServerFn(stigDownloadCklb);
   const push = useServerFn(stigPushSessionAsCklb);
+  const replay = useServerFn(stigReplaySession);
+  const exportFn = useServerFn(stigExportSession);
 
   const qc = useQueryClient();
   const tenantQ = useQuery({ queryKey: ["tenant"], queryFn: () => tenantFn() });
@@ -56,6 +60,24 @@ function StigPage() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["sessions"] }),
   });
 
+  const replayM = useMutation({
+    mutationFn: (sessionId: string) => replay({ data: { sessionId } }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["sessions"] }),
+  });
+
+  const exportM = useMutation({
+    mutationFn: (sessionId: string) => exportFn({ data: { sessionId, slug } }),
+    onSuccess: (res) => {
+      qc.invalidateQueries({ queryKey: ["sessions"] });
+      const stamp = new Date().toISOString().replace(/[:.]/g, "-");
+      const base = `khepra-${res.session_ref}-${stamp}`;
+      downloadText(`${base}.cklb.json`, res.cklb_json);
+      downloadText(`${base}.manifest.json`, res.manifest_json);
+    },
+  });
+
+  const stigSessions = (sessionsQ.data ?? []).filter((s) => s.session_ref === "stig-integration");
+
   const controlsRows: Row[] = Array.isArray((controlsM.data as { data?: Row[] })?.data)
     ? ((controlsM.data as { data: Row[] }).data)
     : [];
@@ -78,6 +100,93 @@ function StigPage() {
       }
     >
       <div className="w-full h-full overflow-auto p-5" style={{ color: "var(--nx-text)" }}>
+        {/* Status mapping table */}
+        <div className="mb-5 p-3 rounded" style={{ background: "var(--nx-bg2)", border: "1px solid var(--nx-border)" }}>
+          <div className="cs-mono uppercase mb-2" style={{ fontSize: 10, letterSpacing: 1.5, color: "var(--ak-gold)" }}>
+            Finding status ↔ CKLB mapping
+          </div>
+          <div className="overflow-auto">
+            <table className="cs-mono w-full" style={{ fontSize: 11, color: "var(--nx-text2)", borderCollapse: "collapse" }}>
+              <thead>
+                <tr style={{ color: "var(--nx-muted)", fontSize: 9, letterSpacing: 1.5, textTransform: "uppercase" }}>
+                  <th style={cellHead}>KHEPRA finding.status</th>
+                  <th style={cellHead}>CKLB status</th>
+                  <th style={cellHead}>Semantics</th>
+                </tr>
+              </thead>
+              <tbody>
+                {STATUS_MAP.map((r) => (
+                  <tr key={r.k} style={{ borderTop: "1px solid var(--nx-border)" }}>
+                    <td style={cell}><span style={{ color: r.color }}>{r.k}</span></td>
+                    <td style={cell}><span style={{ color: "var(--nx-blue)" }}>{r.cklb}</span></td>
+                    <td style={{ ...cell, color: "var(--nx-muted)" }}>{r.note}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Stig-integration session controls: replay + export */}
+        <div className="mb-6 p-3 rounded" style={{ background: "var(--nx-bg2)", border: "1px solid var(--nx-border)" }}>
+          <div className="cs-mono uppercase mb-2" style={{ fontSize: 10, letterSpacing: 1.5, color: "var(--ak-gold)" }}>
+            stig-integration sessions · replay & audit export
+          </div>
+          {stigSessions.length === 0 ? (
+            <div className="cs-mono" style={{ fontSize: 11, color: "var(--nx-muted)" }}>
+              No stig-integration sessions yet — run a fetch or download above to seed evidence.
+            </div>
+          ) : (
+            <div className="flex flex-col gap-2">
+              {stigSessions.map((s) => (
+                <div key={s.id} className="flex items-center gap-2 flex-wrap p-2 rounded" style={{ background: "var(--nx-bg3)", border: "1px solid var(--nx-border)" }}>
+                  <div className="cs-mono" style={{ fontSize: 11, color: "var(--nx-text)", minWidth: 200 }}>
+                    {s.session_ref}
+                    <span style={{ color: "var(--nx-muted)", marginLeft: 8, fontSize: 10 }}>{s.id.slice(0, 8)}</span>
+                  </div>
+                  <button
+                    onClick={() => replayM.mutate(s.id)}
+                    disabled={replayM.isPending}
+                    className="cs-mono uppercase px-3 py-1.5 rounded"
+                    style={{ background: "var(--nx-blue-glow)", border: "1px solid var(--nx-blue)", color: "var(--nx-blue)", fontSize: 10, letterSpacing: 1.5 }}
+                  >
+                    {replayM.isPending && replayM.variables === s.id ? "…" : "One-click replay"}
+                  </button>
+                  <button
+                    onClick={() => exportM.mutate(s.id)}
+                    disabled={exportM.isPending}
+                    className="cs-mono uppercase px-3 py-1.5 rounded"
+                    style={{ background: "var(--nx-bg3)", border: "1px solid var(--ak-gold)", color: "var(--ak-gold)", fontSize: 10, letterSpacing: 1.5 }}
+                  >
+                    {exportM.isPending && exportM.variables === s.id ? "…" : "Export CKLB + manifest"}
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+          {replayM.data && (
+            <div className="mt-3 p-2 rounded cs-mono" style={{ background: "var(--nx-bg3)", border: "1px solid var(--nx-border)", fontSize: 10, color: "var(--nx-text2)" }}>
+              <div style={{ color: "var(--nx-blue)" }}>
+                Replay · matched {replayM.data.matched}/{replayM.data.total} · drift {replayM.data.drifted}
+              </div>
+              <div style={{ color: "var(--nx-muted)" }}>
+                replay session → {replayM.data.replay_session.slice(0, 8)} · root {replayM.data.replay_root.slice(0, 8)}
+              </div>
+              <pre className="mt-2 overflow-auto" style={{ maxHeight: 220 }}>{JSON.stringify(replayM.data.comparisons, null, 2)}</pre>
+            </div>
+          )}
+          {exportM.data && (
+            <div className="mt-3 p-2 rounded cs-mono" style={{ background: "var(--nx-bg3)", border: "1px solid var(--nx-border)", fontSize: 10, color: "var(--nx-text2)" }}>
+              <div style={{ color: "var(--ak-gold)" }}>Export downloaded · {exportM.data.session_ref}</div>
+              <div>cklb sha256 · {exportM.data.cklb_sha256}</div>
+              <div>manifest sha256 · {exportM.data.manifest_sha256}</div>
+              <div style={{ color: "var(--nx-muted)" }}>
+                aeos {exportM.data.counts.aeos} · tool {exportM.data.counts.tool} · attest {exportM.data.counts.attest} · links {exportM.data.counts.links}
+              </div>
+            </div>
+          )}
+        </div>
+
         {/* Controls bar */}
         <div className="flex flex-wrap items-end gap-3 mb-5">
           <label className="flex flex-col gap-1">
