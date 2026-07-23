@@ -31,11 +31,12 @@ function AuthPage() {
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
 
+  const [alreadySignedIn, setAlreadySignedIn] = useState(false);
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
-      if (data.session) navigate({ to: redirectTo, replace: true });
+      if (data.session) setAlreadySignedIn(true);
     });
-  }, [navigate, redirectTo]);
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
