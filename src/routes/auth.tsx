@@ -81,6 +81,20 @@ function AuthPage() {
           {mode === "signin" ? "Access the Trust OS Fabric." : "New tenant provisioned automatically."}
         </p>
 
+        {alreadySignedIn && (
+          <div className="mb-5 p-3 rounded" style={{ background: "var(--nx-bg3)", border: "1px solid var(--nx-border2)" }}>
+            <div className="cs-mono mb-2" style={{ fontSize: 11, color: "var(--nx-text2)" }}>
+              You're already signed in.
+            </div>
+            <div className="flex gap-2">
+              <Link to="/console/timeline" className="flex-1 text-center rounded px-3 py-2 text-xs font-medium"
+                style={{ background: "var(--nx-blue)", color: "#050c16" }}>Open Console</Link>
+              <Link to="/" className="flex-1 text-center rounded px-3 py-2 text-xs"
+                style={{ borderColor: "var(--nx-border2)", border: "1px solid var(--nx-border2)", color: "var(--nx-text)" }}>Back to site</Link>
+            </div>
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} className="space-y-3">
           <Input type="email" placeholder="operator@tenant.gov" value={email} onChange={(e) => setEmail(e.target.value)} required
             style={{ background: "var(--nx-bg3)", borderColor: "var(--nx-border2)", color: "var(--nx-text)" }} />
