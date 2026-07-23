@@ -21,6 +21,25 @@ export const Route = createFileRoute("/_authenticated/console/stig")({
 
 type Row = Record<string, unknown>;
 
+const cellHead: React.CSSProperties = { textAlign: "left", padding: "6px 8px", fontWeight: 500 };
+const cell: React.CSSProperties = { padding: "6px 8px", verticalAlign: "top" };
+
+const STATUS_MAP: Array<{ k: string; cklb: string; note: string; color: string }> = [
+  { k: "open", cklb: "open", note: "Unresolved · counts against posture", color: "var(--cat1, #ff6b7a)" },
+  { k: "adjudicated", cklb: "not_a_finding", note: "Reviewed & accepted as compliant", color: "var(--nx-blue)" },
+  { k: "dismissed", cklb: "not_applicable", note: "Control does not apply to this asset", color: "var(--ak-gold)" },
+  { k: "(null / new)", cklb: "not_reviewed", note: "Awaiting analyst adjudication", color: "var(--nx-muted)" },
+];
+
+function downloadText(filename: string, contents: string) {
+  const blob = new Blob([contents], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
 function StigPage() {
   const tenantFn = useServerFn(getMyTenant);
   const sessionsFn = useServerFn(listSessions);
