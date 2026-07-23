@@ -69,6 +69,14 @@
     "vite-tsconfig-paths": "^6.0.2",
     "zod": "^3.24.2"
   },
+  "overrides": {
+    "@tanstack/start-plugin-core": {
+      "zod": "^4.4.3"
+    }
+  },
+  "resolutions": {
+    "@tanstack/start-plugin-core/zod": "^4.4.3"
+  },
   "devDependencies": {
     "@eslint/js": "^9.32.0",
     "@lovable.dev/vite-tanstack-config": "^2.7.7",
