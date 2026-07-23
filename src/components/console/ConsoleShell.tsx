@@ -11,6 +11,7 @@ const TABS = [
   { to: "/console/controls", label: "Controls" },
   { to: "/console/rulepacks", label: "Rulepacks" },
   { to: "/console/stig", label: "STIG" },
+  { to: "/console/mcp", label: "MCP" },
 ] as const;
 
 export interface ConsoleShellProps {
