@@ -1,0 +1,38 @@
+{
+  "$schema": "https://modelcontextprotocol.io/schema/server.json",
+  "name": "khepra-trust-os",
+  "version": "0.1.0-mvp",
+  "description": "The trust layer for autonomous AI agents. Records every agent action as a post-quantum-signed, content-addressed AI Evidence Object, computes live trust scores, issues portable Agent Passports, and proves determinism across transports via dual-anchor attestation.",
+  "vendor": "SOUHIMBOU DOH KONE LLC",
+  "homepage": "https://mcp.souhimbou.ai/",
+  "transports": [
+    {
+      "type": "stdio",
+      "command": "ktos-mcp",
+      "role": "sovereign execution — customer-owned, air-gap-capable, no third party in the trust boundary"
+    },
+    {
+      "type": "discovery",
+      "endpoint": "mcp.smithery.run/skone",
+      "role": "public catalog, traction metrics, third-party agent onboarding"
+    }
+  ],
+  "tools": [
+    { "name": "agent_register", "risk_class": "read_only", "summary": "Mint an ML-DSA-65 agent identity (did:khepra)." },
+    { "name": "aeo_record", "risk_class": "read_only", "summary": "Seal one agent action as a signed, chained AI Evidence Object." },
+    { "name": "aeo_verify", "risk_class": "read_only", "summary": "Verify one AEO: hash integrity + ML-DSA-65 signature + identity binding." },
+    { "name": "ledger_replay", "risk_class": "read_only", "summary": "Forensic replay: re-verify an agent's full history genesis-to-tip." },
+    { "name": "trust_score", "risk_class": "read_only", "summary": "0-100 trust standing from verified history." },
+    { "name": "passport_issue", "risk_class": "read_only", "summary": "Issue a registrar-signed Agent Passport (earned by record)." },
+    { "name": "passport_verify", "risk_class": "read_only", "summary": "Verify a passport document and re-derive its claims against the ledger." },
+    { "name": "dual_anchor", "risk_class": "read_only", "summary": "Dual-anchor determinism/drift proof across two transports." },
+    { "name": "ledger_stats", "risk_class": "read_only", "summary": "Aggregate trust metrics for traction dashboards." }
+  ],
+  "crypto": {
+    "signature": "ML-DSA-65 (FIPS 204)",
+    "kem": "ML-KEM-1024 (FIPS 203)",
+    "content_address": "SHA-256 (Khepra lattice encoding)"
+  },
+  "specs": ["khepra-aeo/1.0", "khepra-passport/1.0"],
+  "patent": "USPTO #73565085 (KHEPRA Protocol)"
+}
