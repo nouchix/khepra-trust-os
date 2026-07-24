@@ -1,6 +1,12 @@
 import { useEffect, useRef } from "react";
 import type { DagPayload, DagNode } from "@/lib/console/types";
 
+function escapeHtml(s: string): string {
+  return String(s).replace(/[&<>"']/g, (c) => (
+    { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c] as string
+  ));
+}
+
 const COLORS: Record<string, string> = {
   prompt: "#818cf8", tool: "#e5a54b", control: "#22c55e", attest: "#06b6d4",
   finding_CAT_I: "#cc2a36", finding_CAT_II: "#f97316", finding_CAT_III: "#22c55e",
@@ -26,7 +32,13 @@ export function DagCanvas({ payload, onSelect }: { payload: DagPayload; onSelect
       graphRef.current = g;
       g
         .backgroundColor("#050c16")
-        .nodeLabel((n: DagNode) => `<div style="font-family:'JetBrains Mono',monospace;color:${nodeColor(n)};padding:4px 8px;border-left:2px solid ${nodeColor(n)};background:rgba(5,12,22,.9)"><b>${n.label}</b><br/><span style="color:#6b8aaa;font-size:9px">${n.type.toUpperCase()}${n.severity ? " · " + n.severity : ""}</span></div>`)
+        .nodeLabel((n: DagNode) => {
+          const color = nodeColor(n);
+          const label = escapeHtml(n.label ?? "");
+          const type = escapeHtml((n.type ?? "").toUpperCase());
+          const sev = n.severity ? " · " + escapeHtml(n.severity) : "";
+          return `<div style="font-family:'JetBrains Mono',monospace;color:${color};padding:4px 8px;border-left:2px solid ${color};background:rgba(5,12,22,.9)"><b>${label}</b><br/><span style="color:#6b8aaa;font-size:9px">${type}${sev}</span></div>`;
+        })
         .nodeColor((n: DagNode) => nodeColor(n))
         .nodeVal((n: DagNode) => n.val)
         .nodeOpacity(0.95)
