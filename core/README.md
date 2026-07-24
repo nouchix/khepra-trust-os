@@ -27,6 +27,20 @@ Each migration PR must:
    `github.com/nouchix/khepra-trust-os/core`), no replace-directives pointing at
    the public repo once migration of a plane completes.
 
+## Landed planes
+
+| Plane | Source PRs | Lands as | Status |
+|---|---|---|---|
+| Digital Citizenship / Trust | PQC-Khepra-MCP#57 (`pkg/aeo`, `pkg/citizenship`), Adinkhepra-ASAF#7 (spec) | `core/aeo/`, `core/citizenship/` + `docs/AEO_TRUST_EXTENSION.md` | ✅ landed, 13 tests green |
+
+The trust plane carries minimal support copies of `core/adinkra` (ML-DSA-65 /
+Kyber-1024 primitives + lattice hash), `core/dag` (content-addressed anchor
+store), and `core/forensics` (Imhotep's Eye collector) so `core/go.mod` stays
+self-contained per the rules above. When the Sovereign Data plane (order 2)
+migrates with history, these copies collapse into it. Dependencies (CIRCL,
+x/sys) are vendored so `core` builds offline: `cd core && go vet ./... && go
+test ./...`.
+
 ## What never lands here
 
 - `pkg/mcp`, `cmd/khepra-mcp`, manifest tooling — these remain the **public**
