@@ -26,6 +26,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProductsSouhimbouRouteImport } from './routes/products.souhimbou'
 import { Route as ProductsAdinkhepraRouteImport } from './routes/products.adinkhepra'
 import { Route as AuthenticatedConsoleRouteRouteImport } from './routes/_authenticated/console/route'
+import { Route as ApiPublicDemoRouteImport } from './routes/api/public/demo'
 import { Route as ApiPublicAeoRouteImport } from './routes/api/public/aeo'
 import { Route as AuthenticatedConsoleTimelineRouteImport } from './routes/_authenticated/console/timeline'
 import { Route as AuthenticatedConsoleStigRouteImport } from './routes/_authenticated/console/stig'
@@ -120,6 +121,11 @@ const AuthenticatedConsoleRouteRoute =
     path: '/console',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const ApiPublicDemoRoute = ApiPublicDemoRouteImport.update({
+  id: '/api/public/demo',
+  path: '/api/public/demo',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicAeoRoute = ApiPublicAeoRouteImport.update({
   id: '/api/public/aeo',
   path: '/api/public/aeo',
@@ -192,6 +198,7 @@ export interface FileRoutesByFullPath {
   '/console/stig': typeof AuthenticatedConsoleStigRoute
   '/console/timeline': typeof AuthenticatedConsoleTimelineRoute
   '/api/public/aeo': typeof ApiPublicAeoRoute
+  '/api/public/demo': typeof ApiPublicDemoRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -218,6 +225,7 @@ export interface FileRoutesByTo {
   '/console/stig': typeof AuthenticatedConsoleStigRoute
   '/console/timeline': typeof AuthenticatedConsoleTimelineRoute
   '/api/public/aeo': typeof ApiPublicAeoRoute
+  '/api/public/demo': typeof ApiPublicDemoRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -246,6 +254,7 @@ export interface FileRoutesById {
   '/_authenticated/console/stig': typeof AuthenticatedConsoleStigRoute
   '/_authenticated/console/timeline': typeof AuthenticatedConsoleTimelineRoute
   '/api/public/aeo': typeof ApiPublicAeoRoute
+  '/api/public/demo': typeof ApiPublicDemoRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -274,6 +283,7 @@ export interface FileRouteTypes {
     | '/console/stig'
     | '/console/timeline'
     | '/api/public/aeo'
+    | '/api/public/demo'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -300,6 +310,7 @@ export interface FileRouteTypes {
     | '/console/stig'
     | '/console/timeline'
     | '/api/public/aeo'
+    | '/api/public/demo'
   id:
     | '__root__'
     | '/'
@@ -327,6 +338,7 @@ export interface FileRouteTypes {
     | '/_authenticated/console/stig'
     | '/_authenticated/console/timeline'
     | '/api/public/aeo'
+    | '/api/public/demo'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -347,6 +359,7 @@ export interface RootRouteChildren {
   ProductsAdinkhepraRoute: typeof ProductsAdinkhepraRoute
   ProductsSouhimbouRoute: typeof ProductsSouhimbouRoute
   ApiPublicAeoRoute: typeof ApiPublicAeoRoute
+  ApiPublicDemoRoute: typeof ApiPublicDemoRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -470,6 +483,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedConsoleRouteRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/public/demo': {
+      id: '/api/public/demo'
+      path: '/api/public/demo'
+      fullPath: '/api/public/demo'
+      preLoaderRoute: typeof ApiPublicDemoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/aeo': {
       id: '/api/public/aeo'
       path: '/api/public/aeo'
@@ -584,6 +604,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProductsAdinkhepraRoute: ProductsAdinkhepraRoute,
   ProductsSouhimbouRoute: ProductsSouhimbouRoute,
   ApiPublicAeoRoute: ApiPublicAeoRoute,
+  ApiPublicDemoRoute: ApiPublicDemoRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
