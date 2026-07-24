@@ -52,7 +52,7 @@ function Home() {
               Read the Protocol <ArrowRight className="h-4 w-4" />
             </Link>
             <Link
-              to="/platform"
+              to="/demo"
               className="inline-flex items-center gap-2 rounded-md border border-border bg-card/60 px-5 py-3 text-sm font-medium text-foreground hover:bg-card transition-colors"
             >
               Explore the Platform
