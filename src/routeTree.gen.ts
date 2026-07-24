@@ -16,6 +16,7 @@ import { Route as ProtocolRouteImport } from './routes/protocol'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as DocsRouteImport } from './routes/docs'
 import { Route as DevelopersRouteImport } from './routes/developers'
+import { Route as DemoRouteImport } from './routes/demo'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as ConnectorsRouteImport } from './routes/connectors'
 import { Route as AuthRouteImport } from './routes/auth'
@@ -69,6 +70,11 @@ const DocsRoute = DocsRouteImport.update({
 const DevelopersRoute = DevelopersRouteImport.update({
   id: '/developers',
   path: '/developers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DemoRoute = DemoRouteImport.update({
+  id: '/demo',
+  path: '/demo',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContactRoute = ContactRouteImport.update({
@@ -180,6 +186,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/connectors': typeof ConnectorsRoute
   '/contact': typeof ContactRoute
+  '/demo': typeof DemoRoute
   '/developers': typeof DevelopersRoute
   '/docs': typeof DocsRoute
   '/pricing': typeof PricingRoute
@@ -207,6 +214,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/connectors': typeof ConnectorsRoute
   '/contact': typeof ContactRoute
+  '/demo': typeof DemoRoute
   '/developers': typeof DevelopersRoute
   '/docs': typeof DocsRoute
   '/pricing': typeof PricingRoute
@@ -236,6 +244,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/connectors': typeof ConnectorsRoute
   '/contact': typeof ContactRoute
+  '/demo': typeof DemoRoute
   '/developers': typeof DevelopersRoute
   '/docs': typeof DocsRoute
   '/pricing': typeof PricingRoute
@@ -265,6 +274,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/connectors'
     | '/contact'
+    | '/demo'
     | '/developers'
     | '/docs'
     | '/pricing'
@@ -292,6 +302,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/connectors'
     | '/contact'
+    | '/demo'
     | '/developers'
     | '/docs'
     | '/pricing'
@@ -320,6 +331,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/connectors'
     | '/contact'
+    | '/demo'
     | '/developers'
     | '/docs'
     | '/pricing'
@@ -349,6 +361,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   ConnectorsRoute: typeof ConnectorsRoute
   ContactRoute: typeof ContactRoute
+  DemoRoute: typeof DemoRoute
   DevelopersRoute: typeof DevelopersRoute
   DocsRoute: typeof DocsRoute
   PricingRoute: typeof PricingRoute
@@ -411,6 +424,13 @@ declare module '@tanstack/react-router' {
       path: '/developers'
       fullPath: '/developers'
       preLoaderRoute: typeof DevelopersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/demo': {
+      id: '/demo'
+      path: '/demo'
+      fullPath: '/demo'
+      preLoaderRoute: typeof DemoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contact': {
@@ -594,6 +614,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   ConnectorsRoute: ConnectorsRoute,
   ContactRoute: ContactRoute,
+  DemoRoute: DemoRoute,
   DevelopersRoute: DevelopersRoute,
   DocsRoute: DocsRoute,
   PricingRoute: PricingRoute,
