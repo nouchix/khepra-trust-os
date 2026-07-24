@@ -51,6 +51,14 @@ export interface Scenario {
   totals: { agents: number; aeos: number; avgTrust: number };
 }
 
+// What the server evidence gateway returns to the (untrusted) browser. The
+// browser renders this and nothing else — it never builds or signs evidence.
+export interface FabricBundle extends Scenario {
+  source: string; // "mcp.souhimbou.ai" | "khepra-evidence-gateway"
+  signature: string; // server HMAC over the canonical bundle
+  signedAt: string;
+}
+
 const ALGO = "ML-DSA-65 (Dilithium3)";
 
 async function sha256Hex(input: string): Promise<string> {
