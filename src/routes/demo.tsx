@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { PageHero, SectionHeading, Card, Eyebrow } from "@/components/section";
+import { FabricConsole } from "@/components/fabric-console";
 
 export const Route = createFileRoute("/demo")({
   head: () => ({
@@ -83,12 +84,28 @@ function DemoPage() {
     <>
       <PageHero
         eyebrow="Public Demo · No login"
-        title={<>Try the Trust Fabric live.</>}
-        subtitle="Two read-only tools from the KHEPRA MCP server, exposed without auth. Every call is SHA-256 anchored to the shared evidence DAG and viewable in the Console."
+        title={<>"Trust me" → <span className="text-gradient">"Prove it."</span></>}
+        subtitle="Watch an AI agent build a verifiable proof-of-work history through the KHEPRA Trust OS Fabric — post-quantum identity, hash-chained evidence, dual-anchor determinism. Every hash below is real SHA-256, computed in your browser. No login, no backend."
       />
 
       <section className="border-b border-border/60">
-        <div className="container-x py-16 grid lg:grid-cols-2 gap-8">
+        <div className="container-x py-12">
+          <FabricConsole />
+          <p className="mt-4 text-center text-xs text-muted-foreground font-mono">
+            The same nine MCP tools ship in the sovereign server (<span className="text-foreground/80">core/cmd/ktos-mcp</span>). This runs them client-side so the proof needs nothing but your browser.
+          </p>
+        </div>
+      </section>
+
+      <section className="border-b border-border/60">
+        <div className="container-x pt-16 pb-4">
+          <SectionHeading
+            eyebrow="Live API · read-only"
+            title="Or hit the real endpoint."
+            subtitle="Two whitelisted tools proxied through the public MCP bridge — SHA-256 anchored server-side and replayable in the Console."
+          />
+        </div>
+        <div className="container-x pb-16 grid lg:grid-cols-2 gap-8">
           <Card>
             <Eyebrow>Tool · list_controls</Eyebrow>
             <h3 className="mt-3 font-display text-xl font-semibold">CMMC 2.0 control catalog</h3>
