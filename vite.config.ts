@@ -6,6 +6,12 @@
 // You can pass additional config via defineConfig({ vite: { ... }, etc... }) if needed.
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
+// Pin Nitro/Cloudflare compatibility to the newest date supported by the
+// checked-in Wrangler dev dependency. Nitro's default "latest" resolves to
+// the build machine date, which can be ahead of workerd and make preview
+// requests fail with HTTP 500 before React can render.
+process.env.NITRO_COMPATIBILITY_DATE ??= "2026-05-03";
+
 export default defineConfig({
   tanstackStart: {
     // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).

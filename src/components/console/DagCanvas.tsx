@@ -1,82 +1,146 @@
-import { useEffect, useRef } from "react";
 import type { DagPayload, DagNode } from "@/lib/console/types";
 
-function escapeHtml(s: string): string {
-  return String(s).replace(/[&<>"']/g, (c) => (
-    { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c] as string
-  ));
-}
-
 const COLORS: Record<string, string> = {
-  prompt: "#818cf8", tool: "#e5a54b", control: "#22c55e", attest: "#06b6d4",
-  finding_CAT_I: "#cc2a36", finding_CAT_II: "#f97316", finding_CAT_III: "#22c55e",
-  finding: "#cc2a36", default: "#3d5a78",
+  prompt: "#818cf8",
+  tool: "#e5a54b",
+  control: "#22c55e",
+  attest: "#06b6d4",
+  finding_CAT_I: "#cc2a36",
+  finding_CAT_II: "#f97316",
+  finding_CAT_III: "#22c55e",
+  finding: "#cc2a36",
+  default: "#3d5a78",
 };
+
 function nodeColor(n: DagNode) {
-  if (n.type === "finding") return COLORS["finding_" + (n.severity ?? "CAT_I")] ?? COLORS.finding;
+  if (n.type === "finding") return COLORS[`finding_${n.severity ?? "CAT_I"}`] ?? COLORS.finding;
   return COLORS[n.type] ?? COLORS.default;
 }
 
-export function DagCanvas({ payload, onSelect }: { payload: DagPayload; onSelect: (n: DagNode | null) => void }) {
-  const hostRef = useRef<HTMLDivElement | null>(null);
-  const graphRef = useRef<ReturnType<typeof buildGraph> | null>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      const mod = await import("3d-force-graph");
-      // The package's default export is the constructor.
-      const ForceGraph3D = (mod.default ?? (mod as unknown as { default: unknown })) as unknown as () => ReturnType<typeof buildGraph>;
-      if (cancelled || !hostRef.current) return;
-      const g = (ForceGraph3D as unknown as (opts?: unknown) => { (el: HTMLElement): unknown })()(hostRef.current) as ReturnType<typeof buildGraph>;
-      graphRef.current = g;
-      g
-        .backgroundColor("#050c16")
-        .nodeLabel((n: DagNode) => {
-          const color = nodeColor(n);
-          const label = escapeHtml(n.label ?? "");
-          const type = escapeHtml((n.type ?? "").toUpperCase());
-          const sev = n.severity ? " · " + escapeHtml(n.severity) : "";
-          return `<div style="font-family:'JetBrains Mono',monospace;color:${color};padding:4px 8px;border-left:2px solid ${color};background:rgba(5,12,22,.9)"><b>${label}</b><br/><span style="color:#6b8aaa;font-size:9px">${type}${sev}</span></div>`;
-        })
-        .nodeColor((n: DagNode) => nodeColor(n))
-        .nodeVal((n: DagNode) => n.val)
-        .nodeOpacity(0.95)
-        .linkColor(() => "rgba(26,159,232,0.35)")
-        .linkWidth((l: { w?: number }) => (l.w ?? 1) * 0.6)
-        .linkDirectionalParticles(1)
-        .linkDirectionalParticleColor(() => "#1a9fe8")
-        .linkDirectionalParticleWidth(2)
-        .onNodeClick((n: DagNode) => onSelect(n))
-        .onBackgroundClick(() => onSelect(null))
-        .graphData({ nodes: payload.nodes, links: payload.links });
-    })();
-    return () => {
-      cancelled = true;
-      try { graphRef.current?._destructor?.(); } catch { /* noop */ }
-      graphRef.current = null;
-    };
-  }, [payload, onSelect]);
-
-  return <div ref={hostRef} className="w-full h-full" />;
+function nodePosition(index: number, total: number) {
+  const safeTotal = Math.max(total, 1);
+  const ring = Math.floor(index / 12);
+  const ringIndex = index % 12;
+  const ringSize = Math.min(12, safeTotal - ring * 12);
+  const angle = (ringIndex / Math.max(ringSize, 1)) * Math.PI * 2 - Math.PI / 2;
+  const radiusX = 240 + ring * 46;
+  const radiusY = 135 + ring * 30;
+  return {
+    x: 420 + Math.cos(angle) * radiusX,
+    y: 240 + Math.sin(angle) * radiusY,
+  };
 }
 
-// Type helper for the imported graph instance
-function buildGraph(): {
-  backgroundColor: (v: string) => ReturnType<typeof buildGraph>;
-  nodeLabel: (fn: (n: DagNode) => string) => ReturnType<typeof buildGraph>;
-  nodeColor: (fn: (n: DagNode) => string) => ReturnType<typeof buildGraph>;
-  nodeVal: (fn: (n: DagNode) => number) => ReturnType<typeof buildGraph>;
-  nodeOpacity: (v: number) => ReturnType<typeof buildGraph>;
-  linkColor: (fn: () => string) => ReturnType<typeof buildGraph>;
-  linkWidth: (fn: (l: { w?: number }) => number) => ReturnType<typeof buildGraph>;
-  linkDirectionalParticles: (v: number) => ReturnType<typeof buildGraph>;
-  linkDirectionalParticleColor: (fn: () => string) => ReturnType<typeof buildGraph>;
-  linkDirectionalParticleWidth: (v: number) => ReturnType<typeof buildGraph>;
-  onNodeClick: (fn: (n: DagNode) => void) => ReturnType<typeof buildGraph>;
-  onBackgroundClick: (fn: () => void) => ReturnType<typeof buildGraph>;
-  graphData: (d: { nodes: DagNode[]; links: DagPayload["links"] }) => ReturnType<typeof buildGraph>;
-  _destructor?: () => void;
-} {
-  throw new Error("type-only helper");
+function linkEndpoint(value: string | number | { id?: string | number }) {
+  if (typeof value === "object" && value !== null && "id" in value) return String(value.id);
+  return String(value);
+}
+
+export function DagCanvas({
+  payload,
+  onSelect,
+}: {
+  payload: DagPayload;
+  onSelect: (n: DagNode | null) => void;
+}) {
+  const positioned = payload.nodes.map((node, index) => ({
+    ...node,
+    ...nodePosition(index, payload.nodes.length),
+  }));
+  const byId = new Map(positioned.map((node) => [node.id, node]));
+
+  return (
+    <button
+      type="button"
+      className="relative block h-full w-full cursor-crosshair overflow-hidden text-left"
+      aria-label="Clear selected evidence node"
+      onClick={() => onSelect(null)}
+    >
+      <svg viewBox="0 0 840 480" className="h-full w-full" role="img" aria-label="Evidence DAG">
+        <rect width="840" height="480" fill="#050c16" />
+        <g opacity="0.13">
+          {Array.from({ length: 21 }).map((_, i) => (
+            <line
+              key={`v${i}`}
+              x1={i * 42}
+              x2={i * 42}
+              y1="0"
+              y2="480"
+              stroke="#6b8aaa"
+              strokeWidth="0.5"
+            />
+          ))}
+          {Array.from({ length: 13 }).map((_, i) => (
+            <line
+              key={`h${i}`}
+              x1="0"
+              x2="840"
+              y1={i * 40}
+              y2={i * 40}
+              stroke="#6b8aaa"
+              strokeWidth="0.5"
+            />
+          ))}
+        </g>
+        <g>
+          {payload.links.map((link, index) => {
+            const source = byId.get(linkEndpoint(link.source));
+            const target = byId.get(linkEndpoint(link.target));
+            if (!source || !target) return null;
+            return (
+              <line
+                key={`${linkEndpoint(link.source)}-${linkEndpoint(link.target)}-${index}`}
+                x1={source.x}
+                y1={source.y}
+                x2={target.x}
+                y2={target.y}
+                stroke="rgba(26,159,232,0.35)"
+                strokeWidth={Math.max(0.8, (link.w ?? 1) * 0.7)}
+              />
+            );
+          })}
+        </g>
+        <g>
+          {positioned.map((node) => {
+            const color = nodeColor(node);
+            return (
+              <g key={node.id}>
+                <circle cx={node.x} cy={node.y} r="20" fill={color} opacity="0.16" />
+                <circle
+                  cx={node.x}
+                  cy={node.y}
+                  r="10"
+                  fill="#07111f"
+                  stroke={color}
+                  strokeWidth="2"
+                />
+                <circle cx={node.x} cy={node.y} r="3" fill={color} />
+                <text
+                  x={node.x}
+                  y={node.y + 29}
+                  textAnchor="middle"
+                  fontFamily="JetBrains Mono, monospace"
+                  fontSize="9"
+                  fill="#d7e4ef"
+                >
+                  {node.label.length > 18 ? `${node.label.slice(0, 17)}…` : node.label}
+                </text>
+                <circle
+                  cx={node.x}
+                  cy={node.y}
+                  r="22"
+                  fill="transparent"
+                  className="cursor-pointer"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    onSelect(node);
+                  }}
+                />
+              </g>
+            );
+          })}
+        </g>
+      </svg>
+    </button>
+  );
 }
