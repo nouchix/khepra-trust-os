@@ -32,6 +32,12 @@ Each migration PR must:
 | Plane | Source PRs | Lands as | Status |
 |---|---|---|---|
 | Digital Citizenship / Trust | PQC-Khepra-MCP#57 (`pkg/aeo`, `pkg/citizenship`), Adinkhepra-ASAF#7 (spec) | `core/aeo/`, `core/citizenship/` + `docs/AEO_TRUST_EXTENSION.md` | ✅ landed, 13 tests green |
+| Trust MCP server (MVP) | this repo | `core/mcp/`, `core/cmd/ktos-mcp/` | ✅ landed — stdio MCP server exposing the trust layer as 9 tools; `go run ./cmd/ktos-mcp --demo` |
+
+The MCP server (`core/mcp`) is the pitchable surface: any MCP client drives the
+trust layer through it (`agent_register`, `aeo_record`, `trust_score`,
+`passport_issue`, `dual_anchor`, …). See
+[`docs/MVP_QUICKSTART.md`](../docs/MVP_QUICKSTART.md).
 
 The trust plane carries minimal support copies of `core/adinkra` (ML-DSA-65 /
 Kyber-1024 primitives + lattice hash), `core/dag` (content-addressed anchor

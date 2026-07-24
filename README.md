@@ -118,8 +118,14 @@ The module is self-contained and vendored, so it builds and tests fully offline:
 ```sh
 cd core
 go vet ./...
-go test ./...      # trust-layer suites (aeo + citizenship) run green
+go test ./...                 # aeo + citizenship + mcp suites run green
+go run ./cmd/ktos-mcp --demo  # end-to-end trust demo (real PQC signatures)
+go build -o ktos-mcp ./cmd/ktos-mcp && ./ktos-mcp   # stdio MCP server
 ```
+
+The **KTOS Trust MCP server** (`core/mcp`, `core/cmd/ktos-mcp`) is the
+validation-partner surface: any MCP client drives the trust layer through it.
+Partner brief: [`docs/MVP_QUICKSTART.md`](docs/MVP_QUICKSTART.md).
 
 ## Sovereignty boundary (guard G-1)
 
