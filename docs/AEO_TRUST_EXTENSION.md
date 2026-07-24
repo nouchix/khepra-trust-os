@@ -1,6 +1,11 @@
 # KHEPRA MCP Trust Extension — AI Evidence Objects (AEO)
 
-**Spec:** `khepra-aeo/1.0` · **Status:** Draft · **Reference implementation:** `pkg/aeo` in [PQC-Khepra-MCP](https://github.com/nouchix/PQC-Khepra-MCP) and [giza-cyber-shield](https://github.com/EtherVerseCodeMate/giza-cyber-shield)
+**Specs:** `khepra-aeo/1.0` + `khepra-passport/1.0` · **Status:** Draft
+· **Authoritative implementation:** `core/aeo` + `core/citizenship` in this
+repo (`github.com/nouchix/khepra-trust-os/core`)
+· **Public/mirror implementations:** `pkg/aeo` in
+[PQC-Khepra-MCP](https://github.com/nouchix/PQC-Khepra-MCP) and
+[giza-cyber-shield](https://github.com/EtherVerseCodeMate/giza-cyber-shield)
 
 > KHEPRA is the trust layer for autonomous AI systems. It gives every agent a
 > cryptographic identity, a behavioral fingerprint, and an immutable history
