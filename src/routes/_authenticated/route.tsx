@@ -13,19 +13,31 @@ function AuthenticatedGate() {
   useEffect(() => {
     let active = true;
 
-    supabase.auth.getUser().then(({ data, error }) => {
-      if (!active) return;
-      if (error || !data.user) {
-        const intendedPath = window.location.pathname.startsWith("/console")
-          ? `${window.location.pathname}${window.location.search}`
-          : "/console/timeline";
-        window.setTimeout(() => {
-          navigate({ to: "/auth", search: { redirect: intendedPath }, replace: true });
-        }, 0);
-        return;
+    const redirectToAuth = () => {
+      const intendedPath = window.location.pathname.startsWith("/console")
+        ? `${window.location.pathname}${window.location.search}`
+        : "/console/timeline";
+      navigate({ to: "/auth", search: { redirect: intendedPath }, replace: true });
+    };
+
+    // getSession() reads the persisted session locally, so an unauthenticated
+    // visitor is redirected immediately instead of blocking on a network round
+    // trip. Wrapped so a rejected promise — or a supabase client that throws
+    // synchronously (e.g. missing env vars) — fails safe to /auth rather than
+    // leaving the gate stuck on "Verifying console access…" forever.
+    (async () => {
+      try {
+        const { data, error } = await supabase.auth.getSession();
+        if (!active) return;
+        if (error || !data.session) {
+          redirectToAuth();
+          return;
+        }
+        setStatus("allowed");
+      } catch {
+        if (active) redirectToAuth();
       }
-      setStatus("allowed");
-    });
+    })();
 
     return () => {
       active = false;
