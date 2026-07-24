@@ -1,0 +1,15 @@
+name: KTOS TRL10 Guards
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  sovereignty-boundary:
+    name: "G-1 sovereignty boundary guard"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run sovereignty boundary guard
+        run: bash ops/guards/sovereignty_boundary_guard.sh
