@@ -8,11 +8,14 @@ import { EgyptianDivider } from "@/components/egyptian-divider";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "KHEPRA Trust Network — Trust OS for Autonomous Work" },
-      { name: "description", content: "Protocol-first cryptographic identity, policy enforcement, provenance, and immutable attestation for AI agents and enterprise systems." },
-      { property: "og:title", content: "KHEPRA Trust Network — Trust OS for Autonomous Work" },
-      { property: "og:description", content: "Protocol-first cryptographic identity, policy enforcement, provenance, and immutable attestation for AI agents and enterprise systems." },
+      { title: "KHEPRA — Cryptographic Governance for Autonomous Systems" },
+      { name: "description", content: "KHEPRA is the Autonomous Governance Platform. Every autonomous state transition produces an independently verifiable cryptographic evidence object — no trust, only proof." },
+      { property: "og:title", content: "KHEPRA — Cryptographic Governance for Autonomous Systems" },
+      { property: "og:description", content: "Autonomous Governance Fabric, ASAF Runtime, and Agent Evidence Objects: bounded privilege and provable state transitions for AI agents and enterprise systems." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
+    links: [{ rel: "canonical", href: "https://adinkhepra.com/" }],
   }),
   component: Home,
 });
@@ -33,16 +36,16 @@ function Home() {
           }}
         />
         <div className="container-x relative py-24 md:py-36">
-          <Eyebrow>Trust Operating System · v0.1 Alpha</Eyebrow>
+          <Eyebrow>Autonomous Governance Platform · SDS v3.0</Eyebrow>
           <h1 className="mt-6 text-5xl md:text-7xl font-semibold tracking-tight leading-[1.02] max-w-4xl">
-            Trust, made <span className="text-gradient">executable</span>
+            Cryptographic <span className="text-gradient">governance</span>
             <br />
-            for autonomous work.
+            for autonomous systems.
           </h1>
           <p className="mt-7 text-lg md:text-xl text-muted-foreground max-w-2xl leading-relaxed">
-            KHEPRA is a protocol-first trust network: cryptographic identity, policy enforcement,
-            provenance, and immutable DAG-backed attestation for every AI agent, connector, and
-            enterprise system in your operation.
+            Every autonomous state transition SHALL produce independently verifiable cryptographic
+            evidence. KHEPRA is the Autonomous Governance Fabric — bounded privilege, fail-closed
+            actuation, and an append-only Proof Ledger of signed Agent Evidence Objects.
           </p>
           <div className="mt-10 flex flex-wrap gap-3">
             <Link
@@ -61,10 +64,10 @@ function Home() {
 
           <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-6 max-w-3xl">
             {[
-              ["PQC", "Post-quantum identity"],
-              ["DAG", "Immutable attestation"],
-              ["OPA", "Policy enforcement"],
-              ["Replay", "Full agent evidence"],
+              ["GST", "Governed state transitions"],
+              ["AEO", "Agent Evidence Objects"],
+              ["ASAF", "Privileged governance kernel"],
+              ["AGF", "Autonomous Governance Fabric"],
             ].map(([k, v]) => (
               <div key={k} className="border-l border-primary/40 pl-3">
                 <div className="font-mono text-xs text-primary">{k}</div>
@@ -82,18 +85,18 @@ function Home() {
             <div className="lg:col-span-5">
               <SectionHeading
                 eyebrow="The problem"
-                title={<>Autonomous systems <br />outrun human oversight.</>}
+                title={<>Autonomous systems act. <br />Nothing proves how.</>}
               />
             </div>
             <div className="lg:col-span-7 grid sm:grid-cols-2 gap-4">
               {[
-                { t: "Unverifiable actions", d: "Agents call tools and mutate systems without cryptographic proof of who acted, on whose behalf, or under what policy." },
-                { t: "No shared evidence", d: "SIEMs capture logs, not intent. Auditors ask for provenance the stack cannot produce." },
-                { t: "Policy in prompts", d: "Guardrails written in natural language are advisory, not enforced. Every model change is a compliance change." },
-                { t: "Broken chain of custody", d: "Retrieval, tool calls, and downstream writes have no shared identity graph across vendors." },
+                { t: "Unbounded autonomy", d: "Agents hold unbounded privilege. There is no cryptographic broker that narrows what an agent may do before it acts." },
+                { t: "Post-hoc trust", d: "Logs and telemetry describe what happened. They cannot prove that the state transition was authorized, verified, and attested." },
+                { t: "Ungoverned actuation", d: "Execution surfaces run open-loop. No fail-closed kernel enforces pre/post state equality on every action." },
+                { t: "No canonical evidence", d: "Every vendor emits a different event shape. There is no canonically-serialized object an auditor can independently verify." },
               ].map((it) => (
                 <Card key={it.t}>
-                  <div className="font-mono text-[11px] uppercase tracking-widest text-primary/80">01 · gap</div>
+                  <div className="font-mono text-[11px] uppercase tracking-widest text-primary/80">accountability gap</div>
                   <div className="mt-3 font-display text-lg font-semibold">{it.t}</div>
                   <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{it.d}</p>
                 </Card>
@@ -107,18 +110,18 @@ function Home() {
       <section className="border-b border-border/60">
         <div className="container-x py-20 md:py-28">
           <SectionHeading
-            eyebrow="Protocol pillars"
-            title={<>Six primitives. One trust plane.</>}
-            subtitle="KHEPRA collapses identity, policy, provenance, and evidence into a single protocol so every actor — human, agent, or system — participates on the same signed graph."
+            eyebrow="Five planes · one fabric"
+            title={<>The Autonomous Governance Fabric.</>}
+            subtitle="KHEPRA coordinates governance across five cryptographic planes. No orchestration logic, no AI reasoning — pure governance coordination from intent to attested outcome."
           />
           <div className="mt-14 grid md:grid-cols-2 lg:grid-cols-3 gap-4">
             {[
-              { Icon: KeyRound, t: "PQC Identity", d: "Post-quantum signing keys per actor, workload, and tool. Verifiable, revocable, portable." },
-              { Icon: Shield, t: "Policy Engine", d: "OPA/Rego + declarative allow/deny. Every action is authorized against a versioned policy set." },
-              { Icon: Fingerprint, t: "Provenance", d: "Signed lineage for every prompt, retrieval, tool call, and mutation — attached to a canonical actor graph." },
-              { Icon: GitBranch, t: "DAG Attestation", d: "Immutable, hash-linked directed acyclic graph. Tamper-evident by construction, replayable end-to-end." },
-              { Icon: ScrollText, t: "Evidence Recorder", d: "Structured, queryable evidence packages for auditors, incident response, and model governance." },
-              { Icon: Cpu, t: "Agent Runtime", d: "Sandboxed execution with signed tool manifests, mediated I/O, and per-step attestation hooks." },
+              { Icon: ScrollText, t: "Intent Plane", d: "Missions, desired states, and constraints declared before any action. Every GST begins with a signed intent." },
+              { Icon: KeyRound, t: "Identity Plane", d: "PQC identities for agents and humans, brokered under the Adinkra symbol hierarchy for bounded privilege." },
+              { Icon: Shield, t: "Policy Plane", d: "Authorization rules and compliance frameworks compiled to code. Bounded scope, versioned, fail-closed." },
+              { Icon: Cpu, t: "Actuation Plane", d: "The ASAF Runtime — the privileged governance kernel. Fail-closed execution with pre/post state verification." },
+              { Icon: Fingerprint, t: "Evidence Plane", d: "Canonically-serialized AEOs written to the Proof Ledger. Content-addressed, replayable, no phone-home." },
+              { Icon: GitBranch, t: "Governance Graph", d: "Intent → Policy → Privilege → Execution → Attestation → Outcome. Continuous, cryptographically verifiable." },
             ].map(({ Icon, t, d }) => (
               <Card key={t} className="group hover:border-primary/40 transition-colors">
                 <div className="flex items-center gap-3">
@@ -139,15 +142,15 @@ function Home() {
         <div className="container-x py-20 md:py-28 grid lg:grid-cols-12 gap-12 items-center">
           <div className="lg:col-span-6">
             <SectionHeading
-              eyebrow="The trust graph"
-              title={<>Every action becomes <br />a signed, replayable node.</>}
-              subtitle="KHEPRA writes every authorized action to an append-only DAG. Nodes are hash-linked, cryptographically signed, and cross-referenced across actors — so evidence is native, not reconstructed."
+              eyebrow="The Governance Graph"
+              title={<>Every state transition <br />is an Agent Evidence Object.</>}
+              subtitle="Like Bitcoin has transactions, KHEPRA has AEOs. Each GST produces exactly one canonically-serialized, ML-DSA-65 signed evidence object, hash-linked to its parent on the append-only Proof Ledger."
             />
             <div className="mt-8 grid grid-cols-2 gap-4 max-w-md">
               {[
-                ["100%", "actions attested"],
-                ["<50ms", "policy decision"],
-                ["∞", "replayable history"],
+                ["100%", "state transitions attested"],
+                ["ML-DSA-65", "post-quantum signatures"],
+                ["∞", "independently replayable"],
                 ["0", "trusted intermediaries"],
               ].map(([k, v]) => (
                 <div key={v} className="surface-card p-4">
