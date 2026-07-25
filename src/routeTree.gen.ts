@@ -14,6 +14,7 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as RoadmapRouteImport } from './routes/roadmap'
 import { Route as ProtocolRouteImport } from './routes/protocol'
 import { Route as PricingRouteImport } from './routes/pricing'
+import { Route as EmptyLaneRouteImport } from './routes/empty-lane'
 import { Route as DocsRouteImport } from './routes/docs'
 import { Route as DevelopersRouteImport } from './routes/developers'
 import { Route as DemoRouteImport } from './routes/demo'
@@ -27,6 +28,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProductsSouhimbouRouteImport } from './routes/products.souhimbou'
 import { Route as ProductsAdinkhepraRouteImport } from './routes/products.adinkhepra'
 import { Route as AuthenticatedConsoleRouteRouteImport } from './routes/_authenticated/console/route'
+import { Route as ApiPublicFabricRouteImport } from './routes/api/public/fabric'
 import { Route as ApiPublicDemoRouteImport } from './routes/api/public/demo'
 import { Route as ApiPublicAeoRouteImport } from './routes/api/public/aeo'
 import { Route as AuthenticatedConsoleTimelineRouteImport } from './routes/_authenticated/console/timeline'
@@ -60,6 +62,11 @@ const ProtocolRoute = ProtocolRouteImport.update({
 const PricingRoute = PricingRouteImport.update({
   id: '/pricing',
   path: '/pricing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EmptyLaneRoute = EmptyLaneRouteImport.update({
+  id: '/empty-lane',
+  path: '/empty-lane',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DocsRoute = DocsRouteImport.update({
@@ -127,6 +134,11 @@ const AuthenticatedConsoleRouteRoute =
     path: '/console',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const ApiPublicFabricRoute = ApiPublicFabricRouteImport.update({
+  id: '/api/public/fabric',
+  path: '/api/public/fabric',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicDemoRoute = ApiPublicDemoRouteImport.update({
   id: '/api/public/demo',
   path: '/api/public/demo',
@@ -189,6 +201,7 @@ export interface FileRoutesByFullPath {
   '/demo': typeof DemoRoute
   '/developers': typeof DevelopersRoute
   '/docs': typeof DocsRoute
+  '/empty-lane': typeof EmptyLaneRoute
   '/pricing': typeof PricingRoute
   '/protocol': typeof ProtocolRoute
   '/roadmap': typeof RoadmapRoute
@@ -206,6 +219,7 @@ export interface FileRoutesByFullPath {
   '/console/timeline': typeof AuthenticatedConsoleTimelineRoute
   '/api/public/aeo': typeof ApiPublicAeoRoute
   '/api/public/demo': typeof ApiPublicDemoRoute
+  '/api/public/fabric': typeof ApiPublicFabricRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -217,6 +231,7 @@ export interface FileRoutesByTo {
   '/demo': typeof DemoRoute
   '/developers': typeof DevelopersRoute
   '/docs': typeof DocsRoute
+  '/empty-lane': typeof EmptyLaneRoute
   '/pricing': typeof PricingRoute
   '/protocol': typeof ProtocolRoute
   '/roadmap': typeof RoadmapRoute
@@ -234,6 +249,7 @@ export interface FileRoutesByTo {
   '/console/timeline': typeof AuthenticatedConsoleTimelineRoute
   '/api/public/aeo': typeof ApiPublicAeoRoute
   '/api/public/demo': typeof ApiPublicDemoRoute
+  '/api/public/fabric': typeof ApiPublicFabricRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -247,6 +263,7 @@ export interface FileRoutesById {
   '/demo': typeof DemoRoute
   '/developers': typeof DevelopersRoute
   '/docs': typeof DocsRoute
+  '/empty-lane': typeof EmptyLaneRoute
   '/pricing': typeof PricingRoute
   '/protocol': typeof ProtocolRoute
   '/roadmap': typeof RoadmapRoute
@@ -264,6 +281,7 @@ export interface FileRoutesById {
   '/_authenticated/console/timeline': typeof AuthenticatedConsoleTimelineRoute
   '/api/public/aeo': typeof ApiPublicAeoRoute
   '/api/public/demo': typeof ApiPublicDemoRoute
+  '/api/public/fabric': typeof ApiPublicFabricRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -277,6 +295,7 @@ export interface FileRouteTypes {
     | '/demo'
     | '/developers'
     | '/docs'
+    | '/empty-lane'
     | '/pricing'
     | '/protocol'
     | '/roadmap'
@@ -294,6 +313,7 @@ export interface FileRouteTypes {
     | '/console/timeline'
     | '/api/public/aeo'
     | '/api/public/demo'
+    | '/api/public/fabric'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -305,6 +325,7 @@ export interface FileRouteTypes {
     | '/demo'
     | '/developers'
     | '/docs'
+    | '/empty-lane'
     | '/pricing'
     | '/protocol'
     | '/roadmap'
@@ -322,6 +343,7 @@ export interface FileRouteTypes {
     | '/console/timeline'
     | '/api/public/aeo'
     | '/api/public/demo'
+    | '/api/public/fabric'
   id:
     | '__root__'
     | '/'
@@ -334,6 +356,7 @@ export interface FileRouteTypes {
     | '/demo'
     | '/developers'
     | '/docs'
+    | '/empty-lane'
     | '/pricing'
     | '/protocol'
     | '/roadmap'
@@ -351,6 +374,7 @@ export interface FileRouteTypes {
     | '/_authenticated/console/timeline'
     | '/api/public/aeo'
     | '/api/public/demo'
+    | '/api/public/fabric'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -364,6 +388,7 @@ export interface RootRouteChildren {
   DemoRoute: typeof DemoRoute
   DevelopersRoute: typeof DevelopersRoute
   DocsRoute: typeof DocsRoute
+  EmptyLaneRoute: typeof EmptyLaneRoute
   PricingRoute: typeof PricingRoute
   ProtocolRoute: typeof ProtocolRoute
   RoadmapRoute: typeof RoadmapRoute
@@ -373,6 +398,7 @@ export interface RootRouteChildren {
   ProductsSouhimbouRoute: typeof ProductsSouhimbouRoute
   ApiPublicAeoRoute: typeof ApiPublicAeoRoute
   ApiPublicDemoRoute: typeof ApiPublicDemoRoute
+  ApiPublicFabricRoute: typeof ApiPublicFabricRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -410,6 +436,13 @@ declare module '@tanstack/react-router' {
       path: '/pricing'
       fullPath: '/pricing'
       preLoaderRoute: typeof PricingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/empty-lane': {
+      id: '/empty-lane'
+      path: '/empty-lane'
+      fullPath: '/empty-lane'
+      preLoaderRoute: typeof EmptyLaneRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/docs': {
@@ -502,6 +535,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/console'
       preLoaderRoute: typeof AuthenticatedConsoleRouteRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/api/public/fabric': {
+      id: '/api/public/fabric'
+      path: '/api/public/fabric'
+      fullPath: '/api/public/fabric'
+      preLoaderRoute: typeof ApiPublicFabricRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/public/demo': {
       id: '/api/public/demo'
@@ -617,6 +657,7 @@ const rootRouteChildren: RootRouteChildren = {
   DemoRoute: DemoRoute,
   DevelopersRoute: DevelopersRoute,
   DocsRoute: DocsRoute,
+  EmptyLaneRoute: EmptyLaneRoute,
   PricingRoute: PricingRoute,
   ProtocolRoute: ProtocolRoute,
   RoadmapRoute: RoadmapRoute,
@@ -626,17 +667,8 @@ const rootRouteChildren: RootRouteChildren = {
   ProductsSouhimbouRoute: ProductsSouhimbouRoute,
   ApiPublicAeoRoute: ApiPublicAeoRoute,
   ApiPublicDemoRoute: ApiPublicDemoRoute,
+  ApiPublicFabricRoute: ApiPublicFabricRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
