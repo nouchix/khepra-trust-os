@@ -85,14 +85,14 @@ function DemoPage() {
       <PageHero
         eyebrow="Public Demo · No login"
         title={<>"Trust me" → <span className="text-gradient">"Prove it."</span></>}
-        subtitle="Watch an AI agent build a verifiable proof-of-work history through the KHEPRA Trust OS Fabric — post-quantum identity, hash-chained evidence, dual-anchor determinism. Every hash below is real SHA-256, computed in your browser. No login, no backend."
+        subtitle="Watch an AI agent build a verifiable proof-of-work history through the KHEPRA Trust OS Fabric — post-quantum identity, hash-chained evidence, dual-anchor determinism. Every record is built, hashed, and signed by the server evidence gateway; your browser only renders it. No login."
       />
 
       <section className="border-b border-border/60">
         <div className="container-x py-12">
           <FabricConsole />
           <p className="mt-4 text-center text-xs text-muted-foreground font-mono">
-            The same nine MCP tools ship in the sovereign server (<span className="text-foreground/80">core/cmd/ktos-mcp</span>). This runs them client-side so the proof needs nothing but your browser.
+            The frontend is untrusted: it renders a signed Agent Evidence Object (AEO) from the <span className="text-foreground/80">/api/public/fabric</span> gateway, sourced from the sovereign MCP server (<span className="text-foreground/80">mcp.souhimbou.ai</span>). Browser renders — server validates, hashes, and signs.
           </p>
         </div>
       </section>

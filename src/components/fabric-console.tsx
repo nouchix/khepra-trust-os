@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { buildScenario, type FabricLink, type FabricNode, type Scenario } from "@/lib/fabric-demo";
+import type { FabricBundle, FabricLink, FabricNode } from "@/lib/fabric-demo";
 
 const KIND_COLOR: Record<FabricNode["kind"], string> = {
   agent: "#1a9fe8",
@@ -15,7 +15,7 @@ const KIND_COLOR: Record<FabricNode["kind"], string> = {
 const STEP_MS = 1150;
 
 export function FabricConsole() {
-  const [scenario, setScenario] = useState<Scenario | null>(null);
+  const [bundle, setBundle] = useState<FabricBundle | null>(null);
   const [revealed, setRevealed] = useState(0);
   const [running, setRunning] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -30,8 +30,13 @@ export function FabricConsole() {
     setRunning(true);
     setRevealed(0);
     try {
-      const s = scenario ?? (await buildScenario());
-      setScenario(s);
+      // The browser is untrusted: it asks the evidence gateway for a signed AEO
+      // bundle and only renders it. No hashing or signing happens here.
+      const res = await fetch("/api/public/fabric");
+      if (!res.ok) throw new Error(`evidence gateway ${res.status}`);
+      const s = (await res.json()) as FabricBundle;
+      if (!s.steps?.length) throw new Error("gateway returned no evidence");
+      setBundle(s);
       setRevealed(1);
       let i = 1;
       timer.current = setInterval(() => {
@@ -55,7 +60,7 @@ export function FabricConsole() {
     setRevealed(0);
   }
 
-  const steps = scenario?.steps ?? [];
+  const steps = bundle?.steps ?? [];
   const shown = steps.slice(0, revealed);
   const nodes: FabricNode[] = shown.flatMap((s) => s.nodes);
   const nodeIds = new Set(nodes.map((n) => n.id));
@@ -87,9 +92,14 @@ export function FabricConsole() {
             <span className="relative inline-flex h-2 w-2 rounded-full bg-[#22c55e]" />
           </span>
           <span className="fx-mono text-[11px] tracking-[2px] text-[#7fb4d8] uppercase">KHEPRA · Trust Fabric</span>
+          {bundle && (
+            <span className="fx-mono text-[9px] tracking-[1px] text-[#3d5a78] uppercase hidden md:inline">
+              server-signed · {bundle.source}
+            </span>
+          )}
         </div>
         <span className="fx-mono text-[10px] tracking-[1.5px] text-[#3d5a78] uppercase hidden sm:inline">
-          {scenario?.algorithm ?? "ML-DSA-65 · content-addressed"}
+          {bundle ? `sig ${bundle.signature.slice(0, 12)}…` : "ML-DSA-65 · content-addressed"}
         </span>
       </div>
 
