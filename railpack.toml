@@ -1,0 +1,14 @@
+$schema = "https://schema.railpack.com"
+
+[provider]
+framework = "nitro"
+
+[deploy]
+startCommand = "node .output/server/index.mjs"
+
+[deploy.inputs.local]
+include = [".output"]
+outputDir = ""
+
+[nitro]
+preset = "cloudflare"
