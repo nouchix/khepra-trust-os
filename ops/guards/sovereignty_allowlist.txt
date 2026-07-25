@@ -22,3 +22,10 @@ webhook.nouchix.com      control-plane   NONE               platform   Stripe we
 mcp.souhimbou.ai         demo-discovery  DEMO               platform   Public MCP tool endpoint (KHEPRA_DAG_SEED_DEMO=true). Discovery/demo only. TRL10 REQUIREMENT: input guard + "no CUI" banner + isolated demo DAG. See TRL10_SOVEREIGNTY_BOUNDARY_2026-07-02.md.
 gateway.souhimbou.ai     demo-discovery  DEMO               platform   Public eval scan (ASAF_ALLOW_EVAL_WITHOUT_LICENSE=true). TRL10 REQUIREMENT: block real-target/credential submission, tier-gate authenticated scans, "no CUI" banner. See decision doc.
 staging.souhimbou.ai     demo-discovery  SYNTHETIC          platform   CI DAST target (ZAP). Non-production, synthetic only.
+
+# ── PUBLIC MARKETING / SaaS SITE (Profile A) ──────────────────────────────────
+# The vendor's own public site. Its sitemap base URL and canonical hrefs
+# legitimately point here — this is NOT a customer CUI data plane. Customer Hub
+# URLs are per-tenant and supplied at runtime, never this domain (the :8443 Hub
+# hard-rule in the guard still applies and is unaffected by this entry).
+adinkhepra.com           control-plane   NONE               platform   Public marketing/SaaS site. sitemap BASE_URL + SEO canonical only. No customer CUI.
