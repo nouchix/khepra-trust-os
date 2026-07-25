@@ -7,11 +7,13 @@ import { EgyptianDivider } from "@/components/egyptian-divider";
 export const Route = createFileRoute("/asaf")({
   head: () => ({
     meta: [
-      { title: "ASAF — Attested Sovereign Agent Fabric | KHEPRA" },
-      { name: "description", content: "ASAF is the modular architecture of the KHEPRA Trust Network: eight interoperable layers from PQC identity to evidence and replay." },
-      { property: "og:title", content: "ASAF — Attested Sovereign Agent Fabric" },
-      { property: "og:description", content: "The eight-layer trust architecture powering KHEPRA." },
+      { title: "ASAF Runtime — Privileged Governance Kernel | KHEPRA" },
+      { name: "description", content: "The ASAF Runtime is the privileged governance kernel at the heart of KHEPRA — fail-closed actuation, pre/post state verification, and ML-DSA-65 attestation of every Governed State Transition." },
+      { property: "og:title", content: "ASAF Runtime — Privileged Governance Kernel" },
+      { property: "og:description", content: "Authorization, actuation, verification, attestation, and rollback in one sovereign kernel." },
+      { property: "og:type", content: "article" },
     ],
+    links: [{ rel: "canonical", href: "https://adinkhepra.com/asaf" }],
   }),
   component: AsafPage,
 });
@@ -20,9 +22,9 @@ function AsafPage() {
   return (
     <>
       <PageHero
-        eyebrow="ASAF · Attested Sovereign Agent Fabric"
-        title={<>Eight layers. One <span className="text-gradient">sovereign</span> trust plane.</>}
-        subtitle="ASAF is the reference architecture of the KHEPRA Trust Network — a modular stack where every layer is independently verifiable, replaceable, and cryptographically anchored to the layer below."
+        eyebrow="ASAF Runtime · Privileged Governance Kernel"
+        title={<>The <span className="text-gradient">kernel</span> of autonomous governance.</>}
+        subtitle="ASAF is not a daemon and not a service. It is the privileged governance kernel that authorizes, actuates, verifies, attests, and — on failure — rolls back every Governed State Transition. Sovereign, air-gap-capable, fail-closed by construction."
       />
 
       <section className="border-b border-border/60">
@@ -33,14 +35,14 @@ function AsafPage() {
               Hover a layer to trace its role.
             </h2>
             <p className="mt-4 text-muted-foreground leading-relaxed">
-              ASAF is designed to be adopted incrementally. Each layer emits and consumes canonical, signed messages — so partial deployments still produce first-class evidence.
+              ASAF holds six kernel responsibilities: Authorization (policy + Adinkra symbol brokering), Actuation (fail-closed execution), Verification (pre/post state equality), Attestation (ML-DSA-65 signature), Rollback (deterministic reversal on failure), and Continuous Governance (ongoing state re-authorization).
             </p>
             <div className="mt-8 grid grid-cols-2 gap-3">
               {[
-                ["Open spec", "Draft published"],
-                ["Reference impl", "Rust + TypeScript"],
-                ["Verifier", "Independent CLI"],
-                ["Federation", "Cross-tenant Q1 2027"],
+                ["Kernel model", "Privileged governance runtime"],
+                ["Execution", "Fail-closed, rollback-armed"],
+                ["Attestation", "ML-DSA-65 over canonical bytes"],
+                ["Sovereignty", "Air-gap-capable, no phone-home"],
               ].map(([k, v]) => (
                 <div key={k} className="surface-card p-3">
                   <div className="font-mono text-[11px] text-primary/80">{k}</div>
@@ -58,9 +60,9 @@ function AsafPage() {
       <section className="border-b border-border/60">
         <div className="container-x py-20">
           <SectionHeading
-            eyebrow="Live trust graph"
-            title="Every authorized action becomes a signed node."
-            subtitle="Actions flow left to right: from identity through control, into edges, and out onto the immutable attestation ledger. This is a schematic view of a real ASAF-attested session."
+            eyebrow="Governance Graph"
+            title="Every GST becomes an AEO on the Proof Ledger."
+            subtitle="Intent flows into policy, policy into privilege, privilege into actuation, actuation into verification and attestation — each edge cryptographically anchored on the append-only Proof Ledger."
           />
           <div className="mt-10 surface-card p-4 md:p-8">
             <TrustGraph />
@@ -73,12 +75,12 @@ function AsafPage() {
           <EgyptianDivider label="Design invariants" />
           <div className="mt-10 grid md:grid-cols-3 gap-4">
             {[
-              ["Sovereignty", "Every actor holds its own signing key. No shared secrets, no central impersonation."],
-              ["Composability", "Layers speak canonical messages. Swap the runtime or ledger without breaking evidence."],
-              ["Verifiability", "Any third party can replay any envelope and confirm signature, policy, and lineage."],
-              ["Portability", "Actor identities are DID-based. Move workloads across clouds without losing history."],
-              ["Least privilege", "Connectors declare capability scopes. Policy engine narrows them per session."],
-              ["Post-quantum", "Hybrid classical + ML-DSA signatures across identity, envelopes, and ledger anchors."],
+              ["Bounded privilege", "No unbounded agent authority. Every privilege is a scoped Adinkra symbol brokered by the kernel."],
+              ["Fail-closed", "No default-allow. If intent, policy, or verification does not resolve, actuation is refused."],
+              ["Canonical serialization", "AEOs are deterministically encoded so any verifier reproduces the same bytes and hash."],
+              ["Independent replay", "The customer-run verifier reproduces the full GST chain from the Proof Ledger alone."],
+              ["Sovereign deployment", "Runs identically on customer infrastructure, Kubernetes, SSH, or a local daemon. No cloud dependency."],
+              ["Post-quantum", "ML-DSA-65 signatures over canonical GST bytes. Crypto-agile envelope for future rotation."],
             ].map(([t, d]) => (
               <Card key={t}>
                 <div className="font-display text-lg font-semibold">{t}</div>
@@ -97,9 +99,9 @@ function AsafPage() {
           />
           <div className="mt-10 grid md:grid-cols-3 gap-4">
             {[
-              { t: "KHEPRA Cloud", d: "Fully managed by KHEPRA. Fastest to adopt. Regional data residency in US, EU, and UAE.", tag: "Managed" },
-              { t: "Hybrid", d: "Control plane in KHEPRA Cloud. Data plane in your VPC. Keys held on your HSMs.", tag: "Recommended" },
-              { t: "Sovereign", d: "Full stack in your environment. Air-gap capable. Independent verifier ships with the release.", tag: "Regulated" },
+              { t: "Sovereign", d: "Full ASAF Runtime + Proof Ledger in your environment. Air-gap-capable. Independent verifier ships with the release. Default posture for CUI, ITAR, and regulated workloads.", tag: "Regulated" },
+              { t: "Hybrid", d: "Control plane managed by KHEPRA. ASAF Runtime and Proof Ledger in your VPC. Keys held on your HSMs.", tag: "Recommended" },
+              { t: "Validation adapters", d: "Optional external harnesses (e.g. HackerAI) used only to demonstrate and certify ASAF behavior. Never a runtime dependency.", tag: "PoC" },
             ].map((o) => (
               <Card key={o.t}>
                 <div className="font-mono text-[11px] uppercase tracking-widest text-primary/80">{o.tag}</div>

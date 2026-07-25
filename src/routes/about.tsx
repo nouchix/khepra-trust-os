@@ -5,11 +5,13 @@ import { EgyptianDivider } from "@/components/egyptian-divider";
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
-      { title: "About — KHEPRA Trust Network" },
-      { name: "description", content: "KHEPRA is building the trust operating system for autonomous work. Our mission, principles, and origin." },
+      { title: "About — KHEPRA Autonomous Governance Platform" },
+      { name: "description", content: "KHEPRA is building cryptographic governance for autonomous systems: bounded privilege, fail-closed actuation, and independently verifiable evidence of every state transition." },
       { property: "og:title", content: "About KHEPRA" },
-      { property: "og:description", content: "The trust operating system for autonomous work." },
+      { property: "og:description", content: "Cryptographic governance for autonomous systems." },
+      { property: "og:type", content: "website" },
     ],
+    links: [{ rel: "canonical", href: "https://adinkhepra.com/about" }],
   }),
   component: AboutPage,
 });
@@ -19,8 +21,8 @@ function AboutPage() {
     <>
       <PageHero
         eyebrow="About"
-        title={<>We build the <span className="text-gradient">substrate</span> autonomous systems will run on.</>}
-        subtitle="KHEPRA is a protocol-first company. Named for the scarab that rolls the sun into a new day, we're building the primitives that let autonomous work be trusted at scale."
+        title={<>We build the <span className="text-gradient">governance</span> autonomous systems will run under.</>}
+        subtitle="KHEPRA is a protocol-first company. Named for the scarab that rolls the sun into a new day, we're building the cryptographic governance primitives that let autonomous systems act — under bounded privilege, with provable evidence of every state transition."
       />
 
       <section className="border-b border-border/60">
@@ -28,15 +30,15 @@ function AboutPage() {
           <div className="lg:col-span-5">
             <Eyebrow>Mission</Eyebrow>
             <h2 className="mt-4 text-3xl md:text-4xl font-semibold tracking-tight">
-              Make trust <span className="text-gradient">executable</span>.
+              Replace trust with <span className="text-gradient">proof</span>.
             </h2>
           </div>
           <div className="lg:col-span-7 space-y-4">
             <p className="text-foreground/90 leading-relaxed">
-              Autonomous systems are moving faster than the human processes we've relied on to trust them. Policy lives in documents. Evidence lives in log aggregators. Identity is passed as string secrets. It doesn't add up.
+              Autonomous systems act faster than the human processes we've relied on to trust them. Agents hold unbounded privilege. Policy lives in documents. Evidence lives in log aggregators. There is no cryptographic broker between an agent's intent and the world it is about to change.
             </p>
             <p className="text-muted-foreground leading-relaxed">
-              KHEPRA reduces trust to primitives: cryptographic identity, policy compiled to code, provenance attached to every action, and immutable attestation on a shared DAG. We ship the protocol as an open specification and the products that make it usable on day one.
+              KHEPRA reduces governance to primitives: Governed State Transitions, canonical Agent Evidence Objects, and the ASAF Runtime — a privileged governance kernel that authorizes, actuates, verifies, and attests every autonomous action. We ship the protocol as an open specification and the products that make it usable on day one.
             </p>
           </div>
         </div>

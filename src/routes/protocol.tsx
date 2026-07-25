@@ -4,11 +4,13 @@ import { PageHero, SectionHeading, Card, Eyebrow } from "@/components/section";
 export const Route = createFileRoute("/protocol")({
   head: () => ({
     meta: [
-      { title: "The KHEPRA Protocol — Cryptographic Trust for Autonomous Systems" },
-      { name: "description", content: "The KHEPRA Protocol defines signed identity, policy-mediated actions, and DAG-backed attestation for every actor in an autonomous stack." },
-      { property: "og:title", content: "The KHEPRA Protocol" },
-      { property: "og:description", content: "Cryptographic trust primitives for autonomous systems." },
+      { title: "KHEPRA Autonomous Governance Protocol (AGP)" },
+      { name: "description", content: "AGP defines Governed State Transitions, Agent Evidence Objects, and the Autonomous Governance Fabric — cryptographic governance for every autonomous action." },
+      { property: "og:title", content: "KHEPRA Autonomous Governance Protocol" },
+      { property: "og:description", content: "GST · AEO · AGF · ASAF Runtime · Proof Ledger · Governance Graph." },
+      { property: "og:type", content: "article" },
     ],
+    links: [{ rel: "canonical", href: "https://adinkhepra.com/protocol" }],
   }),
   component: ProtocolPage,
 });
@@ -17,9 +19,9 @@ function ProtocolPage() {
   return (
     <>
       <PageHero
-        eyebrow="Protocol Specification · Draft"
-        title={<>The KHEPRA Protocol.</>}
-        subtitle="A protocol-first substrate for verifiable action. Every actor — human, agent, connector, or system — holds a cryptographic identity, acts under policy, and emits signed attestations onto a shared DAG."
+        eyebrow="Autonomous Governance Protocol · SDS v3.0"
+        title={<>Cryptographic governance, <br/>not implicit autonomy.</>}
+        subtitle="AGP specifies the Governed State Transition (GST) lifecycle, the canonical Agent Evidence Object (AEO), and the five-plane Autonomous Governance Fabric. Every autonomous state transition SHALL produce independently verifiable cryptographic evidence."
       />
 
       <section className="border-b border-border/60">
@@ -30,12 +32,12 @@ function ProtocolPage() {
           </div>
           <div className="lg:col-span-8 space-y-4">
             {[
-              ["Cryptographic by default", "No plaintext trust decisions. Every action carries a verifiable signature chain."],
-              ["Protocol before product", "The trust layer is an open specification. Products are conformant implementations."],
-              ["Evidence, not logs", "Structured, replayable attestations — not opaque telemetry."],
-              ["Portable identity", "Actors move across vendors without losing lineage or provenance."],
-              ["Policy as code", "Human intent compiled into deterministic authorization rules."],
-              ["Post-quantum ready", "Hybrid classical + PQC signatures across identity and attestation."],
+              ["Proof, not trust", "Bitcoin replaced trusted third parties with cryptographic proof. AGP does the same for autonomous state."],
+              ["Bounded privilege", "No unbounded agent authority. The Adinkra symbol hierarchy brokers every privilege acquisition."],
+              ["Fail-closed actuation", "The ASAF Runtime refuses to execute unless intent, policy, and privilege all resolve. There is no default-allow."],
+              ["Canonical serialization", "Every AEO is deterministically encoded so any verifier reproduces the same bytes and signature check."],
+              ["Independently verifiable", "No phone-home. A customer-run verifier can replay any AEO chain from the Proof Ledger alone."],
+              ["Post-quantum by design", "ML-DSA-65 signatures over canonical GST bytes. Crypto-agile envelope for future FIPS 203/204/205 rotation."],
             ].map(([t, d]) => (
               <Card key={t}>
                 <div className="flex flex-col md:flex-row md:items-start gap-3 md:gap-8">
@@ -51,43 +53,42 @@ function ProtocolPage() {
       <section className="border-b border-border/60">
         <div className="container-x py-20">
           <SectionHeading
-            eyebrow="Message shape"
-            title="An attestation, in one envelope."
-            subtitle="Every KHEPRA event — identity issuance, tool call, mutation, policy decision — is emitted as a canonical signed envelope."
+            eyebrow="Canonical AEO"
+            title="One state transition. One evidence object."
+            subtitle="Every Governed State Transition emits exactly one Agent Evidence Object — canonically serialized, content-addressed, hash-linked to its parent, and signed with ML-DSA-65 over the canonical bytes."
           />
           <div className="mt-10 surface-card p-0 overflow-hidden">
             <div className="flex items-center justify-between px-5 py-3 border-b border-border/60 bg-background/40">
-              <div className="font-mono text-xs text-muted-foreground">attestation.envelope.json</div>
-              <div className="font-mono text-[11px] text-primary/80">v0.1</div>
+              <div className="font-mono text-xs text-muted-foreground">agent-evidence-object.json</div>
+              <div className="font-mono text-[11px] text-primary/80">aeo/1.0</div>
             </div>
             <pre className="p-6 text-[13px] leading-relaxed text-foreground/90 overflow-x-auto"><code>{`{
-  "id": "att_01H8Z...KX9",
-  "ts": "2026-07-23T14:22:08.412Z",
-  "actor": {
-    "id": "did:khepra:agent/finance-copilot#v3",
-    "kind": "agent",
-    "on_behalf_of": "did:khepra:user/j.okafor"
+  "aeo_id": "b3:hash(canonical_bytes)",
+  "previous_hash": "b3:parent_aeo_id",
+  "timestamp": "2026-02-17T10:30:00Z",
+  "gst_phase": ["Intent", "Authorization", "Actuation", "Verification", "Attestation"],
+  "agent_id": "ml-dsa-65:did:khepra:agent/finance-copilot#v3",
+  "human_approver": "ml-dsa-65:did:khepra:user/j.okafor",
+  "intent": {
+    "mission_id": "generate_q3_ap_summary",
+    "desired_state": { "report": "q3-ap.parquet", "classification": "CUI" }
   },
-  "action": {
-    "type": "tool.invoke",
-    "target": "conn:snowflake/warehouse.reports",
-    "intent": "generate_q3_ap_summary"
+  "policy_applied": ["CMMC_L3_SC.3.177", "NIST_800-53_AC-2"],
+  "privilege_context": { "symbol": "Eban", "scope": "warehouse.reports" },
+  "execution": {
+    "command": "warehouse.query(...)",
+    "timestamp": "2026-02-17T10:30:00.412Z"
   },
-  "policy": {
-    "bundle": "cmmc.l2@2026.07",
-    "decision": "allow",
-    "obligations": ["mask_pii", "record_full_io"]
+  "verification": {
+    "pre_state": "b3:9c3a...",
+    "post_state": "b3:1f8e...",
+    "equality": true
   },
-  "provenance": {
-    "parents": ["att_01H8Z...KX7", "att_01H8Z...KX8"],
-    "inputs_hash": "b3:9c3a...",
-    "outputs_hash": "b3:1f8e..."
-  },
-  "sig": {
-    "alg": "ml-dsa-65+ed25519",
-    "key": "kid:khepra/runtime/eu-west-1#4",
-    "value": "0x8f1c..."
-  }
+  "signature_ml_dsa_65": "base64(...)",
+  "governance_graph_edges": [
+    "agent_id→mission_id",
+    "policy_id→execution_id"
+  ]
 }`}</code></pre>
           </div>
         </div>
@@ -96,16 +97,18 @@ function ProtocolPage() {
       <section className="border-b border-border/60">
         <div className="container-x py-20">
           <SectionHeading
-            eyebrow="Lifecycle"
-            title="From intent to immutable evidence."
+            eyebrow="Governed State Transition"
+            title="State₀ → Intent → Policy → Privilege → Actuation → Verification → Attestation → State₁"
           />
-          <div className="mt-12 grid md:grid-cols-5 gap-4">
+          <div className="mt-12 grid md:grid-cols-7 gap-4">
             {[
-              ["01", "Identify", "Actor authenticates with PQC-hybrid key. Session bound to on-behalf-of chain."],
-              ["02", "Intend", "Requested action is declared with target, scope, and expected effect."],
-              ["03", "Authorize", "Policy engine evaluates against versioned bundle. Obligations attached."],
-              ["04", "Attest", "Signed envelope written to the DAG with parent-lineage hashes."],
-              ["05", "Replay", "Any authorized reviewer reconstructs the action, inputs, and effects."],
+              ["01", "Intent", "Mission and desired end-state declared and signed before any execution."],
+              ["02", "Policy", "Authorization evaluated against versioned bundle; obligations attached."],
+              ["03", "Privilege", "ASAF brokers an Adinkra symbol scoped to this GST. Bounded, revocable."],
+              ["04", "Actuation", "ASAF Runtime executes fail-closed. Rollback armed on any verification failure."],
+              ["05", "Verification", "Pre/post state equality confirmed against declared desired state."],
+              ["06", "Attestation", "ML-DSA-65 signature over canonical GST bytes."],
+              ["07", "Evidence", "AEO written to Proof Ledger; edges added to the Governance Graph."],
             ].map(([n, t, d]) => (
               <Card key={n}>
                 <div className="font-mono text-primary">{n}</div>
