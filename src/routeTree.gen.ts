@@ -14,6 +14,7 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as RoadmapRouteImport } from './routes/roadmap'
 import { Route as ProtocolRouteImport } from './routes/protocol'
 import { Route as PricingRouteImport } from './routes/pricing'
+import { Route as EmptyLaneRouteImport } from './routes/empty-lane'
 import { Route as DocsRouteImport } from './routes/docs'
 import { Route as DevelopersRouteImport } from './routes/developers'
 import { Route as DemoRouteImport } from './routes/demo'
@@ -61,6 +62,11 @@ const ProtocolRoute = ProtocolRouteImport.update({
 const PricingRoute = PricingRouteImport.update({
   id: '/pricing',
   path: '/pricing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EmptyLaneRoute = EmptyLaneRouteImport.update({
+  id: '/empty-lane',
+  path: '/empty-lane',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DocsRoute = DocsRouteImport.update({
@@ -195,6 +201,7 @@ export interface FileRoutesByFullPath {
   '/demo': typeof DemoRoute
   '/developers': typeof DevelopersRoute
   '/docs': typeof DocsRoute
+  '/empty-lane': typeof EmptyLaneRoute
   '/pricing': typeof PricingRoute
   '/protocol': typeof ProtocolRoute
   '/roadmap': typeof RoadmapRoute
@@ -224,6 +231,7 @@ export interface FileRoutesByTo {
   '/demo': typeof DemoRoute
   '/developers': typeof DevelopersRoute
   '/docs': typeof DocsRoute
+  '/empty-lane': typeof EmptyLaneRoute
   '/pricing': typeof PricingRoute
   '/protocol': typeof ProtocolRoute
   '/roadmap': typeof RoadmapRoute
@@ -255,6 +263,7 @@ export interface FileRoutesById {
   '/demo': typeof DemoRoute
   '/developers': typeof DevelopersRoute
   '/docs': typeof DocsRoute
+  '/empty-lane': typeof EmptyLaneRoute
   '/pricing': typeof PricingRoute
   '/protocol': typeof ProtocolRoute
   '/roadmap': typeof RoadmapRoute
@@ -286,6 +295,7 @@ export interface FileRouteTypes {
     | '/demo'
     | '/developers'
     | '/docs'
+    | '/empty-lane'
     | '/pricing'
     | '/protocol'
     | '/roadmap'
@@ -315,6 +325,7 @@ export interface FileRouteTypes {
     | '/demo'
     | '/developers'
     | '/docs'
+    | '/empty-lane'
     | '/pricing'
     | '/protocol'
     | '/roadmap'
@@ -345,6 +356,7 @@ export interface FileRouteTypes {
     | '/demo'
     | '/developers'
     | '/docs'
+    | '/empty-lane'
     | '/pricing'
     | '/protocol'
     | '/roadmap'
@@ -376,6 +388,7 @@ export interface RootRouteChildren {
   DemoRoute: typeof DemoRoute
   DevelopersRoute: typeof DevelopersRoute
   DocsRoute: typeof DocsRoute
+  EmptyLaneRoute: typeof EmptyLaneRoute
   PricingRoute: typeof PricingRoute
   ProtocolRoute: typeof ProtocolRoute
   RoadmapRoute: typeof RoadmapRoute
@@ -423,6 +436,13 @@ declare module '@tanstack/react-router' {
       path: '/pricing'
       fullPath: '/pricing'
       preLoaderRoute: typeof PricingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/empty-lane': {
+      id: '/empty-lane'
+      path: '/empty-lane'
+      fullPath: '/empty-lane'
+      preLoaderRoute: typeof EmptyLaneRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/docs': {
@@ -637,6 +657,7 @@ const rootRouteChildren: RootRouteChildren = {
   DemoRoute: DemoRoute,
   DevelopersRoute: DevelopersRoute,
   DocsRoute: DocsRoute,
+  EmptyLaneRoute: EmptyLaneRoute,
   PricingRoute: PricingRoute,
   ProtocolRoute: ProtocolRoute,
   RoadmapRoute: RoadmapRoute,
@@ -651,13 +672,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

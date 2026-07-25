@@ -7,6 +7,7 @@ const links = [
   { to: "/protocol", label: "Protocol" },
   { to: "/asaf", label: "ASAF" },
   { to: "/trust-network", label: "Trust Network" },
+  { to: "/empty-lane", label: "The Lane" },
   { to: "/products/adinkhepra", label: "AdinKhepra" },
   { to: "/products/souhimbou", label: "SouHimBou" },
   { to: "/connectors", label: "Connectors" },
