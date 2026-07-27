@@ -13,3 +13,11 @@ jobs:
       - uses: actions/checkout@v4
       - name: Run sovereignty boundary guard
         run: bash ops/guards/sovereignty_boundary_guard.sh
+
+  duplicate-primitives:
+    name: "G-3 no-duplicate-primitives guard"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run duplicate-primitive guard
+        run: bash ops/guards/no_duplicate_primitives.sh
