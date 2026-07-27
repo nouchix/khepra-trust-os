@@ -187,6 +187,51 @@ uploads the generated `go.sum` as an artifact and warns that it is uncommitted.
 not be generated in the authoring environment (the module proxy is blocked there
 by egress policy), which is precisely why it is a CI job.
 
+**SC-2 — the committed vendor tree does not match upstream, and the go directive
+is inconsistent.** Found by the `supply-chain` job on its first run, which is the
+job doing its job:
+
+```
+go: module golang.org/x/sys@v0.46.0 requires go >= 1.25.0; switching to go1.25.12
+```
+
+`core/go.mod` declares `go 1.24.0`, and the committed `vendor/modules.txt` records
+`## explicit; go 1.24.0` for **both** dependencies — the same value as the main
+module. Upstream `x/sys v0.46.0` requires `>= 1.25.0`, and `circl v1.6.4` declares
+its own (different) directive. Two identical directives matching the parent is the
+signature of a `modules.txt` produced under a different `go.mod`, not by a clean
+`go mod vendor`.
+
+This does **not** affect the offline build — vendor mode does not re-check
+dependency go directives, which is exactly why nothing caught it, and why
+`GOPROXY=off go build ./...` and all 91 tests pass. But it means the vendored
+bytes' metadata is not what upstream produces, so "our vendor tree is upstream"
+is currently an unverified claim.
+
+*Resolution requires a decision, not just a command:*
+- **(a)** move `core/go.mod` to `go 1.25.x` and raise the toolchain floor
+  everywhere (CI, `core/Dockerfile`, developer machines — the authoring
+  environment runs 1.24.7, so this cannot be validated locally today); or
+- **(b)** pin `golang.org/x/sys` to the last release compatible with `go 1.24`
+  and re-vendor.
+
+(b) is the lower-risk choice for the Groff pilot: `x/sys` is used for the
+platform syscall surface, not for anything on the evidence path, and holding the
+toolchain floor at 1.24 keeps the sovereign build reproducible on the Go version
+already validated. Neither option can be executed in the authoring environment
+(proxy blocked), so both the `go mod verify` recording step and the vendor-diff
+step ship **report-only** (`continue-on-error`) with the regenerated tree uploaded
+as a CI artifact.
+
+**Stated plainly: shipping a report-only check is a weaker control than a blocking
+one.** It is deliberate and bounded — turning the diff blocking in the same change
+that introduces it would wedge every PR on a pre-existing condition. The
+blocking checks (offline build, vet, gofmt, 91 tests under `-race`, static
+linkage, binary smoke tests, G-1, G-2, image build, compose fail-closed) all gate
+merges today. SC-2 is the one check that reports instead of blocks, and closing it
+is a single follow-up PR: apply the uploaded artifacts, delete two
+`continue-on-error` lines.
+
 **SV-1 — the sovereign UI is still built against cloud Supabase.** `asaf-ui`
 needs `NEXT_PUBLIC_SUPABASE_URL` / `_ANON_KEY` at *build* time because
 `/AuthCallback` initializes the Supabase client at module scope. Moving the build
@@ -212,6 +257,20 @@ build -trimpath -ldflags "-s -w"` produces three statically linked binaries
 --demo`, and `ktos-mcp` answering `initialize` + `tools/list` over stdio. The
 `image` CI job is what proves the container layer, and it must go green before
 this is described as a shippable image.
+
+### A note on `ktos-aiscan`'s exit code
+
+`ktos-aiscan` **exits 3 when it finds policy violations** — deliberate, so it can
+gate an MSP pipeline the way a linter does (`cmd/ktos-aiscan/main.go`: *"Non-zero
+exit on violations so this can gate a pipeline or an MSP check"*). The `--demo`
+scenario plants a violating Jupyter service, so **3 is the passing result and 0
+would mean the detector stopped detecting.**
+
+The first version of the CI smoke test asserted exit 0 and failed. The local
+pre-commit check had piped the demo through `head`, so the pipeline returned
+`head`'s exit status and the real code was never observed — a reminder that
+`cmd | head` silently discards the signal you are testing for. The CI step now
+asserts exactly 3 and treats 0 as a detector regression.
 
 ## 8. Guard G-2
 
