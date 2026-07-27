@@ -47,6 +47,15 @@ jobs:
       - name: Run module boundary guard
         run: bash ops/guards/module_boundary_guard.sh
 
+  # ── G-3: single-source primitives (ADR-012 Step 1, merged in #20) ────────────
+  duplicate-primitives:
+    name: "G-3 no-duplicate-primitives guard"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run duplicate-primitive guard
+        run: bash ops/guards/no_duplicate_primitives.sh
+
   # ── core/: build, vet, test ──────────────────────────────────────────────────
   # Runs fully OFFLINE against core/vendor/. GOFLAGS=-mod=vendor and GOPROXY=off
   # mean a missing or incomplete vendor tree fails here rather than silently
