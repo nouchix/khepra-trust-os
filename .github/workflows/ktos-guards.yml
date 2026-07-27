@@ -129,13 +129,18 @@ jobs:
         # A binary that builds but panics on startup is not a release. These are
         # the three things a customer actually runs.
         run: |
-          set -uo pipefail
+          set -euo pipefail
           # ktos-aiscan EXITS 3 WHEN IT FINDS POLICY VIOLATIONS — by design, so it
           # can gate an MSP pipeline the way a linter does. The --demo scenario
           # deliberately plants a violating Jupyter service, so 3 is the PASSING
           # result here and 0 would mean the detector stopped detecting.
-          /tmp/ktos-bin/ktos-aiscan --demo > /dev/null 2>&1
-          rc=$?
+          #
+          # `rc=0; cmd || rc=$?` and NOT a bare `cmd; rc=$?`: GitHub runs this
+          # script as `bash -e {0}`, and `set +e`/`set -uo pipefail` inside the
+          # script does not reliably undo an -e supplied on the command line. The
+          # `||` branch is what makes a non-zero exit survivable under -e.
+          rc=0
+          /tmp/ktos-bin/ktos-aiscan --demo > /dev/null 2>&1 || rc=$?
           if [ "$rc" -ne 3 ]; then
             echo "::error::ktos-aiscan --demo exited $rc, expected 3 (violations found)."
             echo "::error::Exit 0 means the demo's planted violation was not detected."
@@ -143,7 +148,6 @@ jobs:
             exit 1
           fi
           echo "  ktos-aiscan --demo   ok (exit 3, violations detected as expected)"
-          set -e
           /tmp/ktos-bin/ktos-enforce --demo > /dev/null
           echo "  ktos-enforce --demo  ok"
           # Drive the MCP server over stdio exactly as an IDE would.
@@ -234,7 +238,13 @@ jobs:
           GOFLAGS: -mod=mod
         run: |
           set -uo pipefail
-          go mod vendor
+          # `|| { ...; exit 1; }` rather than a bare call: under the runner's
+          # `bash -e` a failing `go mod vendor` would otherwise abort with no
+          # diagnostic, and this step is the one that has to explain itself.
+          go mod vendor || {
+            echo "::warning::'go mod vendor' failed — see gap SC-2 in ARCH-014 §7."
+            exit 1
+          }
           if ! git diff --quiet -- vendor/ go.mod; then
             echo "::warning::core/vendor/ does not match what 'go mod vendor' produces (gap SC-2)."
             git --no-pager diff --stat -- vendor/ go.mod
@@ -299,17 +309,17 @@ jobs:
 
       - name: The image must actually run
         run: |
-          set -uo pipefail
-          # Exit 3 == violations found == the demo working. See core-verify.
-          docker run --rm ktos-core:ci ktos-aiscan --demo > /dev/null 2>&1
-          rc=$?
+          set -euo pipefail
+          # Exit 3 == violations found == the demo working. See core-verify for why
+          # this uses `|| rc=$?` rather than `; rc=$?`.
+          rc=0
+          docker run --rm ktos-core:ci ktos-aiscan --demo > /dev/null 2>&1 || rc=$?
           if [ "$rc" -ne 3 ]; then
             echo "::error::ktos-aiscan --demo in-image exited $rc, expected 3"
             docker run --rm ktos-core:ci ktos-aiscan --demo || true
             exit 1
           fi
           echo "  ktos-aiscan in-image   ok (exit 3)"
-          set -e
           docker run --rm ktos-core:ci ktos-enforce --demo > /dev/null
           echo "  ktos-enforce in-image  ok"
           out="$(printf '%s\n' \
