@@ -26,6 +26,16 @@ Each migration PR must:
 4. Keep the Go module self-contained: `core/go.mod` (module
    `github.com/nouchix/khepra-trust-os/core`), no replace-directives pointing at
    the public repo once migration of a plane completes.
+   **This is now enforced, not requested** — guard G-2
+   (`ops/guards/module_boundary_guard.sh`) fails CI on any gitlink, checked-in
+   copy, `require`/`replace`, or Go import of `PQC-Khepra-MCP`. It was added
+   after a stray submodule gitlink sat on `main` for two weeks pinning a public
+   commit that still contained two live credentials. See
+   `docs/architecture/ARCH-014-production-release-topology.md` §2.
+5. Keep the build offline. The module is vendored (`core/vendor/`) so it builds
+   air-gapped; CI runs `GOPROXY=off GOFLAGS=-mod=vendor`. A new dependency must be
+   vendored in the same PR, and `go mod vendor` must reproduce the committed tree
+   exactly (CI job `supply-chain`).
 
 ## Landed planes
 

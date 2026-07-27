@@ -45,19 +45,18 @@ services:
   # Go binary serving the compliance graph API and DAG viewer.
   # Communicates with asaf-daemon through the Unix socket on the host.
   asaf-api:
-    build:
-      context: .
-      dockerfile: Dockerfile.adinkhepra
-    image: ghcr.io/nouchix/adinkhepra:latest
+    # CONSUMED AS A PINNED IMAGE, NOT BUILT HERE (ARCH-014 §3).
+    # This service previously carried `build: {context: ., dockerfile:
+    # Dockerfile.adinkhepra}` — a Dockerfile that lives in Adinkhepra-ASAF and has
+    # never existed in this repo, so `docker compose build` could not have worked.
+    # Its image is produced by its own repo's release workflow and consumed here.
+    # Build it there; pin the digest here.
+    #
+    # The image's ENTRYPOINT/CMD already default to "adinkhepra serve -port 8443",
+    # so no command override is needed.
+    image: ${ASAF_API_IMAGE:?set ASAF_API_IMAGE to a released digest, e.g. ghcr.io/nouchix/adinkhepra@sha256:...}
     container_name: asaf-api
     restart: unless-stopped
-    # Dockerfile.adinkhepra's ENTRYPOINT/CMD already default to
-    # "adinkhepra serve -port 8443" — no command override needed. This
-    # replaced the root Dockerfile (9 unrelated "tactical suite" binaries +
-    # a Python/PyTorch ML service this process never uses) 2026-06-30 after
-    # it accumulated unrelated build breakage (stale top_secret_intel path,
-    # cmd/apiserver needing -tags saas never passed). See
-    # project_product_a_architecture memory.
     ports:
       - "8443:8443"
     volumes:
@@ -92,20 +91,18 @@ services:
   # ─── COMPLIANCE GRAPH UI ─────────────────────────────────────────────────────
   # Next.js frontend — Compliance Graph, Policy Editor, Staging Gate, Evidence Export
   asaf-ui:
-    build:
-      context: .
-      dockerfile: Dockerfile.dashboard
-      args:
-        - NEXT_PUBLIC_ASAF_API_URL=http://localhost:8443
-        - NEXT_PUBLIC_APP_NAME=AdinKhepra ASAF
-        # Supabase anon key — public by design (RLS-protected), required at
-        # Next.js build time even for the sovereign on-prem image because
-        # /AuthCallback initializes the Supabase client at module scope.
-        # See the "sovereign mode still depends on cloud Supabase" note in
-        # CONNECTIVE_TISSUE_BUILD_SPEC.md / flagged to the user 2026-06-30.
-        - NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL:?set in .env — Supabase project URL}
-        - NEXT_PUBLIC_SUPABASE_ANON_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY:?set in .env — anon key is RLS-protected but still belongs in env, not VCS}
-    image: ghcr.io/nouchix/adinkhepra-ui:latest
+    # CONSUMED AS A PINNED IMAGE, NOT BUILT HERE (ARCH-014 §3). Same reason as
+    # asaf-api: Dockerfile.dashboard lives in Adinkhepra-ASAF.
+    #
+    # CARRIED-OVER CONSTRAINT, NOT RESOLVED BY THIS CHANGE: the Next.js UI needs
+    # NEXT_PUBLIC_SUPABASE_URL / _ANON_KEY at BUILD time, because /AuthCallback
+    # initializes the Supabase client at module scope. Those are build args in the
+    # UI's own repo, which means the sovereign on-prem image is still built against
+    # a cloud Supabase project — the "sovereign mode still depends on cloud
+    # Supabase" gap flagged 2026-06-30. Moving the build out of this file does not
+    # fix that; it relocates it to where the build actually happens. Tracked as an
+    # open sovereignty gap in ARCH-014 §7.
+    image: ${ASAF_UI_IMAGE:?set ASAF_UI_IMAGE to a released digest, e.g. ghcr.io/nouchix/adinkhepra-ui@sha256:...}
     container_name: asaf-ui
     restart: unless-stopped
     ports:
@@ -130,7 +127,9 @@ services:
   # Models are pulled on first start and cached in the volume.
   # Pull command: docker exec asaf-ollama ollama pull llama3.1:8b
   ollama:
-    image: ollama/ollama:latest
+    # Third-party image — pin the digest. An air-gapped site mirrors this into its
+    # own registry, so the variable also serves as the mirror indirection point.
+    image: ${OLLAMA_IMAGE:?set OLLAMA_IMAGE to a pinned digest, e.g. ollama/ollama@sha256:...}
     container_name: asaf-ollama
     restart: unless-stopped
     ports:
@@ -181,7 +180,12 @@ services:
   # Cursor / Antigravity config example (settings.json):
   #   { "mcp": { "servers": { "asaf": { "command": "docker exec -i asaf-mcp khepra-mcp" } } } }
   khepra-mcp:
-    image: ghcr.io/nouchix/pqc-khepra-mcp:latest
+    # THE PUBLIC/PRIVATE SEAM. This is the ONLY place khepra-trust-os depends on
+    # PQC-Khepra-MCP, and the dependency is on a published artifact — never on its
+    # source. There is no submodule and no Go import in either direction; guard
+    # G-2 (ops/guards/module_boundary_guard.sh) fails CI if that ever changes.
+    # See ARCH-014 §3.
+    image: ${KHEPRA_MCP_IMAGE:?set KHEPRA_MCP_IMAGE to a released digest, e.g. ghcr.io/nouchix/pqc-khepra-mcp@sha256:...}
     container_name: asaf-mcp
     restart: unless-stopped
     environment:
@@ -211,6 +215,46 @@ services:
       timeout: 5s
       retries: 3
       start_period: 15s
+
+  # ─── KHEPRA TRUST OS CORE (toolbox) ─────────────────────────────────────────
+  # The ONLY service built from this repository — everything above is a consumed
+  # artifact. Carries the three binaries khepra-trust-os owns: ktos-aiscan,
+  # ktos-mcp, ktos-enforce.
+  #
+  # It is under the "tools" profile because it is a TOOLBOX, not a daemon. None of
+  # these three is a long-running network service, and giving it `restart:
+  # unless-stopped` would fake a running control plane. It does not start with the
+  # stack; it is invoked per command:
+  #
+  #   AI/agent/LLM discovery + governance attestation on a client subnet:
+  #     docker compose run --rm ktos-core ktos-aiscan --targets 10.0.0.5,10.0.0.6
+  #   Emit a starter governance policy to edit:
+  #     docker compose run --rm --no-TTY ktos-core ktos-aiscan --print-policy > ai-policy.json
+  #   Enforcement-plane demonstration (what actually stops a violating agent):
+  #     docker compose run --rm ktos-core ktos-enforce --demo
+  #   KTOS trust-fabric MCP server over stdio — what an IDE attaches to:
+  #     docker compose run --rm --no-TTY ktos-core ktos-mcp
+  #
+  # ktos-mcp serves the 9 EVIDENCE tools (AEO record/verify, ledger replay, trust
+  # score, passports, dual-anchor). It does not overlap khepra-mcp above, which
+  # serves the 72 KERNEL tools. Two planes, not two competing servers — ARCH-014 §4.
+  ktos-core:
+    profiles: ["tools"]
+    build:
+      # Resolves to <repo>/core — the build context is this repo, which is the
+      # whole point: no foreign Dockerfile, no unbuildable stanza.
+      context: ../../../core
+      dockerfile: Dockerfile
+    image: ${KTOS_CORE_IMAGE:-ktos-core:dev}
+    networks:
+      - asaf-network
+    volumes:
+      # Read-only: evidence this container produces is appended via the API, not
+      # written straight into the chain from a one-shot CLI.
+      - asaf-dag:/var/lib/asaf/dag:ro
+    environment:
+      - KHEPRA_DAG_PATH=/var/lib/asaf/dag
+      - KTOS_MCP_UPSTREAM=http://asaf-api:8443
 
 # ─── Volumes ─────────────────────────────────────────────────────────────────
 volumes:
