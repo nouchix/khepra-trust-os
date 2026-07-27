@@ -1,7 +1,7 @@
 # ADR-011 — Quantum-Classical Governed Actuation
 
 **Date:** 2026-07-25
-**Status:** Accepted (seam landed: `core/quantum`, tests green)
+**Status:** Accepted — seam + follow-ups landed (`core/quantum`, `core/pqcsuite`, tests green)
 **Context repos:** `khepra-trust-os/core` · ASAF daemon (`giza-cyber-shield/pkg/asaf/daemon`)
 
 ## Context
@@ -123,10 +123,48 @@ actually compile, rather than importing a package that does not exist.
 - Every quantum-classical actuation is deny-by-default, attested, and offline
   verifiable — consistent with the rest of the Trust OS.
 
-## Follow-ups
+## Follow-ups — landed 2026-07-25
 
-- Backend adapter contract (gRPC/NIM) spec + one reference adapter (a CUDA-Q
-  emulator client) behind the `Validator` interface.
-- Wire `Gate.Evaluate` into the ASAF daemon `Execute()` and extend the execution
-  DAG node with `quantum_context_hash`.
-- SLH-DSA hybrid signature suite once CIRCL is re-vendored.
+All three ADR follow-ups are now real, offline-built, and tested
+(`go build ./... && go test ./...` green across `core`):
+
+1. **Reference backend adapter — done.** `core/quantum/adapter.go`
+   `RemoteValidator`: an out-of-process HTTP+JSON adapter implementing
+   `Validator`. The documented wire contract (POST `QuantumContext` → `Verdict`;
+   non-200/transport/decode error → the Gate denies) is what real NVIDIA Ising
+   (NIM), Pasqal QEK, CUDA-Q, ProjectQ, and EVOVAQ adapters implement (HTTP or a
+   gRPC equivalent). Tested against an `httptest` backend: verified→allow,
+   500→deny, telemetry carried through.
+
+2. **Daemon `Execute()` wiring — done as a reusable seam.** `core/quantum/govern.go`
+   `Gate.GuardChange(ctx, *QuantumContext) (*Attestation, bool)` is the exact,
+   additive call the ASAF daemon makes at Execute() step 7 (after the classical
+   symbol/staging/approval gates). `nil` context → classical no-op (allow, no
+   attestation); present context → evaluate, always return an attestation to
+   commit, allow only when verified. The precise `daemon.go` insertion patch is
+   documented in the function's doc comment. It is a seam in `core` (the plane's
+   ARCH-010 destination) rather than a blind edit to the read-only
+   `giza-cyber-shield` daemon; that daemon adopts it when it migrates to `core`,
+   or imports `core/quantum` in the interim.
+
+3. **Hybrid PQC signature suite — done (real, honest scope).** `core/pqcsuite`
+   is a crypto-agility `Suite` where a signature is valid only if **every**
+   scheme verifies (belt-and-suspenders). The shipping `Default()` is **ML-DSA-65
+   (FIPS 204, PQC) + Ed25519 (classical, transition defense-in-depth)** — both
+   vendored, offline-built, tested (round-trip, tamper, drop-one-scheme-fails,
+   corrupt-one-scheme-fails). **SLH-DSA** (FIPS 205) plugs in as a third `Scheme`
+   with a one-line `NewSuite(MLDSA65{}, Ed25519Scheme{}, SLHDSA{})` once a real
+   implementation is vendored — the abstraction is ready and reports exactly
+   which algorithms a build can actually run (`Algorithms()`), never a phantom
+   one. The daemon can migrate its single-signature attestation to
+   `pqcsuite.Suite` without touching its gate logic.
+
+### Remaining (external, not blind-committed here)
+
+- Physically wiring `GuardChange` into `giza-cyber-shield/pkg/asaf/daemon`
+  Execute() and extending its execution DAG node with `quantum_context_hash` —
+  a paired change in that separate module (its own build), best done when the
+  ASAF plane migrates into `core` per ARCH-010.
+- A production `RemoteValidator` deployment against a live NVIDIA Ising / Pasqal
+  QEK endpoint (needs the GPU/QPU service, out of scope for the sovereign daemon
+  binary).
