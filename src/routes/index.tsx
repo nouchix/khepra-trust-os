@@ -36,38 +36,51 @@ function Home() {
           }}
         />
         <div className="container-x relative py-24 md:py-36">
-          <Eyebrow>Autonomous Governance Platform · SDS v3.0</Eyebrow>
+          <Eyebrow>AI Agent Runtime Security</Eyebrow>
           <h1 className="mt-6 text-5xl md:text-7xl font-semibold tracking-tight leading-[1.02] max-w-4xl">
-            Cryptographic <span className="text-gradient">governance</span>
-            <br />
-            for autonomous systems.
+            The AI agent was not <br />supposed to reach <span className="text-gradient">production</span>.
           </h1>
-          <p className="mt-7 text-lg md:text-xl text-muted-foreground max-w-2xl leading-relaxed">
-            Every autonomous state transition SHALL produce independently verifiable cryptographic
-            evidence. KHEPRA is the Autonomous Governance Fabric — bounded privilege, fail-closed
-            actuation, and an append-only Proof Ledger of signed Agent Evidence Objects.
+          <p className="mt-5 font-display text-2xl md:text-3xl text-foreground/85">
+            It found a way anyway.
           </p>
+          <p className="mt-7 text-lg text-muted-foreground max-w-2xl leading-relaxed">
+            In July 2026, autonomous models chained vulnerabilities, privilege escalation, lateral
+            movement, stolen credentials, and remote code execution to reach sensitive systems during
+            a cyber-capability evaluation — crossing out of a controlled research environment. OpenAI
+            called it an “unprecedented cyber incident.”
+          </p>
+          <p className="mt-6 text-lg text-foreground/90 max-w-2xl leading-relaxed">
+            The question is no longer whether AI agents can act autonomously. They already can. The
+            question is:{" "}
+            <span className="text-primary">what stands between an autonomous agent and the systems it can affect?</span>
+          </p>
+          <p className="mt-6 text-base text-muted-foreground max-w-2xl leading-relaxed">
+            KHEPRA ASAF is the cryptographic enforcement and proof plane for autonomous AI. It places
+            a controlled security boundary between agents and the tools, data, APIs, infrastructure,
+            and environments they are allowed to affect.
+          </p>
+
           <div className="mt-10 flex flex-wrap gap-3">
             <Link
-              to="/protocol"
+              to="/contact"
               className="inline-flex items-center gap-2 rounded-md bg-primary px-5 py-3 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors glow-ring"
             >
-              Read the Protocol <ArrowRight className="h-4 w-4" />
+              Run an AI Agent Risk Assessment <ArrowRight className="h-4 w-4" />
             </Link>
             <Link
-              to="/demo"
+              to="/threat-model"
               className="inline-flex items-center gap-2 rounded-md border border-border bg-card/60 px-5 py-3 text-sm font-medium text-foreground hover:bg-card transition-colors"
             >
-              Explore the Platform
+              See the Enforcement Architecture
             </Link>
           </div>
 
           <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-6 max-w-3xl">
             {[
-              ["GST", "Governed state transitions"],
-              ["AEO", "Agent Evidence Objects"],
-              ["ASAF", "Privileged governance kernel"],
-              ["AGF", "Autonomous Governance Fabric"],
+              ["DISCOVER", "what the agent is"],
+              ["VERIFY", "what it is authorized to do"],
+              ["CONTROL", "what it may execute"],
+              ["PROVE", "what happened — and what was prevented"],
             ].map(([k, v]) => (
               <div key={k} className="border-l border-primary/40 pl-3">
                 <div className="font-mono text-xs text-primary">{k}</div>
