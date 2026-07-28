@@ -98,18 +98,19 @@ function Home() {
             <div className="lg:col-span-5">
               <SectionHeading
                 eyebrow="The problem"
-                title={<>Autonomous systems act. <br />Nothing proves how.</>}
+                title={<>You don't have an AI governance gap. <br />You have an AI <span className="text-gradient">authority</span> gap.</>}
+                subtitle="Policies do not enforce themselves. Logs do not reverse actions. Once an agent can act, the security question changes."
               />
             </div>
             <div className="lg:col-span-7 grid sm:grid-cols-2 gap-4">
               {[
-                { t: "Unbounded autonomy", d: "Agents hold unbounded privilege. There is no cryptographic broker that narrows what an agent may do before it acts." },
-                { t: "Post-hoc trust", d: "Logs and telemetry describe what happened. They cannot prove that the state transition was authorized, verified, and attested." },
-                { t: "Ungoverned actuation", d: "Execution surfaces run open-loop. No fail-closed kernel enforces pre/post state equality on every action." },
-                { t: "No canonical evidence", d: "Every vendor emits a different event shape. There is no canonically-serialized object an auditor can independently verify." },
+                { t: "Inherited authority", d: "Agents inherit credentials, plugins, browsers, and system permissions. A manipulated agent still possesses enough authority to act." },
+                { t: "Detection after the fact", d: "Observability tells you an agent crossed a boundary. By the time the alert fires, the transfer has already completed." },
+                { t: "No runtime verification", d: "Nobody re-checks, at the moment of execution, whether this agent may use this credential against this target for this purpose." },
+                { t: "Unprovable incidents", d: "After an incident, fragmented logs cannot show what the agent was authorized to do, or whether your controls intervened." },
               ].map((it) => (
                 <Card key={it.t}>
-                  <div className="font-mono text-[11px] uppercase tracking-widest text-primary/80">accountability gap</div>
+                  <div className="font-mono text-[11px] uppercase tracking-widest text-primary/80">authority gap</div>
                   <div className="mt-3 font-display text-lg font-semibold">{it.t}</div>
                   <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{it.d}</p>
                 </Card>
