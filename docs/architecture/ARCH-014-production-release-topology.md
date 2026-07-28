@@ -196,85 +196,79 @@ checksum transparency log (`GOSUMDB=sum.golang.org`), which is the actual
 upstream-authenticity control. It is now committed: 4 modules, 8 hashes. The
 `go.sum must be committed` step is **blocking**, so it cannot silently disappear
 again.
+**SC-2 — the committed vendor tree did not match `go mod vendor` output. CLOSED
+2026-07-28.** (Took three attempts and was twice mis-called; the history is kept
+below because the failure mode is instructive.)
 
-**SC-2 — the committed vendor tree does not match `go mod vendor` output. REAL,
-OPEN. (Briefly and wrongly marked "withdrawn" — see the correction below.)**
+### What was wrong
 
-The mechanism is now known exactly, from the first CI run whose diagnostic
-survived long enough to print it:
+Two things, both fixed:
 
-```
---- a/core/go.mod
--go 1.24.0
-+go 1.25.0
-...
-462 files changed, 2 insertions(+), 239870 deletions(-)
-```
+1. **The go directive was too low.** `golang.org/x/sys v0.46.0` declares
+   `go >= 1.25.0`, so `go mod vendor` raises `core/go.mod` from `1.24.0` to
+   `1.25.0`. Holding the module at 1.24 left the tree permanently unable to match
+   upstream.
+2. **The tree was over-vendored by 27 packages.** Verified with
+   `go list -deps`: the build reaches exactly **13 circl packages plus
+   `golang.org/x/sys/cpu`** — 14 in total. The committed tree carried 41,
+   including all of `x/sys/unix`, `x/sys/windows`, `windows/svc/{debug,eventlog,mgr}`,
+   `windows/registry`, `plan9`, `execabs`, and circl's `x25519`, `x448`,
+   `ed25519`, `ed448`, `goldilocks`, `kyber512`, `kyber768` and `dilithium/mode3`.
+   None of it is reachable. The surplus was almost certainly inherited from a
+   source repo where the ASAF daemon *did* use `x/sys/unix` and `windows/svc`.
 
-Two things happen when `go mod vendor` runs:
+### The fix
 
-1. **It rewrites the go directive** from `1.24.0` to `1.25.0`, because
-   `golang.org/x/sys v0.46.0` requires `go >= 1.25.0` and the toolchain raises the
-   main module's directive to satisfy it.
-2. **It prunes 462 files / ~240k lines** of vendored code that nothing reaches.
-   Verified against the source: `core/` imports **nothing** from
-   `golang.org/x/sys` directly, and only two circl packages
-   (`kem/kyber/kyber1024`, `sign/mldsa/mldsa65`). But the committed tree carries
-   `x/sys/unix`, `x/sys/windows`, `windows/svc/{debug,eventlog,mgr}`,
-   `windows/registry`, `plan9`, `execabs`, and circl's `x25519`/`x448` — none of
-   which are reachable. The committed tree is **over-vendored**, most likely
-   inherited from a source repo where the ASAF daemon *did* use `x/sys/unix` and
-   `windows/svc`.
+`go mod vendor` could not be run in the authoring environment (the module proxy
+returns 403 there), but the operation is deterministic, so it was reproduced
+directly: the drop set was computed from `go list -deps` rather than chosen by
+hand, those 27 package directories were deleted, `vendor/modules.txt` was
+regenerated from the reachable set, and the go directive was raised to `1.25.0`.
 
-The pruning is correct behaviour, not damage: a vendor directory is supposed to
-contain exactly what the build imports. Removing ~240k lines of unreachable
-third-party code is a supply-chain *improvement* — smaller SBOM, smaller audit
-surface, less to review for a FIPS/ATO story.
+**Confirmed byte-exact against upstream.** The resulting diff is
+`462 files changed, 2 insertions(+), 239870 deletions(-)` — identical in every
+figure to the diff CI's own `go mod vendor` produced on run `30330971793`. The
+tree shrank from **11 MB / 511 Go files to 1.1 MB / 105 Go files**.
 
-### Correction: why this was briefly marked "withdrawn"
+Verified with Go 1.25.1 offline (`GOFLAGS=-mod=vendor GOPROXY=off`): vendor
+consistency, `build`, `vet`, `gofmt`, the full suite under `-race`, and all three
+static binaries building and running. Go validates `vendor/modules.txt` against
+`go.mod` and the import graph in vendor mode, so a wrong package list or a wrong
+`## explicit; go` annotation fails the build rather than passing silently.
 
-I marked SC-2 withdrawn on the strength of a run that reported success and
-uploaded no drift artifact. **That reasoning was wrong, and the cause was a bug in
-the check itself.** The diagnostic piped `git diff` into `head -200`; under
-`pipefail`, `head` closing the pipe sent SIGPIPE to `git diff`, killing the step
-with exit **141** — *before* the line that writes `/tmp/vendor-drift.diff`. With
-`continue-on-error` masking the failure, the job showed `conclusion: success` and
-produced no artifact. I read "no artifact" as "no drift," twice.
+*Consequences:* `GO_VERSION` (CI) and `GO_IMAGE` (`core/Dockerfile`) move to
+1.25.1, and the vendor-diff step is **blocking**. Dropping ~240k lines of
+unreachable third-party code is also a real supply-chain win — smaller SBOM,
+smaller audit surface, less third-party code to justify in a FIPS/ATO review.
 
-Two durable lessons, both now encoded in the workflow:
+### Why this took three attempts — the instructive part
+
+The gap was called *real*, then *withdrawn*, then *real again*. The withdrawal was
+wrong, and the cause was a bug in the check itself:
+
+- The diagnostic piped `git diff` into `head -200`. Under `pipefail`, `head`
+  closing the pipe sent SIGPIPE to `git diff`, killing the step with exit **141**
+  — *before* the line that writes `/tmp/vendor-drift.diff`. With
+  `continue-on-error` masking the failure, the job reported
+  `conclusion: success` and produced no artifact. "No artifact" was then read as
+  "no drift."
+- The original diagnosis had also been partly right for the wrong reason: it
+  flagged `vendor/modules.txt` recording `## explicit; go 1.24.0` for `x/sys` as
+  suspicious. That annotation *was* wrong — upstream is `1.25.0` — but the
+  inference drawn from it ("generated under a different go.mod") was not the
+  mechanism.
+
+Three rules now encoded in the workflow:
 
 - **Never pipe an evidence-producing command into a truncating pager.** Write the
   artifact first, then read the file. A diagnostic that destroys its own evidence
-  is worse than no diagnostic, because it reports success.
+  is worse than none, because it reports success.
 - **`continue-on-error` steps report `conclusion: success` in the Actions API
-  regardless of what the command did.** Job status alone cannot distinguish
-  "passed" from "failed but tolerated." Only the log or the artifact can.
-
-### Resolution — needs a decision
-
-- **(a) Accept upstream (recommended).** Set `go 1.25.0`, run `go mod vendor`,
-  commit the pruned tree, and raise the toolchain floor in `GO_VERSION` (CI) and
-  `GO_IMAGE` (`core/Dockerfile`) to 1.25.x. This is the upstream-correct answer
-  *and* it deletes ~240k lines of unreachable vendored code.
-- **(b) Hold the floor at 1.24.** Pin `golang.org/x/sys` to its last
-  `go 1.24`-compatible release and re-vendor. Keeps the toolchain where it is,
-  but keeps us on an older dependency for no benefit — `x/sys` is not on the
-  evidence path, and nothing in `core` imports it directly.
-
-**(a) is the right call.** I previously recommended (b); that was based on the
-mistaken belief that the toolchain floor was the only issue. Now that the
-over-vendoring is visible, (a) fixes both at once.
-
-Neither can be executed in the authoring environment — `go mod vendor` needs the
-module proxy, which is blocked there by egress policy — so the step ships
-**report-only** and uploads the complete diff plus a `--stat` summary as the
-`core-supply-chain` artifact. Applying that artifact and deleting one
-`continue-on-error` line closes SC-2.
-
-*Not affected:* the offline build. Vendor mode does not re-check dependency go
-directives and happily builds from an over-vendored tree, which is why
-`core-verify` builds, vets and passes all tests on Go 1.24.7 with `GOPROXY=off`.
-SC-2 is a provenance gap, not a broken build.
+  regardless of what the command did.** Job status cannot distinguish "passed"
+  from "failed but tolerated" — only the log or the artifact can.
+- **Do not flip a check to blocking on the strength of a run that produced no
+  evidence.** Absence of a failure artifact is not proof of success when the
+  failure path is what writes the artifact.
 
 **SV-1 — the sovereign UI is still built against cloud Supabase.** `asaf-ui`
 needs `NEXT_PUBLIC_SUPABASE_URL` / `_ANON_KEY` at *build* time because

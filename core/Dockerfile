@@ -36,7 +36,7 @@
 # done when the release workflow resolves and records the digest it actually
 # built with. An explicit patch tag is the strongest pin available at authoring
 # time; ":alpine" or ":latest" would not be.
-ARG GO_IMAGE=golang:1.24.7-alpine3.21
+ARG GO_IMAGE=golang:1.25.1-alpine
 FROM ${GO_IMAGE} AS build
 
 # Fail the build if the toolchain tries to fetch anything.

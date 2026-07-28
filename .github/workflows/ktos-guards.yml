@@ -34,7 +34,11 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
-  GO_VERSION: "1.24.7"
+  # Raised 1.24.7 -> 1.25.1 on 2026-07-28 to close SC-2. golang.org/x/sys v0.46.0
+  # declares `go >= 1.25.0`, so `go mod vendor` raises core/go.mod's directive to
+  # 1.25.0; holding CI at 1.24.7 would leave the vendor tree permanently unable to
+  # match upstream. See ARCH-014 §7.
+  GO_VERSION: "1.25.1"
 
 jobs:
   # ── G-1: sovereignty boundary ────────────────────────────────────────────────
@@ -236,37 +240,32 @@ jobs:
           GOFLAGS: -mod=mod
         run: go mod verify
 
-      - name: Report the dependency go-directive
-        # `go mod download` reports:
-        #   "module golang.org/x/sys@v0.46.0 requires go >= 1.25.0; switching to go1.25.12"
-        # while core/go.mod declares go 1.24.0. This is INFORMATIONAL, not a defect:
-        # it surfaces only in module mode (this job), because the vendored build path
-        # does not consult dependency go directives — core-verify builds and tests
-        # clean on Go 1.24.7 with GOPROXY=off. It is printed so the toolchain floor
-        # is a visible, deliberate fact rather than a surprise at release time.
-        continue-on-error: true
+      - name: Record the toolchain floor
+        # Printed so the Go floor is a visible, deliberate fact rather than a
+        # release-time surprise. x/sys v0.46.0 requires go >= 1.25.0, which is why
+        # core/go.mod declares 1.25.0 and GO_VERSION / core/Dockerfile's GO_IMAGE
+        # track it. If these ever disagree, the vendor-diff step below fails.
         run: |
           set -uo pipefail
-          echo "committed vendor/modules.txt go directives:"
+          echo "main module:  $(grep '^go ' go.mod)"
+          echo "dependency go directives recorded in vendor/modules.txt:"
           grep -A1 '^# ' vendor/modules.txt
-          echo
-          echo "main module go directive: $(grep '^go ' go.mod)"
 
       - name: Vendor tree must match upstream exactly
-        # REPORT-ONLY — gap SC-2 is REAL and open. See ARCH-014 §7.
+        # BLOCKING — SC-2 is closed (ARCH-014 §7). The committed vendor tree now
+        # reproduces `go mod vendor` output exactly: the 27 unreachable packages were
+        # pruned and go.mod's directive raised to 1.25.0.
         #
-        # I briefly marked SC-2 withdrawn and made this step blocking. That was
-        # wrong, and the thing that fooled me was a bug in THIS STEP: the old
-        # diagnostic piped `git diff` into `head -200`, and under `pipefail` the
-        # SIGPIPE from head killed the step with exit 141 — BEFORE the line that
-        # writes /tmp/vendor-drift.diff. With continue-on-error masking the failure,
-        # the run showed "success" and uploaded no drift artifact, and I read
-        # "no artifact" as "no drift". Twice.
-        #
-        # Never pipe the evidence-producing command into a truncating pager: write
-        # the artifact FIRST, then read the file. That ordering is the fix below,
-        # and it is why the drift is now visible at all.
-        continue-on-error: true
+        # Two earlier bugs in THIS step are why SC-2 took three attempts, and both
+        # fixes are load-bearing:
+        #   1. The diagnostic piped `git diff` into `head -200`. Under `pipefail`
+        #      head's SIGPIPE killed the step with exit 141 BEFORE the line writing
+        #      /tmp/vendor-drift.diff — so with continue-on-error masking it, the run
+        #      reported success and produced no evidence. Never pipe the
+        #      evidence-producing command into a truncating pager: write the artifact
+        #      FIRST, then read the file.
+        #   2. It was flipped to blocking while the drift was still real, on the
+        #      strength of that false success.
         env:
           GOFLAGS: -mod=mod
         run: |
@@ -279,7 +278,8 @@ jobs:
             # Write the full diff to the artifact path FIRST. No pipe, no truncation,
             # nothing that can SIGPIPE before the evidence exists.
             git --no-pager diff -- vendor/ go.mod go.sum > /tmp/vendor-drift.diff
-            echo "::warning::core/vendor/ does not match 'go mod vendor' output (gap SC-2)."
+            echo "::error::core/vendor/ does not match 'go mod vendor' output."
+            echo "::error::Run 'go mod vendor' in core/ and commit the result."
             echo "Full diff uploaded as the core-supply-chain artifact ($(wc -l < /tmp/vendor-drift.diff) lines)."
             git --no-pager diff --stat -- vendor/ go.mod go.sum > /tmp/vendor-drift.stat
             echo "--- summary ---"
