@@ -270,29 +270,98 @@ Three rules now encoded in the workflow:
   evidence.** Absence of a failure artifact is not proof of success when the
   failure path is what writes the artifact.
 
-**SV-1 — the sovereign UI is still built against cloud Supabase.** `asaf-ui`
-needs `NEXT_PUBLIC_SUPABASE_URL` / `_ANON_KEY` at *build* time because
-`/AuthCallback` initializes the Supabase client at module scope. Moving the build
-out of this compose file (§6) relocated that problem to the UI's own repo; it did
-not solve it. An air-gapped site still ships an image built against a cloud
-project. Pre-existing (flagged 2026-06-30), unchanged by this work, and a real
-gap in the sovereignty claim.
+**SV-1 — the sovereign UI is built against cloud Supabase. SCOPED 2026-07-28:
+this repo is clean; the gap is in Adinkhepra-ASAF only.**
+
+Investigated rather than assumed. **`khepra-trust-os` does not have this
+problem:** all three Supabase clients here initialize lazily — `client.ts` behind
+a `Proxy` that calls `createSupabaseClient()` only on first property access, and
+`client.server.ts` / `auth-middleware.ts` inside functions — and the public API
+routes reach Supabase through a dynamic `await import(...)`. Nothing forces
+`VITE_SUPABASE_*` at build time; a missing variable throws at first *use*, not at
+build. So this repo's frontend builds and ships without a cloud dependency baked
+in.
+
+The gap is real but belongs to **`asaf-ui` in Adinkhepra-ASAF**: its Next.js
+`/AuthCallback` initializes the Supabase client at *module scope*, which makes
+`NEXT_PUBLIC_SUPABASE_URL` / `_ANON_KEY` mandatory at build time. Moving the build
+out of the compose file (§6) relocated that problem to the UI's own repo; it did
+not solve it, and an air-gapped site still ships an image built against a cloud
+project.
+
+*Fix shape (in that repo, not this one):* move the client behind a lazy accessor —
+the same `Proxy` pattern `khepra-trust-os/src/integrations/supabase/client.ts`
+already uses — and gate the `/AuthCallback` route on a sovereign-mode flag so an
+air-gapped build has no cloud auth path to initialize. That is a change to
+Adinkhepra-ASAF and cannot be validated from this repo.
+
+*Correction to the earlier wording:* SV-1 was previously written as though it
+applied to the sovereign profile generally. It does not — it is one route in one
+component. Recording it as broader than it is would have justified work that
+isn't needed here.
 
 **RL-1 — no release workflow yet.** §5 describes the procedure; no
 `.github/workflows/release.yml` implements it. Today CI *builds* the core image
 (`image` job) but never pushes it, and digest resolution is manual. Until that
 workflow exists, §5 is a runbook, not a control.
 
-**DM-1 — the hosted demo surfaces' TRL10 conditions are unverified.** §6.1 moves
-demonstrations off local stubs and onto `gateway.souhimbou.ai` and
-`mcp.souhimbou.ai`. The G-1 allowlist already records what those endpoints must
-have — input guard, "no CUI" banner, isolated demo DAG, blocked real-target and
-credential submission, tier-gated authenticated scans — but G-1 only checks that a
-vendor-hosted demo surface is *acknowledged*, not that those controls exist. So
-removing the local simulation improved the shipped binaries and shifted the
-exposure to a hosted endpoint whose guarantees nothing in CI currently tests. That
-is a net improvement (a customer-run binary no longer opens sockets), but it is not
-a closed loop. Verifying those five conditions is the follow-up.
+**DM-1 — the hosted demo surfaces' conditions. PARTIALLY CLOSED 2026-07-28:
+implemented and tested for the MCP surface; web routes and the gateway remain.**
+
+§6.1 moved demonstrations off local stubs and onto `gateway.souhimbou.ai` and
+`mcp.souhimbou.ai`. The G-1 allowlist records what those endpoints must have —
+input guard, "no CUI" banner, isolated demo DAG, blocked real-target submission,
+tier-gated authenticated scans — but G-1 only checks that a surface is
+*acknowledged*, never that the controls exist. They were prose.
+
+**Now implemented (`core/mcp/demoguard.go`), for the surface `server.json` names
+as this server's homepage:**
+
+- **Banner** — `NoCUINotice` rides in the MCP `initialize` response's
+  `instructions` field, so every client sees it before its first tool call. A
+  banner a human must scroll to is not a control; this is delivered in-band.
+- **Demo-mode declaration** — a machine-readable `demoMode` object naming the DAG
+  and accepted classification, which is what makes "the demo DAG is isolated"
+  externally checkable instead of `UNVERIFIABLE`.
+- **Input guard** — refuses credential shapes (PEM keys, AWS/Stripe/GitHub/Slack
+  tokens, JWTs, bearer headers), banner/portion control markings (`CUI//`, leading
+  `CUI`, `CONTROLLED UNCLASSIFIED`, `NOFORN`, `FOUO`, `ITAR`, classification
+  banners), and sensitive field names. **Screened before the trust layer runs**, so
+  refused input is never recorded: an AEO is content-addressed and chained, so a
+  credential written into the ledger cannot be removed afterwards without breaking
+  the chain. Refuse first, record nothing.
+- **Opt-in** — driven by `KHEPRA_DAG_SEED_DEMO`, the same variable the allowlist
+  already records, so the deployment knob and the documented condition cannot
+  drift. Unset means sovereign: no banner, no guard, CUI accepted — correct for a
+  customer inside their own boundary, where controlled data is the point.
+
+**Two stated limits, because overclaiming here is worse than the gap:**
+
+1. **Unmarked CUI is undetectable by any pattern.** Nothing can tell that an
+   ordinary-looking hostname or filename is controlled. The banner is the primary
+   control; the guard is defence in depth against pasted *marked* documents.
+2. **Casual mentions are deliberately allowed.** An earlier version matched
+   `CUI` as a token and refused the product's own catalog text
+   ("FIPS-validated cryptography for CUI at rest") — caught by a test. The guard
+   now targets marking *syntax*, not vocabulary. A guard that blocks the product's
+   own reference data is a bug, not caution.
+
+**Still open:**
+
+- **`gateway.souhimbou.ai`** — the eval-scan surface. Its two extra conditions
+  (real-target block, tier-gated authenticated scans) are checked by
+  `core/democonform` but not yet implemented; that code lives in PQC-Khepra-MCP.
+- **The web demo routes** (`src/routes/api/public/{demo,aeo,fabric}.ts`) — public,
+  unauthenticated, and currently carrying neither banner nor input guard. Not
+  fixed here because this environment cannot install dependencies
+  (`npm` returns 403) and the project has no test framework, so the change could
+  not be compiled or tested. **Shipping an untested regex guard into a public
+  request path would be the same mistake as the SIGPIPE bug in §7 — a control that
+  looks present and is not.** The Go implementation above is the reference; the
+  TypeScript port should be applied and built locally.
+- **CI wiring** — the `demo-conformance` job exists and is opt-in via the
+  `KTOS_DEMO_MCP_URL` / `KTOS_DEMO_GATEWAY_URL` repository variables. Until those
+  are set, the hosted surfaces are still unassessed in CI.
 
 **DP-1 — no systemd unit for `asaf-daemon`.** Unchanged from the ported profile:
 the privileged daemon runs on bare metal, not in compose, and no unit file exists
