@@ -6,8 +6,8 @@
 //
 // Honest state (TRL10 — enforced, not asserted):
 //   - Today the default suite is ML-DSA-65 (FIPS 204, post-quantum, via CIRCL)
-//     + Ed25519 (classical, defense-in-depth during the PQC transition). Both
-//     are vendored and build offline.
+//     paired with Ed25519 (classical, defense-in-depth during the PQC
+//     transition). Both are vendored and build offline.
 //   - SLH-DSA (FIPS 205, stateless hash-based) is the intended third scheme for
 //     a fully-PQC hybrid. It plugs in as `NewSuite(MLDSA65{}, Ed25519{},
 //     SLHDSA{})` once a real implementation is vendored — nothing here fakes it.
