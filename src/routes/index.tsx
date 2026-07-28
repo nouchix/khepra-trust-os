@@ -120,6 +120,119 @@ function Home() {
         </div>
       </section>
 
+      {/* SEE CONTROL PROVE */}
+      <section className="border-b border-border/60">
+        <div className="container-x py-20 md:py-28">
+          <SectionHeading
+            eyebrow="The product promise"
+            title={<>See. Control. Prove.</>}
+            subtitle="See what AI agents are doing. Control what they are allowed to do. Prove what happened. Three security functions enterprises need — in one architecture."
+          />
+          <div className="mt-12 grid md:grid-cols-3 gap-4">
+            {[
+              { Icon: Eye, k: "01 · Visibility", t: "See", d: "Discover agentic systems, identify their tools and capabilities, establish behavioral baselines, and detect unexpected activity." },
+              { Icon: Lock, k: "02 · Control", t: "Control", d: "Evaluate every action before execution and rule dynamically: ALLOW → CONSTRAIN → REQUIRE APPROVAL → DENY → QUARANTINE → LOCK." },
+              { Icon: ShieldCheck, k: "03 · Proof", t: "Prove", d: "Cryptographically verifiable evidence of who acted, what authority was evaluated, what policy applied, what occurred — and what was prevented." },
+            ].map(({ Icon, k, t, d }) => (
+              <Card key={t} className="hover:border-primary/40 transition-colors">
+                <div className="flex items-center justify-between">
+                  <div className="font-mono text-[11px] uppercase tracking-widest text-primary/80">{k}</div>
+                  <Icon className="h-4.5 w-4.5 text-primary" />
+                </div>
+                <div className="mt-5 font-display text-3xl font-semibold">{t}</div>
+                <p className="mt-3 text-sm text-muted-foreground leading-relaxed">{d}</p>
+              </Card>
+            ))}
+          </div>
+          <div className="mt-8 surface-card p-6 flex flex-wrap items-center gap-x-3 gap-y-2 font-mono text-xs">
+            {["Observe", "Identify", "Evaluate", "Authorize", "Enforce", "Attest", "Replay"].map((s, i, arr) => (
+              <span key={s} className="inline-flex items-center gap-3">
+                <span className="text-primary">{s}</span>
+                {i < arr.length - 1 && <span className="text-muted-foreground">→</span>}
+              </span>
+            ))}
+            <span className="ml-auto text-muted-foreground">not: Observe → Alert → Investigate</span>
+          </div>
+        </div>
+      </section>
+
+      {/* THREAT MODEL TEASER */}
+      <section className="border-b border-border/60">
+        <div className="container-x py-20 md:py-28 grid lg:grid-cols-12 gap-12">
+          <div className="lg:col-span-5">
+            <SectionHeading
+              eyebrow="Threat-model reconstruction"
+              title={<>Could an enforcement boundary have interrupted the attack path?</>}
+              subtitle="Not a claim of guaranteed prevention — a stage-by-stage reconstruction of where ASAF introduces a decision point once autonomous behavior becomes consequential."
+            />
+            <Link
+              to="/threat-model"
+              className="mt-8 inline-flex items-center gap-2 rounded-md bg-primary px-5 py-3 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors glow-ring"
+            >
+              Read the reconstruction <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+          <div className="lg:col-span-7 space-y-3">
+            {[
+              ["Stage 1", "Agent requests a new capability", "CONSTRAIN", "Internet access is outside the agent's authorized scope."],
+              ["Stage 2", "Agent attempts privilege escalation", "REQUIRE APPROVAL", "Privilege expansion exceeds the authorized operating envelope."],
+              ["Stage 3", "Agent attempts lateral movement", "DENY", "Cross-boundary movement is not authorized. Blocked before execution."],
+              ["Stage 4", "Agent uses stolen credentials", "QUARANTINE", "Credential use is inconsistent with authority and behavioral profile."],
+              ["Stage 5", "The incident becomes evidence", "REPLAY", "The decision chain is signed, linked, and independently replayable."],
+            ].map(([s, behavior, ruling, why]) => (
+              <Card key={s}>
+                <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-6">
+                  <div className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground md:w-20 shrink-0">{s}</div>
+                  <div className="md:flex-1 text-sm text-foreground/90">{behavior}</div>
+                  <div className="font-mono text-[11px] px-2 py-1 rounded border border-primary/40 text-primary shrink-0">{ruling}</div>
+                </div>
+                <p className="mt-3 text-sm text-muted-foreground leading-relaxed">{why}</p>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CATEGORY COMPARISON */}
+      <section className="border-b border-border/60">
+        <div className="container-x py-20 md:py-28">
+          <SectionHeading
+            eyebrow="The category"
+            title={<>Policies do not enforce themselves. <br />Logs do not reverse actions.</>}
+          />
+          <div className="mt-10 surface-card p-0 overflow-x-auto">
+            <table className="w-full text-left text-sm min-w-[720px]">
+              <thead>
+                <tr className="border-b border-border/60 text-muted-foreground font-mono text-[11px] uppercase tracking-widest">
+                  <th className="px-5 py-4 font-normal">Security approach</th>
+                  <th className="px-5 py-4 font-normal">What it answers</th>
+                  <th className="px-5 py-4 font-normal">What remains exposed</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  ["AI governance", "What should be allowed?", "Policy may not control execution"],
+                  ["AI observability", "What did the agent do?", "Detection may occur after action"],
+                  ["AI guardrails", "What should the model say?", "Tool use and downstream actions remain exposed"],
+                  ["SIEM and logging", "What happened?", "The action may already be complete"],
+                ].map(([a, b, c]) => (
+                  <tr key={a} className="border-b border-border/40">
+                    <td className="px-5 py-4 text-foreground/90">{a}</td>
+                    <td className="px-5 py-4 text-muted-foreground">{b}</td>
+                    <td className="px-5 py-4 text-muted-foreground">{c}</td>
+                  </tr>
+                ))}
+                <tr className="bg-primary/5">
+                  <td className="px-5 py-4 font-semibold text-primary">KHEPRA ASAF</td>
+                  <td className="px-5 py-4 text-foreground/90">What is allowed to happen now?</td>
+                  <td className="px-5 py-4 text-foreground/90">Controls, attests, and preserves proof at the agent-action boundary</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
       {/* PROTOCOL PILLARS */}
       <section className="border-b border-border/60">
         <div className="container-x py-20 md:py-28">
