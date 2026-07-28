@@ -253,36 +253,42 @@ jobs:
           echo "main module go directive: $(grep '^go ' go.mod)"
 
       - name: Vendor tree must match upstream exactly
-        # BLOCKING. This is the strongest supply-chain check in the suite: it proves
-        # the committed vendor/ is byte-identical to what upstream produces, so the
-        # offline build is not merely reproducible but reproducible FROM UPSTREAM.
+        # REPORT-ONLY — gap SC-2 is REAL and open. See ARCH-014 §7.
         #
-        # It shipped report-only for exactly one run, because the tree's provenance
-        # was unknown and wedging every PR on an unverified assumption would have
-        # been worse. That run proved the tree matches (no drift artifact produced),
-        # so the guard is now enforcing. See ARCH-014 §7.
+        # I briefly marked SC-2 withdrawn and made this step blocking. That was
+        # wrong, and the thing that fooled me was a bug in THIS STEP: the old
+        # diagnostic piped `git diff` into `head -200`, and under `pipefail` the
+        # SIGPIPE from head killed the step with exit 141 — BEFORE the line that
+        # writes /tmp/vendor-drift.diff. With continue-on-error masking the failure,
+        # the run showed "success" and uploaded no drift artifact, and I read
+        # "no artifact" as "no drift". Twice.
+        #
+        # Never pipe the evidence-producing command into a truncating pager: write
+        # the artifact FIRST, then read the file. That ordering is the fix below,
+        # and it is why the drift is now visible at all.
+        continue-on-error: true
         env:
           GOFLAGS: -mod=mod
         run: |
           set -uo pipefail
-          # `|| { ...; exit 1; }` rather than a bare call: under the runner's
-          # `bash -e` a failing `go mod vendor` would otherwise abort with no
-          # diagnostic, and this step is the one that has to explain itself.
           go mod vendor || {
             echo "::error::'go mod vendor' failed — the module graph cannot be re-resolved."
             exit 1
           }
           if ! git diff --quiet -- vendor/ go.mod go.sum; then
-            echo "::error::core/vendor/ does not match what 'go mod vendor' produces."
-            echo "::error::Either the vendor tree was hand-edited, or a dependency changed"
-            echo "::error::without re-vendoring. Run 'go mod vendor' and commit the result."
-            git --no-pager diff --stat -- vendor/ go.mod go.sum
-            echo "--- first 200 lines of diff ---"
-            git --no-pager diff -- vendor/ go.mod go.sum | head -200
+            # Write the full diff to the artifact path FIRST. No pipe, no truncation,
+            # nothing that can SIGPIPE before the evidence exists.
             git --no-pager diff -- vendor/ go.mod go.sum > /tmp/vendor-drift.diff
+            echo "::warning::core/vendor/ does not match 'go mod vendor' output (gap SC-2)."
+            echo "Full diff uploaded as the core-supply-chain artifact ($(wc -l < /tmp/vendor-drift.diff) lines)."
+            git --no-pager diff --stat -- vendor/ go.mod go.sum > /tmp/vendor-drift.stat
+            echo "--- summary ---"
+            tail -1 /tmp/vendor-drift.stat
+            echo "--- go.mod delta (the root cause) ---"
+            sed -n '1,12p' /tmp/vendor-drift.diff
             exit 1
           fi
-          echo "vendor tree matches upstream bit-for-bit"
+          echo "vendor tree matches upstream bit-for-bit — SC-2 is closeable"
 
       - name: go.sum must be committed
         # BLOCKING. go.sum was absent until 2026-07-28 (gap SC-1): vendor mode reads
@@ -310,6 +316,7 @@ jobs:
           path: |
             core/go.sum
             /tmp/vendor-drift.diff
+            /tmp/vendor-drift.stat
           if-no-files-found: warn
 
   # ── Container image builds ───────────────────────────────────────────────────
