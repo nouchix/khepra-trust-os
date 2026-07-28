@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Shield, Fingerprint, GitBranch, Camera, Cpu, KeyRound, ScrollText, Activity, ExternalLink } from "lucide-react";
+import { ArrowRight, Shield, Fingerprint, GitBranch, Camera, Cpu, KeyRound, ScrollText, Activity, ExternalLink, Eye, Lock, ShieldCheck } from "lucide-react";
 import heroImg from "@/assets/hero-scarab.jpg";
 import { Eyebrow, SectionHeading, Card } from "@/components/section";
 import { TrustGraph } from "@/components/trust-graph";
@@ -8,10 +8,10 @@ import { EgyptianDivider } from "@/components/egyptian-divider";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "KHEPRA — Cryptographic Governance for Autonomous Systems" },
-      { name: "description", content: "KHEPRA is the Autonomous Governance Platform. Every autonomous state transition produces an independently verifiable cryptographic evidence object — no trust, only proof." },
-      { property: "og:title", content: "KHEPRA — Cryptographic Governance for Autonomous Systems" },
-      { property: "og:description", content: "Autonomous Governance Fabric, ASAF Runtime, and Agent Evidence Objects: bounded privilege and provable state transitions for AI agents and enterprise systems." },
+      { title: "KHEPRA ASAF — AI Agent Runtime Security & Enforcement" },
+      { name: "description", content: "KHEPRA ASAF places a cryptographic enforcement and proof boundary between autonomous AI agents and the systems they can affect. See. Control. Prove." },
+      { property: "og:title", content: "KHEPRA ASAF — AI Agent Runtime Security & Enforcement" },
+      { property: "og:description", content: "Autonomous capability should not automatically become autonomous authority. Control agent actions before execution, contain the agent, and prove the decision." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
