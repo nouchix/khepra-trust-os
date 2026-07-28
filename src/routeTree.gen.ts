@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TrustNetworkRouteImport } from './routes/trust-network'
+import { Route as ThreatModelRouteImport } from './routes/threat-model'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as RoadmapRouteImport } from './routes/roadmap'
 import { Route as ProtocolRouteImport } from './routes/protocol'
@@ -42,6 +43,11 @@ import { Route as AuthenticatedConsoleAgentsRouteImport } from './routes/_authen
 const TrustNetworkRoute = TrustNetworkRouteImport.update({
   id: '/trust-network',
   path: '/trust-network',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ThreatModelRoute = ThreatModelRouteImport.update({
+  id: '/threat-model',
+  path: '/threat-model',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
@@ -206,6 +212,7 @@ export interface FileRoutesByFullPath {
   '/protocol': typeof ProtocolRoute
   '/roadmap': typeof RoadmapRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/threat-model': typeof ThreatModelRoute
   '/trust-network': typeof TrustNetworkRoute
   '/console': typeof AuthenticatedConsoleRouteRouteWithChildren
   '/products/adinkhepra': typeof ProductsAdinkhepraRoute
@@ -236,6 +243,7 @@ export interface FileRoutesByTo {
   '/protocol': typeof ProtocolRoute
   '/roadmap': typeof RoadmapRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/threat-model': typeof ThreatModelRoute
   '/trust-network': typeof TrustNetworkRoute
   '/console': typeof AuthenticatedConsoleRouteRouteWithChildren
   '/products/adinkhepra': typeof ProductsAdinkhepraRoute
@@ -268,6 +276,7 @@ export interface FileRoutesById {
   '/protocol': typeof ProtocolRoute
   '/roadmap': typeof RoadmapRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/threat-model': typeof ThreatModelRoute
   '/trust-network': typeof TrustNetworkRoute
   '/_authenticated/console': typeof AuthenticatedConsoleRouteRouteWithChildren
   '/products/adinkhepra': typeof ProductsAdinkhepraRoute
@@ -300,6 +309,7 @@ export interface FileRouteTypes {
     | '/protocol'
     | '/roadmap'
     | '/sitemap.xml'
+    | '/threat-model'
     | '/trust-network'
     | '/console'
     | '/products/adinkhepra'
@@ -330,6 +340,7 @@ export interface FileRouteTypes {
     | '/protocol'
     | '/roadmap'
     | '/sitemap.xml'
+    | '/threat-model'
     | '/trust-network'
     | '/console'
     | '/products/adinkhepra'
@@ -361,6 +372,7 @@ export interface FileRouteTypes {
     | '/protocol'
     | '/roadmap'
     | '/sitemap.xml'
+    | '/threat-model'
     | '/trust-network'
     | '/_authenticated/console'
     | '/products/adinkhepra'
@@ -393,6 +405,7 @@ export interface RootRouteChildren {
   ProtocolRoute: typeof ProtocolRoute
   RoadmapRoute: typeof RoadmapRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  ThreatModelRoute: typeof ThreatModelRoute
   TrustNetworkRoute: typeof TrustNetworkRoute
   ProductsAdinkhepraRoute: typeof ProductsAdinkhepraRoute
   ProductsSouhimbouRoute: typeof ProductsSouhimbouRoute
@@ -408,6 +421,13 @@ declare module '@tanstack/react-router' {
       path: '/trust-network'
       fullPath: '/trust-network'
       preLoaderRoute: typeof TrustNetworkRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/threat-model': {
+      id: '/threat-model'
+      path: '/threat-model'
+      fullPath: '/threat-model'
+      preLoaderRoute: typeof ThreatModelRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sitemap.xml': {
@@ -662,6 +682,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProtocolRoute: ProtocolRoute,
   RoadmapRoute: RoadmapRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  ThreatModelRoute: ThreatModelRoute,
   TrustNetworkRoute: TrustNetworkRoute,
   ProductsAdinkhepraRoute: ProductsAdinkhepraRoute,
   ProductsSouhimbouRoute: ProductsSouhimbouRoute,
