@@ -449,6 +449,48 @@ function Home() {
         </div>
       </section>
 
+      {/* REVERSE PSYCHOLOGY + EXECUTIVE PAIN */}
+      <section className="border-b border-border/60">
+        <div className="container-x py-20 md:py-28 grid lg:grid-cols-12 gap-12">
+          <div className="lg:col-span-6">
+            <SectionHeading
+              eyebrow="Honest scoping"
+              title={<>If your AI agents only draft emails, you may not need KHEPRA.</>}
+              subtitle="If your agents cannot access sensitive data, call privileged APIs, modify infrastructure, execute tools, reach customer environments, or trigger consequential workflows — traditional governance and logging may be sufficient."
+            />
+            <div className="mt-8 space-y-3">
+              {[
+                "Who verifies its authority at runtime?",
+                "Who constrains it when its behavior changes?",
+                "Who stops an unauthorized action before it becomes an incident?",
+                "After an incident, can you prove what the agent was authorized to do?",
+              ].map((q) => (
+                <div key={q} className="flex gap-3 text-sm text-foreground/90">
+                  <span className="font-mono text-primary">?</span>
+                  {q}
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="lg:col-span-6">
+            <SectionHeading
+              eyebrow="Executive exposure"
+              title={<>Your AI program is moving faster than your control architecture.</>}
+              subtitle="Leaders are approving systems that access proprietary data, interact with customers, invoke APIs, modify cloud resources, and execute operational workflows — while relying on policy documents, application-level guardrails, fragmented logs, and manual reconstruction."
+            />
+            <Card className="mt-8 border-primary/30">
+              <p className="text-base text-foreground/90 leading-relaxed">
+                If an autonomous agent takes an unauthorized action tomorrow, can you show what it was
+                allowed to do, what it actually did, and whether your controls intervened?
+              </p>
+              <p className="mt-4 text-sm text-muted-foreground">
+                KHEPRA ASAF is designed to make that answer defensible.
+              </p>
+            </Card>
+          </div>
+        </div>
+      </section>
+
       {/* CTA */}
       <section>
         <div className="container-x py-24">
@@ -459,17 +501,22 @@ function Home() {
             />
             <div className="relative grid lg:grid-cols-12 gap-8 items-center">
               <div className="lg:col-span-8">
-                <Eyebrow>Design partners · Q3 cohort open</Eyebrow>
+                <Eyebrow>AI Agent Authority Assessment</Eyebrow>
                 <h3 className="mt-4 text-3xl md:text-4xl font-semibold tracking-tight max-w-2xl">
-                  Bring cryptographic trust to your autonomous stack.
+                  Before your AI agents receive more authority, give your enterprise a way to control it.
                 </h3>
                 <p className="mt-4 text-muted-foreground max-w-xl">
-                  Join the KHEPRA alpha for early access to AdinKhepra, SouHimBou AI, and the trust protocol SDKs.
+                  We help you identify where autonomous agents operate, what tools and data they can
+                  reach, where authority is inherited or excessive, where prompt injection becomes tool
+                  execution, where policy lacks runtime enforcement, and where forensic replay is incomplete.
                 </p>
               </div>
-              <div className="lg:col-span-4 flex lg:justify-end">
-                <Link to="/developers" className="inline-flex items-center gap-2 rounded-md bg-primary px-6 py-3.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors glow-ring">
-                  Request Access <ArrowRight className="h-4 w-4" />
+              <div className="lg:col-span-4 flex lg:justify-end flex-wrap gap-3">
+                <Link to="/contact" className="inline-flex items-center gap-2 rounded-md bg-primary px-6 py-3.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors glow-ring">
+                  Assess Your Agent Attack Surface <ArrowRight className="h-4 w-4" />
+                </Link>
+                <Link to="/contact" className="inline-flex items-center gap-2 rounded-md border border-border bg-card/60 px-6 py-3.5 text-sm font-medium text-foreground hover:bg-card transition-colors">
+                  Schedule an Architecture Briefing
                 </Link>
               </div>
             </div>
