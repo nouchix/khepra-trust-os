@@ -216,12 +216,3 @@ function ThreatModelPage() {
     </>
   );
 }
-import { createFileRoute } from '@tanstack/react-router'
-
-export const Route = createFileRoute('/threat-model')({
-  component: RouteComponent,
-})
-
-function RouteComponent() {
-  return <div>Hello "/threat-model"!</div>
-}
