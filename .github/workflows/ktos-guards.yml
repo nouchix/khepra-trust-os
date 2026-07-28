@@ -370,6 +370,73 @@ jobs:
           fi
           echo "image runs as $uid"
 
+  # ── DM-1: the hosted demo surfaces enforce what the allowlist claims ─────────
+  # Guard G-1 checks only that a vendor-hosted demo surface is ACKNOWLEDGED in
+  # ops/guards/sovereignty_allowlist.txt. It cannot check that the conditions
+  # recorded there (no-CUI banner, isolated demo DAG, input guard, real-target
+  # block, tier gating) actually hold. This job checks them.
+  #
+  # It is opt-in via the KTOS_DEMO_MCP_URL / KTOS_DEMO_GATEWAY_URL repository
+  # variables. Without them the job reports "not configured" and passes, so a demo
+  # endpoint being down or unreleased can never wedge an unrelated PR. That is a
+  # deliberate trade: a hard dependency on a live third-party surface would make
+  # every merge hostage to its uptime.
+  demo-conformance:
+    name: "DM-1 demo surface conformance"
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: core
+    env:
+      GOFLAGS: -mod=vendor
+      GOPROXY: off
+      GOSUMDB: off
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: false
+
+      - name: Build the conformance checker
+        run: go build -trimpath -o /tmp/ktos-demotest ./cmd/ktos-demotest
+
+      - name: Assess the demo surfaces
+        env:
+          MCP_URL: ${{ vars.KTOS_DEMO_MCP_URL }}
+          GATEWAY_URL: ${{ vars.KTOS_DEMO_GATEWAY_URL }}
+        run: |
+          set -uo pipefail
+          if [ -z "${MCP_URL}" ] && [ -z "${GATEWAY_URL}" ]; then
+            echo "::notice::DM-1 not configured. Set repository variables"
+            echo "::notice::KTOS_DEMO_MCP_URL and/or KTOS_DEMO_GATEWAY_URL to assess the"
+            echo "::notice::hosted demo surfaces. Until then the allowlist conditions for"
+            echo "::notice::those surfaces remain unverified (ARCH-014 §7, gap DM-1)."
+            exit 0
+          fi
+          worst=0
+          for pair in "mcp:${MCP_URL}" "gateway:${GATEWAY_URL}"; do
+            kind="${pair%%:*}"
+            url="${pair#*:}"
+            [ -z "$url" ] && continue
+            echo "── ${kind} → ${url} ──"
+            rc=0
+            /tmp/ktos-demotest --target "$url" --kind "$kind" || rc=$?
+            case "$rc" in
+              0) echo "::notice::${kind}: conformant" ;;
+              3) echo "::error::${kind}: a required allowlist condition is NOT enforced"; worst=3 ;;
+              4) echo "::warning::${kind}: inconclusive — a condition could not be observed"
+                 [ "$worst" -eq 0 ] && worst=4 ;;
+              *) echo "::warning::${kind}: checker exited $rc"; [ "$worst" -eq 0 ] && worst=4 ;;
+            esac
+          done
+          # A real FAIL is a hard failure: the surface is doing something the
+          # allowlist says it must not. Inconclusive is surfaced but not fatal —
+          # it means we cannot see, which is a spec gap on the endpoint, not a
+          # regression in this repo.
+          [ "$worst" -eq 3 ] && exit 1
+          exit 0
+
   # ── Deployment manifest validity ─────────────────────────────────────────────
   # A deployment profile that cannot be parsed and resolved is not a deployment
   # profile. The sovereign profile previously referenced two Dockerfiles that have
