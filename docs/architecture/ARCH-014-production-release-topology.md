@@ -173,64 +173,68 @@ without them.
 
 ## 7. Open gaps (stated, not hidden)
 
-**SC-1 — `core/go.sum` does not exist.** The module vendors its dependencies
-(`core/vendor/`), which is what makes offline/air-gapped builds work — verified:
-`GOPROXY=off go build ./...` succeeds. But vendor mode consults
-`vendor/modules.txt`, **not** `go.sum`, so the vendored bytes currently have no
-local cryptographic record of what they should hash to. Nothing caught this
-because nothing ran `go mod verify`.
-*Closing control (this change):* the `supply-chain` CI job re-resolves from the
-module proxy, runs `go mod verify`, re-runs `go mod vendor`, and fails if the
-committed tree differs — proving `vendor/` matches upstream bit-for-bit. It
-uploads the generated `go.sum` as an artifact and warns that it is uncommitted.
-*Remaining step:* commit that `go.sum` and flip the warning to an error. It could
-not be generated in the authoring environment (the module proxy is blocked there
-by egress policy), which is precisely why it is a CI job.
+**CI-1 — `cancel-in-progress` was cancelling `main` verification. FIXED
+2026-07-28.** The workflow shipped with `cancel-in-progress: true` unconditionally.
+Within a day it cost exactly what this workflow exists to provide: PR #18 merged at
+04:24:41, a dependabot PR merged 16 seconds later, and the newer push **cancelled
+the #18 merge run**. A commit landed on `main` with its verification killed
+mid-flight — a silent hole in the evidence chain the TRL10 claim rests on, since a
+guard that is cancelled cannot fail loudly. Now
+`cancel-in-progress: ${{ github.event_name == 'pull_request' }}`: superseding is
+correct on a PR (the newer commit replaces the old one, and nothing is claimed
+about the old one), but on `main` each commit is a distinct artifact whose
+green-ness is asserted independently.
 
-**SC-2 — the committed vendor tree does not match upstream, and the go directive
-is inconsistent.** Found by the `supply-chain` job on its first run, which is the
-job doing its job:
+**SC-1 — `core/go.sum` did not exist. CLOSED 2026-07-28.** The module vendors its
+dependencies (`core/vendor/`), which is what makes offline/air-gapped builds work.
+But vendor mode consults `vendor/modules.txt`, **not** `go.sum`, so the vendored
+bytes had no local cryptographic record of what they should hash to, and nothing
+noticed because nothing ran `go mod verify`.
+
+The `supply-chain` job generated it on its first successful run — against the Go
+checksum transparency log (`GOSUMDB=sum.golang.org`), which is the actual
+upstream-authenticity control. It is now committed: 4 modules, 8 hashes. The
+`go.sum must be committed` step is **blocking**, so it cannot silently disappear
+again.
+
+**SC-2 — WITHDRAWN. The claim was wrong; CI disproved it.**
+
+The original claim was that the committed vendor tree did not match upstream,
+inferred from this toolchain message plus the observation that
+`vendor/modules.txt` records `## explicit; go 1.24.0` for both dependencies — the
+same value as the main module:
 
 ```
 go: module golang.org/x/sys@v0.46.0 requires go >= 1.25.0; switching to go1.25.12
 ```
 
-`core/go.mod` declares `go 1.24.0`, and the committed `vendor/modules.txt` records
-`## explicit; go 1.24.0` for **both** dependencies — the same value as the main
-module. Upstream `x/sys v0.46.0` requires `>= 1.25.0`, and `circl v1.6.4` declares
-its own (different) directive. Two identical directives matching the parent is the
-signature of a `modules.txt` produced under a different `go.mod`, not by a clean
-`go mod vendor`.
+I read "two identical directives matching the parent" as the signature of a
+`modules.txt` generated under a different `go.mod`. **That inference was
+incorrect.** On the first run where the job actually reached the check, `go mod
+vendor` reproduced the committed tree with **no diff at all** — no drift artifact
+was produced, and only `go.sum` was uploaded. The committed `vendor/` *is* what
+upstream produces, byte for byte.
 
-This does **not** affect the offline build — vendor mode does not re-check
-dependency go directives, which is exactly why nothing caught it, and why
-`GOPROXY=off go build ./...` and all 91 tests pass. But it means the vendored
-bytes' metadata is not what upstream produces, so "our vendor tree is upstream"
-is currently an unverified claim.
+What remains true is narrower and is not a defect: `x/sys v0.46.0` does declare
+`go >= 1.25.0`, so **module-mode** operations auto-switch the toolchain. The
+vendored build path never consults dependency go directives, which is why
+`core-verify` builds, vets and tests clean on Go 1.24.7 with `GOPROXY=off`. The
+toolchain floor is now simply printed by an informational step so it is a visible
+fact rather than a release-time surprise. No `go.mod` change and no `x/sys`
+downgrade is needed; both options previously proposed here are moot.
 
-*Resolution requires a decision, not just a command:*
-- **(a)** move `core/go.mod` to `go 1.25.x` and raise the toolchain floor
-  everywhere (CI, `core/Dockerfile`, developer machines — the authoring
-  environment runs 1.24.7, so this cannot be validated locally today); or
-- **(b)** pin `golang.org/x/sys` to the last release compatible with `go 1.24`
-  and re-vendor.
+*Consequence:* the vendor-diff step is now **blocking**. It shipped report-only
+for exactly one run — the right call at the time, because the tree's provenance
+was genuinely unknown and wedging every PR on an unverified assumption would have
+been worse — and that run supplied the evidence to turn it on. Every check in the
+suite now gates merges; none reports-only except the informational go-directive
+print.
 
-(b) is the lower-risk choice for the Groff pilot: `x/sys` is used for the
-platform syscall surface, not for anything on the evidence path, and holding the
-toolchain floor at 1.24 keeps the sovereign build reproducible on the Go version
-already validated. Neither option can be executed in the authoring environment
-(proxy blocked), so both the `go mod verify` recording step and the vendor-diff
-step ship **report-only** (`continue-on-error`) with the regenerated tree uploaded
-as a CI artifact.
-
-**Stated plainly: shipping a report-only check is a weaker control than a blocking
-one.** It is deliberate and bounded — turning the diff blocking in the same change
-that introduces it would wedge every PR on a pre-existing condition. The
-blocking checks (offline build, vet, gofmt, 91 tests under `-race`, static
-linkage, binary smoke tests, G-1, G-2, image build, compose fail-closed) all gate
-merges today. SC-2 is the one check that reports instead of blocks, and closing it
-is a single follow-up PR: apply the uploaded artifacts, delete two
-`continue-on-error` lines.
+*Method note, since this is the second inference in this document that CI
+corrected:* the `continue-on-error` steps report `conclusion: success` in the
+Actions API regardless of what the command did. Reading job status alone would
+have left SC-2 looking unresolved. The uploaded-artifact manifest ("there will be
+1 file uploaded") is what actually settled it.
 
 **SV-1 — the sovereign UI is still built against cloud Supabase.** `asaf-ui`
 needs `NEXT_PUBLIC_SUPABASE_URL` / `_ANON_KEY` at *build* time because

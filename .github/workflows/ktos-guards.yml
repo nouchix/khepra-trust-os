@@ -18,7 +18,20 @@ permissions:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  # Cancel superseded runs on PULL REQUESTS only. On main, every commit's
+  # verification must be allowed to finish.
+  #
+  # This was `true` unconditionally for one day and immediately cost us the thing
+  # this workflow exists for: PR #18 merged at 04:24:41, a dependabot PR merged 16
+  # seconds later, and the newer push CANCELLED the #18 merge run. A commit landed
+  # on main with its verification killed mid-flight — a silent gap in exactly the
+  # evidence chain the repo's TRL10 claim rests on ("a CI guard that fails loudly"
+  # cannot fail loudly if it is cancelled).
+  #
+  # On a PR, cancelling a superseded run is correct: the newer commit supersedes it
+  # and nothing is claimed about the old one. On main there is no superseding —
+  # each commit is a distinct thing whose green-ness is asserted independently.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
   GO_VERSION: "1.24.7"
@@ -223,17 +236,14 @@ jobs:
           GOFLAGS: -mod=mod
         run: go mod verify
 
-      - name: Report the go-directive discrepancy
-        # A real finding from this job's first run: the toolchain reports
-        #   "module golang.org/x/sys@v0.46.0 requires go >= 1.25.0"
-        # while the COMMITTED vendor/modules.txt records `## explicit; go 1.24.0`
-        # for it — and records the identical 1.24.0 for circl, which is the
-        # signature of a modules.txt that was generated under a different go.mod
-        # rather than by a clean `go mod vendor`.
-        #
-        # Informational: it does not affect the offline build (vendor mode does not
-        # re-check dependency go directives), but it means the committed vendor
-        # metadata is not what upstream produces. Tracked as gap SC-2 in ARCH-014 §7.
+      - name: Report the dependency go-directive
+        # `go mod download` reports:
+        #   "module golang.org/x/sys@v0.46.0 requires go >= 1.25.0; switching to go1.25.12"
+        # while core/go.mod declares go 1.24.0. This is INFORMATIONAL, not a defect:
+        # it surfaces only in module mode (this job), because the vendored build path
+        # does not consult dependency go directives — core-verify builds and tests
+        # clean on Go 1.24.7 with GOPROXY=off. It is printed so the toolchain floor
+        # is a visible, deliberate fact rather than a surprise at release time.
         continue-on-error: true
         run: |
           set -uo pipefail
@@ -241,21 +251,16 @@ jobs:
           grep -A1 '^# ' vendor/modules.txt
           echo
           echo "main module go directive: $(grep '^go ' go.mod)"
-          echo
-          echo "::notice::See ARCH-014 §7 gap SC-2. If x/sys v0.46.0 requires go >= 1.25.0,"
-          echo "::notice::either core/go.mod must move to 1.25.x (and the toolchain floor with"
-          echo "::notice::it), or x/sys must be pinned to a release compatible with go 1.24."
 
       - name: Vendor tree must match upstream exactly
-        # REPORT-ONLY FOR NOW (gap SC-2). This is the strongest supply-chain check
-        # in the suite and it is intended to be blocking, but it cannot be turned on
-        # in the same change that introduces it: the committed vendor tree predates
-        # this job and does not match what upstream produces (see the step above).
-        # Turning it blocking before the tree is regenerated would wedge every PR.
+        # BLOCKING. This is the strongest supply-chain check in the suite: it proves
+        # the committed vendor/ is byte-identical to what upstream produces, so the
+        # offline build is not merely reproducible but reproducible FROM UPSTREAM.
         #
-        # The regenerated tree and go.sum are uploaded as artifacts below. Closing
-        # SC-2 means committing them and deleting this `continue-on-error`.
-        continue-on-error: true
+        # It shipped report-only for exactly one run, because the tree's provenance
+        # was unknown and wedging every PR on an unverified assumption would have
+        # been worse. That run proved the tree matches (no drift artifact produced),
+        # so the guard is now enforcing. See ARCH-014 §7.
         env:
           GOFLAGS: -mod=mod
         run: |
@@ -264,34 +269,35 @@ jobs:
           # `bash -e` a failing `go mod vendor` would otherwise abort with no
           # diagnostic, and this step is the one that has to explain itself.
           go mod vendor || {
-            echo "::warning::'go mod vendor' failed — see gap SC-2 in ARCH-014 §7."
+            echo "::error::'go mod vendor' failed — the module graph cannot be re-resolved."
             exit 1
           }
-          if ! git diff --quiet -- vendor/ go.mod; then
-            echo "::warning::core/vendor/ does not match what 'go mod vendor' produces (gap SC-2)."
-            git --no-pager diff --stat -- vendor/ go.mod
+          if ! git diff --quiet -- vendor/ go.mod go.sum; then
+            echo "::error::core/vendor/ does not match what 'go mod vendor' produces."
+            echo "::error::Either the vendor tree was hand-edited, or a dependency changed"
+            echo "::error::without re-vendoring. Run 'go mod vendor' and commit the result."
+            git --no-pager diff --stat -- vendor/ go.mod go.sum
             echo "--- first 200 lines of diff ---"
-            git --no-pager diff -- vendor/ go.mod | head -200
-            git --no-pager diff -- vendor/ go.mod > /tmp/vendor-drift.diff
+            git --no-pager diff -- vendor/ go.mod go.sum | head -200
+            git --no-pager diff -- vendor/ go.mod go.sum > /tmp/vendor-drift.diff
             exit 1
           fi
-          echo "vendor tree matches upstream bit-for-bit — SC-2 is closeable"
+          echo "vendor tree matches upstream bit-for-bit"
 
-      - name: Report go.sum status
-        # Not yet a hard failure: go.sum is absent today, and this job is what
-        # generates it. Flipping this to an error is the follow-up once the
-        # generated go.sum is committed (ARCH-014 §7, gap SC-1).
+      - name: go.sum must be committed
+        # BLOCKING. go.sum was absent until 2026-07-28 (gap SC-1): vendor mode reads
+        # vendor/modules.txt and never consults go.sum, so nothing noticed that the
+        # vendored bytes had no local hash record. The generated file is now
+        # committed, and this step keeps it that way.
         run: |
-          if [ -f go.sum ] && git ls-files --error-unmatch go.sum >/dev/null 2>&1; then
-            echo "go.sum is committed and verified"
-          else
-            echo "::warning::core/go.sum is not committed. The vendor tree is"
-            echo "::warning::verified against upstream by this job, but offline"
-            echo "::warning::builds have no local hash record. Commit the go.sum"
-            echo "::warning::this job generated to close gap SC-1 (ARCH-014 §7)."
-            echo "--- generated go.sum ---"
-            cat go.sum 2>/dev/null || echo "(none generated)"
+          set -uo pipefail
+          if ! git ls-files --error-unmatch go.sum >/dev/null 2>&1; then
+            echo "::error::core/go.sum is not committed. Without it the vendored bytes"
+            echo "::error::have no local cryptographic record. Commit the go.sum this"
+            echo "::error::job generated (uploaded as the core-supply-chain artifact)."
+            exit 1
           fi
+          echo "go.sum is committed; $(grep -c ' h1:' go.sum) module hashes recorded"
 
       - name: Upload the regenerated go.sum and vendor drift
         # These two artifacts are what closing SC-2 requires: commit the go.sum,
