@@ -102,8 +102,13 @@ ENV PATH=/usr/local/bin
 
 # No default long-running process: this image is a toolbox, invoked per command.
 # Declaring a fake server entrypoint would misrepresent what it is.
+#
+# The default command prints the starter governance policy — a real, network-free
+# operation. It is deliberately NOT a demo/simulation: `ktos-aiscan` has no stub
+# mode (ARCH-014 §6.1), and a container whose default action fabricated findings
+# would be exactly the thing that was removed.
 ENTRYPOINT []
-CMD ["ktos-aiscan", "--demo"]
+CMD ["ktos-aiscan", "--print-policy"]
 
 ARG VERSION=dev
 LABEL org.opencontainers.image.version="${VERSION}" \

@@ -139,26 +139,39 @@ jobs:
         # the three things a customer actually runs.
         run: |
           set -euo pipefail
-          # ktos-aiscan EXITS 3 WHEN IT FINDS POLICY VIOLATIONS — by design, so it
-          # can gate an MSP pipeline the way a linter does. The --demo scenario
-          # deliberately plants a violating Jupyter service, so 3 is the PASSING
-          # result here and 0 would mean the detector stopped detecting.
+          # ktos-aiscan has NO simulation mode — it does not start stub services and
+          # cannot scan a fake target, so the smoke test exercises the two real,
+          # deterministic, network-free paths. Scanner behaviour itself is covered by
+          # the aidiscovery unit tests, where httptest fixtures belong.
           #
           # `rc=0; cmd || rc=$?` and NOT a bare `cmd; rc=$?`: GitHub runs this
-          # script as `bash -e {0}`, and `set +e`/`set -uo pipefail` inside the
-          # script does not reliably undo an -e supplied on the command line. The
-          # `||` branch is what makes a non-zero exit survivable under -e.
+          # script as `bash -e {0}`, and `set +e` inside the script does not reliably
+          # undo an -e supplied on the command line. The `||` branch is what makes a
+          # non-zero exit survivable under -e.
+          /tmp/ktos-bin/ktos-aiscan --print-policy | python3 -c 'import json,sys; d=json.load(sys.stdin); assert d["name"] and d["version"], d'
+          echo "  ktos-aiscan --print-policy  ok (valid policy JSON)"
+
+          # Missing --targets must be a usage error, not a scan of nothing.
           rc=0
-          /tmp/ktos-bin/ktos-aiscan --demo > /dev/null 2>&1 || rc=$?
-          if [ "$rc" -ne 3 ]; then
-            echo "::error::ktos-aiscan --demo exited $rc, expected 3 (violations found)."
-            echo "::error::Exit 0 means the demo's planted violation was not detected."
-            /tmp/ktos-bin/ktos-aiscan --demo || true
+          /tmp/ktos-bin/ktos-aiscan > /dev/null 2>&1 || rc=$?
+          if [ "$rc" -ne 2 ]; then
+            echo "::error::ktos-aiscan with no --targets exited $rc, expected 2 (usage)."
             exit 1
           fi
-          echo "  ktos-aiscan --demo   ok (exit 3, violations detected as expected)"
+          echo "  ktos-aiscan no-targets      ok (exit 2)"
+
+          # The removed simulation flag must stay removed.
+          rc=0
+          /tmp/ktos-bin/ktos-aiscan --demo > /dev/null 2>&1 || rc=$?
+          if [ "$rc" -eq 0 ]; then
+            echo "::error::--demo was accepted. The local stub-service simulation was"
+            echo "::error::deliberately removed (ARCH-014 §6.1); it must not return."
+            exit 1
+          fi
+          echo "  ktos-aiscan --demo          ok (rejected, exit $rc)"
+
           /tmp/ktos-bin/ktos-enforce --demo > /dev/null
-          echo "  ktos-enforce --demo  ok"
+          echo "  ktos-enforce --demo         ok"
           # Drive the MCP server over stdio exactly as an IDE would.
           out="$(printf '%s\n%s\n' \
             '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","capabilities":{},"clientInfo":{"name":"ci","version":"1"}}}' \
@@ -319,16 +332,10 @@ jobs:
       - name: The image must actually run
         run: |
           set -euo pipefail
-          # Exit 3 == violations found == the demo working. See core-verify for why
-          # this uses `|| rc=$?` rather than `; rc=$?`.
-          rc=0
-          docker run --rm ktos-core:ci ktos-aiscan --demo > /dev/null 2>&1 || rc=$?
-          if [ "$rc" -ne 3 ]; then
-            echo "::error::ktos-aiscan --demo in-image exited $rc, expected 3"
-            docker run --rm ktos-core:ci ktos-aiscan --demo || true
-            exit 1
-          fi
-          echo "  ktos-aiscan in-image   ok (exit 3)"
+          # No simulation mode — exercise the real network-free path. See core-verify.
+          docker run --rm ktos-core:ci ktos-aiscan --print-policy \
+            | python3 -c 'import json,sys; d=json.load(sys.stdin); assert d["name"] and d["version"], d'
+          echo "  ktos-aiscan in-image   ok (valid policy JSON)"
           docker run --rm ktos-core:ci ktos-enforce --demo > /dev/null
           echo "  ktos-enforce in-image  ok"
           out="$(printf '%s\n' \

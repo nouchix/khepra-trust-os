@@ -245,6 +245,17 @@ gap in the sovereignty claim.
 (`image` job) but never pushes it, and digest resolution is manual. Until that
 workflow exists, §5 is a runbook, not a control.
 
+**DM-1 — the hosted demo surfaces' TRL10 conditions are unverified.** §6.1 moves
+demonstrations off local stubs and onto `gateway.souhimbou.ai` and
+`mcp.souhimbou.ai`. The G-1 allowlist already records what those endpoints must
+have — input guard, "no CUI" banner, isolated demo DAG, blocked real-target and
+credential submission, tier-gated authenticated scans — but G-1 only checks that a
+vendor-hosted demo surface is *acknowledged*, not that those controls exist. So
+removing the local simulation improved the shipped binaries and shifted the
+exposure to a hosted endpoint whose guarantees nothing in CI currently tests. That
+is a net improvement (a customer-run binary no longer opens sockets), but it is not
+a closed loop. Verifying those five conditions is the follow-up.
+
 **DP-1 — no systemd unit for `asaf-daemon`.** Unchanged from the ported profile:
 the privileged daemon runs on bare metal, not in compose, and no unit file exists
 in any repo. Same family of gap as "no real installer bundle."
@@ -258,19 +269,75 @@ build -trimpath -ldflags "-s -w"` produces three statically linked binaries
 `image` CI job is what proves the container layer, and it must go green before
 this is described as a shippable image.
 
-### A note on `ktos-aiscan`'s exit code
+## 6.1 No simulation in shipped binaries
 
-`ktos-aiscan` **exits 3 when it finds policy violations** — deliberate, so it can
-gate an MSP pipeline the way a linter does (`cmd/ktos-aiscan/main.go`: *"Non-zero
-exit on violations so this can gate a pipeline or an MSP check"*). The `--demo`
-scenario plants a violating Jupyter service, so **3 is the passing result and 0
-would mean the detector stopped detecting.**
+**Decision: `ktos-aiscan --demo` and its stub-service harness are deleted. Demos
+run against a real deployed service.**
 
-The first version of the CI smoke test asserted exit 0 and failed. The local
-pre-commit check had piped the demo through `head`, so the pipeline returned
-`head`'s exit status and the real code was never observed — a reminder that
-`cmd | head` silently discards the signal you are testing for. The CI step now
-asserts exactly 3 and treats 0 as a detector regression.
+The removed code (~95 lines: `setupDemo`, `newStub`, `stub`, `splitURL`) started
+stub HTTP servers on `127.0.0.1` pretending to be Ollama and Jupyter, then
+"discovered" them. Four reasons it had to go, in order of severity:
+
+1. **It never exercised the shipped detection.** `setupDemo` built its *own*
+   `Scanner` with a two-signature pack synthesized from the stubs' ephemeral
+   ports, bypassing the real 15-signature pack entirely. A green demo proved
+   nothing about whether the product detects anything.
+2. **It made a read-only scanner open listening sockets.** The tool's stated
+   guarantee is *"never authenticates, never writes, never exploits."* Shipping
+   `net.Listen` inside it contradicted that in the binary an MSP runs on a client
+   network. The doc comment now also promises **never LISTENS**, and there is no
+   longer any code that could break that promise.
+3. **It hardcoded a named customer** ("Groff NetWorks AI Governance Policy") into
+   the shipped binary.
+4. **It panicked on listen failure** — an unrecoverable crash path in a release
+   artifact, reachable on any port-exhausted or restricted host.
+
+It also cost two CI cycles. `ktos-aiscan` exits **3** on policy violations by
+design (so it can gate a pipeline like a linter), and the demo deliberately
+planted a violating service — so 3 was the *passing* result, which the first smoke
+test got backwards. The local pre-commit check had piped the demo through `head`,
+so the pipeline returned `head`'s status and the real exit code was never
+observed. That is the general hazard the user named: **a simulation generates its
+own bugs, and they are bugs about the simulation, not about the product.**
+
+### What replaced it
+
+- **In the binaries:** nothing. `--targets` is now required; a missing target is a
+  usage error (exit 2). Exit 3 on violations is unchanged — that is real product
+  behaviour, not demo scaffolding.
+- **In CI:** the smoke test exercises the two real, deterministic, network-free
+  paths — `--print-policy` must emit valid policy JSON, and no `--targets` must
+  exit 2. It also asserts `--demo` is **still rejected**, so the simulation cannot
+  silently return. Scanner behaviour is covered by the `aidiscovery` unit tests,
+  where `httptest` fixtures legitimately belong: a fixture inside a test is scoped
+  to the test, whereas a fixture inside `main` ships to customers.
+- **In the container:** the default `CMD` is `ktos-aiscan --print-policy`, not a
+  demo.
+- **For demonstrations:** the two external surfaces already allowlisted by guard
+  G-1 in `ops/guards/sovereignty_allowlist.txt`:
+
+  | Host | Class | Purpose |
+  |---|---|---|
+  | `gateway.souhimbou.ai` | `demo-discovery` / `DEMO` | public eval scan (`ASAF_ALLOW_EVAL_WITHOUT_LICENSE=true`) |
+  | `mcp.souhimbou.ai` | `demo-discovery` / `DEMO` | public MCP tool endpoint (`KHEPRA_DAG_SEED_DEMO=true`) |
+
+  Both carry pre-existing TRL10 conditions in the allowlist that this decision now
+  depends on: input guard, a "no CUI" banner, an isolated demo DAG, and — for the
+  eval scan — blocking real-target/credential submission and tier-gating
+  authenticated scans. **Those conditions are not verified by this change.** Moving
+  the demo surface off the laptop and onto a hosted endpoint makes them load-bearing
+  rather than aspirational; see gap DM-1 in §7.
+
+### What was deliberately NOT deleted
+
+`ktos-enforce --demo` and `mcp.RunDemo` stay. They are not simulations: neither
+opens a socket, fabricates a service, or substitutes a synthetic pack. They drive
+the real `enforce` and `mcp` packages in-process and print the real rulings and
+AEOs, and `RunDemo` is covered by `TestDemoRuns`. Deleting them would remove
+genuine coverage and the only offline way to exercise the enforcement plane, which
+is not what "clean" means here. If the intent is that these move to the hosted
+surface too, that is a separate, larger change — the MCP demo in particular is
+what `mcp.souhimbou.ai` would serve.
 
 ## 8. Guard G-2
 

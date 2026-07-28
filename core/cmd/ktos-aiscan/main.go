@@ -7,14 +7,28 @@
 //
 // Usage:
 //
-//	ktos-aiscan --demo                          # self-contained demo, no network needed
 //	ktos-aiscan --targets 10.0.0.5,10.0.0.6     # scan hosts with the shipped signature pack
 //	ktos-aiscan --targets 10.0.0.5 --policy ai-policy.json
 //	ktos-aiscan --print-policy > ai-policy.json # emit a starter policy to edit
 //
 // Read-only by design: TCP connect plus benign GETs on documented discovery
-// endpoints. It never authenticates, never writes, never exploits — safe to run
-// against a client's production network.
+// endpoints. It never authenticates, never writes, never exploits, and never
+// LISTENS — safe to run against a client's production network.
+//
+// NO SIMULATION MODE. This binary previously carried a `--demo` flag that started
+// stub HTTP servers on 127.0.0.1 and then "discovered" them. It was removed
+// because it was not a demonstration of this tool:
+//
+//   - It built its OWN signature pack from the stubs' ephemeral ports, so it never
+//     exercised the shipped 15-signature pack. A green demo proved nothing about
+//     real detection.
+//   - It made a read-only scanner open listening sockets — attack surface, and a
+//     direct contradiction of the guarantee above.
+//   - It hardcoded a named customer's policy into the shipped binary.
+//   - It panicked on listen failure.
+//
+// Demonstrations now run against a real deployed service, not a local fake. See
+// docs/architecture/ARCH-014-production-release-topology.md §6.1.
 //
 // Single static binary, standard library only: nothing to install on the target,
 // no Python runtime, no agent, no data leaves the network.
@@ -25,10 +39,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"net"
-	"net/http"
 	"os"
-	"strconv"
 	"strings"
 	"time"
 
@@ -39,7 +50,6 @@ func main() {
 	var (
 		targets  = flag.String("targets", "", "comma-separated hosts/IPs to scan")
 		policyIn = flag.String("policy", "", "path to an AI governance policy (JSON)")
-		demo     = flag.Bool("demo", false, "run a self-contained demo (starts local stub AI services, then finds them)")
 		printPol = flag.Bool("print-policy", false, "print a starter policy template and exit")
 		jsonOut  = flag.Bool("json", false, "emit the full assessment as JSON")
 		timeout  = flag.Duration("timeout", 90*time.Second, "overall scan timeout")
@@ -54,35 +64,32 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), *timeout)
 	defer cancel()
 
-	var (
-		hosts []string
-		sc    = &aidiscovery.Scanner{}
-		pol   aidiscovery.Policy
-	)
+	if *targets == "" {
+		fmt.Fprintln(os.Stderr, "error: --targets is required (comma-separated hosts or IPs)")
+		flag.Usage()
+		os.Exit(2)
+	}
 
-	switch {
-	case *demo:
-		var stop func()
-		hosts, sc, pol, stop = setupDemo()
-		defer stop()
-	default:
-		if *targets == "" {
-			fmt.Fprintln(os.Stderr, "error: provide --targets, or use --demo to see it work")
-			flag.Usage()
-			os.Exit(2)
-		}
-		for _, h := range strings.Split(*targets, ",") {
-			if h = strings.TrimSpace(h); h != "" {
-				hosts = append(hosts, h)
-			}
-		}
-		var err error
-		pol, err = loadPolicy(*policyIn)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "error: %v\n", err)
-			os.Exit(1)
+	var hosts []string
+	for _, h := range strings.Split(*targets, ",") {
+		if h = strings.TrimSpace(h); h != "" {
+			hosts = append(hosts, h)
 		}
 	}
+	if len(hosts) == 0 {
+		fmt.Fprintln(os.Stderr, "error: --targets contained no usable hosts")
+		os.Exit(2)
+	}
+
+	pol, err := loadPolicy(*policyIn)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "error: %v\n", err)
+		os.Exit(1)
+	}
+
+	// The SHIPPED signature pack — the same one a client engagement uses. There is
+	// no code path that substitutes a synthesized pack.
+	sc := &aidiscovery.Scanner{}
 
 	rep := sc.Scan(ctx, hosts)
 	assessment := aidiscovery.Evaluate(rep, pol)
@@ -138,97 +145,6 @@ func emitStarterPolicy() {
 	enc := json.NewEncoder(os.Stdout)
 	enc.SetIndent("", "  ")
 	_ = enc.Encode(p)
-}
-
-// setupDemo starts local stub AI services so the tool can be demonstrated on a
-// laptop with no client network and no real AI installed.
-func setupDemo() ([]string, *aidiscovery.Scanner, aidiscovery.Policy, func()) {
-	// Stub "Ollama" — an approved service.
-	ollama := newStub(map[string]string{
-		"/api/tags": `{"models":[{"name":"llama3:8b","size":4661211808}]}`,
-	})
-	// Stub "Jupyter" — a forbidden category (arbitrary code execution).
-	jupyter := newStub(map[string]string{
-		"/api/status": `{"started":"2026-12-25T09:00:00Z","version":"7.0.6","kernels":2}`,
-	})
-	// A plain web server — open port, NOT AI. Must be reported as weak, not as a
-	// false shadow-AI finding.
-	decoy := newStub(map[string]string{
-		"/": `<html><body>intranet</body></html>`,
-	})
-
-	oHost, oPort := splitURL(ollama.URL)
-	jHost, jPort := splitURL(jupyter.URL)
-	_, dPort := splitURL(decoy.URL)
-
-	sc := &aidiscovery.Scanner{
-		Ports: []int{oPort, jPort, dPort},
-		Signatures: []aidiscovery.Signature{
-			{
-				Name: "Ollama", Category: aidiscovery.CatLLMServer, Ports: []int{oPort},
-				ProbePaths: []string{"/api/tags"}, BodyMarkers: []string{"models"},
-				Notes: "Local LLM runtime; often binds 0.0.0.0 with no auth.",
-			},
-			{
-				Name: "Jupyter Notebook / JupyterLab", Category: aidiscovery.CatNotebook, Ports: []int{jPort},
-				ProbePaths: []string{"/api/status"}, BodyMarkers: []string{"kernels", "version"},
-				Notes: "HIGH RISK: arbitrary code execution surface.",
-			},
-		},
-	}
-
-	pol := aidiscovery.Policy{
-		Name:                "Groff NetWorks AI Governance Policy (sample)",
-		Version:             "1.0",
-		ApprovedServices:    []string{"Ollama"},
-		ForbiddenCategories: []aidiscovery.Category{aidiscovery.CatNotebook},
-		FlagUnidentified:    true,
-	}
-
-	hosts := []string{oHost}
-	if jHost != oHost {
-		hosts = append(hosts, jHost)
-	}
-	return hosts, sc, pol, func() {
-		ollama.Close()
-		jupyter.Close()
-		decoy.Close()
-	}
-}
-
-type stub struct {
-	URL   string
-	close func()
-}
-
-func (s *stub) Close() { s.close() }
-
-func newStub(routes map[string]string) *stub {
-	mux := http.NewServeMux()
-	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		if body, ok := routes[r.URL.Path]; ok {
-			_, _ = w.Write([]byte(body))
-			return
-		}
-		w.WriteHeader(http.StatusNotFound)
-	})
-	l, err := net.Listen("tcp", "127.0.0.1:0")
-	if err != nil {
-		panic(err)
-	}
-	srv := &http.Server{Handler: mux}
-	go func() { _ = srv.Serve(l) }()
-	return &stub{
-		URL:   "http://" + l.Addr().String(),
-		close: func() { _ = srv.Close() },
-	}
-}
-
-func splitURL(raw string) (string, int) {
-	hp := strings.TrimPrefix(raw, "http://")
-	host, portStr, _ := net.SplitHostPort(hp)
-	p, _ := strconv.Atoi(portStr)
-	return host, p
 }
 
 func render(rep aidiscovery.Report, a aidiscovery.Assessment) {
