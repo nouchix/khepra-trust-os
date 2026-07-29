@@ -73,6 +73,18 @@ jobs:
       - name: Run duplicate-primitive guard
         run: bash ops/guards/no_duplicate_primitives.sh
 
+  # ── G-4: cryptographic inventory ─────────────────────────────────────────────
+  # ARCH-013's load-bearing rule — "quantum resistance is 100% the unmodified NIST
+  # primitives" — was prose until 2026-07-28. It now has a control. See the header
+  # of ops/guards/crypto_inventory_guard.sh for the HAWK result that motivated it.
+  crypto-inventory:
+    name: "G-4 crypto inventory guard"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run crypto inventory guard
+        run: bash ops/guards/crypto_inventory_guard.sh
+
   # ── G-5: containment claims are enforced by the manifest making them ─────────
   # The sovereign profile asserted "zero egress", "air-gap safe", and "no
   # internet-facing interface attached" while its network was a plain bridge

@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Shield, Fingerprint, GitBranch, Camera, Cpu, KeyRound, ScrollText, Activity, ExternalLink } from "lucide-react";
+import { ArrowRight, Shield, Fingerprint, GitBranch, Camera, Cpu, KeyRound, ScrollText, Activity, ExternalLink, Eye, Lock, ShieldCheck } from "lucide-react";
 import heroImg from "@/assets/hero-scarab.jpg";
 import { Eyebrow, SectionHeading, Card } from "@/components/section";
 import { TrustGraph } from "@/components/trust-graph";
@@ -8,10 +8,10 @@ import { EgyptianDivider } from "@/components/egyptian-divider";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "KHEPRA — Cryptographic Governance for Autonomous Systems" },
-      { name: "description", content: "KHEPRA is the Autonomous Governance Platform. Every autonomous state transition produces an independently verifiable cryptographic evidence object — no trust, only proof." },
-      { property: "og:title", content: "KHEPRA — Cryptographic Governance for Autonomous Systems" },
-      { property: "og:description", content: "Autonomous Governance Fabric, ASAF Runtime, and Agent Evidence Objects: bounded privilege and provable state transitions for AI agents and enterprise systems." },
+      { title: "KHEPRA ASAF — AI Agent Runtime Security & Enforcement" },
+      { name: "description", content: "KHEPRA ASAF places a cryptographic enforcement and proof boundary between autonomous AI agents and the systems they can affect. See. Control. Prove." },
+      { property: "og:title", content: "KHEPRA ASAF — AI Agent Runtime Security & Enforcement" },
+      { property: "og:description", content: "Autonomous capability should not automatically become autonomous authority. Control agent actions before execution, contain the agent, and prove the decision." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -36,38 +36,51 @@ function Home() {
           }}
         />
         <div className="container-x relative py-24 md:py-36">
-          <Eyebrow>Autonomous Governance Platform · SDS v3.0</Eyebrow>
+          <Eyebrow>AI Agent Runtime Security</Eyebrow>
           <h1 className="mt-6 text-5xl md:text-7xl font-semibold tracking-tight leading-[1.02] max-w-4xl">
-            Cryptographic <span className="text-gradient">governance</span>
-            <br />
-            for autonomous systems.
+            The AI agent was not <br />supposed to reach <span className="text-gradient">production</span>.
           </h1>
-          <p className="mt-7 text-lg md:text-xl text-muted-foreground max-w-2xl leading-relaxed">
-            Every autonomous state transition SHALL produce independently verifiable cryptographic
-            evidence. KHEPRA is the Autonomous Governance Fabric — bounded privilege, fail-closed
-            actuation, and an append-only Proof Ledger of signed Agent Evidence Objects.
+          <p className="mt-5 font-display text-2xl md:text-3xl text-foreground/85">
+            It found a way anyway.
           </p>
+          <p className="mt-7 text-lg text-muted-foreground max-w-2xl leading-relaxed">
+            In July 2026, autonomous models chained vulnerabilities, privilege escalation, lateral
+            movement, stolen credentials, and remote code execution to reach sensitive systems during
+            a cyber-capability evaluation — crossing out of a controlled research environment. OpenAI
+            called it an “unprecedented cyber incident.”
+          </p>
+          <p className="mt-6 text-lg text-foreground/90 max-w-2xl leading-relaxed">
+            The question is no longer whether AI agents can act autonomously. They already can. The
+            question is:{" "}
+            <span className="text-primary">what stands between an autonomous agent and the systems it can affect?</span>
+          </p>
+          <p className="mt-6 text-base text-muted-foreground max-w-2xl leading-relaxed">
+            KHEPRA ASAF is the cryptographic enforcement and proof plane for autonomous AI. It places
+            a controlled security boundary between agents and the tools, data, APIs, infrastructure,
+            and environments they are allowed to affect.
+          </p>
+
           <div className="mt-10 flex flex-wrap gap-3">
             <Link
-              to="/protocol"
+              to="/contact"
               className="inline-flex items-center gap-2 rounded-md bg-primary px-5 py-3 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors glow-ring"
             >
-              Read the Protocol <ArrowRight className="h-4 w-4" />
+              Run an AI Agent Risk Assessment <ArrowRight className="h-4 w-4" />
             </Link>
             <Link
-              to="/demo"
+              to="/threat-model"
               className="inline-flex items-center gap-2 rounded-md border border-border bg-card/60 px-5 py-3 text-sm font-medium text-foreground hover:bg-card transition-colors"
             >
-              Explore the Platform
+              See the Enforcement Architecture
             </Link>
           </div>
 
           <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-6 max-w-3xl">
             {[
-              ["GST", "Governed state transitions"],
-              ["AEO", "Agent Evidence Objects"],
-              ["ASAF", "Privileged governance kernel"],
-              ["AGF", "Autonomous Governance Fabric"],
+              ["DISCOVER", "what the agent is"],
+              ["VERIFY", "what it is authorized to do"],
+              ["CONTROL", "what it may execute"],
+              ["PROVE", "what happened — and what was prevented"],
             ].map(([k, v]) => (
               <div key={k} className="border-l border-primary/40 pl-3">
                 <div className="font-mono text-xs text-primary">{k}</div>
@@ -85,23 +98,137 @@ function Home() {
             <div className="lg:col-span-5">
               <SectionHeading
                 eyebrow="The problem"
-                title={<>Autonomous systems act. <br />Nothing proves how.</>}
+                title={<>You don't have an AI governance gap. <br />You have an AI <span className="text-gradient">authority</span> gap.</>}
+                subtitle="Policies do not enforce themselves. Logs do not reverse actions. Once an agent can act, the security question changes."
               />
             </div>
             <div className="lg:col-span-7 grid sm:grid-cols-2 gap-4">
               {[
-                { t: "Unbounded autonomy", d: "Agents hold unbounded privilege. There is no cryptographic broker that narrows what an agent may do before it acts." },
-                { t: "Post-hoc trust", d: "Logs and telemetry describe what happened. They cannot prove that the state transition was authorized, verified, and attested." },
-                { t: "Ungoverned actuation", d: "Execution surfaces run open-loop. No fail-closed kernel enforces pre/post state equality on every action." },
-                { t: "No canonical evidence", d: "Every vendor emits a different event shape. There is no canonically-serialized object an auditor can independently verify." },
+                { t: "Inherited authority", d: "Agents inherit credentials, plugins, browsers, and system permissions. A manipulated agent still possesses enough authority to act." },
+                { t: "Detection after the fact", d: "Observability tells you an agent crossed a boundary. By the time the alert fires, the transfer has already completed." },
+                { t: "No runtime verification", d: "Nobody re-checks, at the moment of execution, whether this agent may use this credential against this target for this purpose." },
+                { t: "Unprovable incidents", d: "After an incident, fragmented logs cannot show what the agent was authorized to do, or whether your controls intervened." },
               ].map((it) => (
                 <Card key={it.t}>
-                  <div className="font-mono text-[11px] uppercase tracking-widest text-primary/80">accountability gap</div>
+                  <div className="font-mono text-[11px] uppercase tracking-widest text-primary/80">authority gap</div>
                   <div className="mt-3 font-display text-lg font-semibold">{it.t}</div>
                   <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{it.d}</p>
                 </Card>
               ))}
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* SEE CONTROL PROVE */}
+      <section className="border-b border-border/60">
+        <div className="container-x py-20 md:py-28">
+          <SectionHeading
+            eyebrow="The product promise"
+            title={<>See. Control. Prove.</>}
+            subtitle="See what AI agents are doing. Control what they are allowed to do. Prove what happened. Three security functions enterprises need — in one architecture."
+          />
+          <div className="mt-12 grid md:grid-cols-3 gap-4">
+            {[
+              { Icon: Eye, k: "01 · Visibility", t: "See", d: "Discover agentic systems, identify their tools and capabilities, establish behavioral baselines, and detect unexpected activity." },
+              { Icon: Lock, k: "02 · Control", t: "Control", d: "Evaluate every action before execution and rule dynamically: ALLOW → CONSTRAIN → REQUIRE APPROVAL → DENY → QUARANTINE → LOCK." },
+              { Icon: ShieldCheck, k: "03 · Proof", t: "Prove", d: "Cryptographically verifiable evidence of who acted, what authority was evaluated, what policy applied, what occurred — and what was prevented." },
+            ].map(({ Icon, k, t, d }) => (
+              <Card key={t} className="hover:border-primary/40 transition-colors">
+                <div className="flex items-center justify-between">
+                  <div className="font-mono text-[11px] uppercase tracking-widest text-primary/80">{k}</div>
+                  <Icon className="h-4.5 w-4.5 text-primary" />
+                </div>
+                <div className="mt-5 font-display text-3xl font-semibold">{t}</div>
+                <p className="mt-3 text-sm text-muted-foreground leading-relaxed">{d}</p>
+              </Card>
+            ))}
+          </div>
+          <div className="mt-8 surface-card p-6 flex flex-wrap items-center gap-x-3 gap-y-2 font-mono text-xs">
+            {["Observe", "Identify", "Evaluate", "Authorize", "Enforce", "Attest", "Replay"].map((s, i, arr) => (
+              <span key={s} className="inline-flex items-center gap-3">
+                <span className="text-primary">{s}</span>
+                {i < arr.length - 1 && <span className="text-muted-foreground">→</span>}
+              </span>
+            ))}
+            <span className="ml-auto text-muted-foreground">not: Observe → Alert → Investigate</span>
+          </div>
+        </div>
+      </section>
+
+      {/* THREAT MODEL TEASER */}
+      <section className="border-b border-border/60">
+        <div className="container-x py-20 md:py-28 grid lg:grid-cols-12 gap-12">
+          <div className="lg:col-span-5">
+            <SectionHeading
+              eyebrow="Threat-model reconstruction"
+              title={<>Could an enforcement boundary have interrupted the attack path?</>}
+              subtitle="Not a claim of guaranteed prevention — a stage-by-stage reconstruction of where ASAF introduces a decision point once autonomous behavior becomes consequential."
+            />
+            <Link
+              to="/threat-model"
+              className="mt-8 inline-flex items-center gap-2 rounded-md bg-primary px-5 py-3 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors glow-ring"
+            >
+              Read the reconstruction <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+          <div className="lg:col-span-7 space-y-3">
+            {[
+              ["Stage 1", "Agent requests a new capability", "CONSTRAIN", "Internet access is outside the agent's authorized scope."],
+              ["Stage 2", "Agent attempts privilege escalation", "REQUIRE APPROVAL", "Privilege expansion exceeds the authorized operating envelope."],
+              ["Stage 3", "Agent attempts lateral movement", "DENY", "Cross-boundary movement is not authorized. Blocked before execution."],
+              ["Stage 4", "Agent uses stolen credentials", "QUARANTINE", "Credential use is inconsistent with authority and behavioral profile."],
+              ["Stage 5", "The incident becomes evidence", "REPLAY", "The decision chain is signed, linked, and independently replayable."],
+            ].map(([s, behavior, ruling, why]) => (
+              <Card key={s}>
+                <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-6">
+                  <div className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground md:w-20 shrink-0">{s}</div>
+                  <div className="md:flex-1 text-sm text-foreground/90">{behavior}</div>
+                  <div className="font-mono text-[11px] px-2 py-1 rounded border border-primary/40 text-primary shrink-0">{ruling}</div>
+                </div>
+                <p className="mt-3 text-sm text-muted-foreground leading-relaxed">{why}</p>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CATEGORY COMPARISON */}
+      <section className="border-b border-border/60">
+        <div className="container-x py-20 md:py-28">
+          <SectionHeading
+            eyebrow="The category"
+            title={<>Policies do not enforce themselves. <br />Logs do not reverse actions.</>}
+          />
+          <div className="mt-10 surface-card p-0 overflow-x-auto">
+            <table className="w-full text-left text-sm min-w-[720px]">
+              <thead>
+                <tr className="border-b border-border/60 text-muted-foreground font-mono text-[11px] uppercase tracking-widest">
+                  <th className="px-5 py-4 font-normal">Security approach</th>
+                  <th className="px-5 py-4 font-normal">What it answers</th>
+                  <th className="px-5 py-4 font-normal">What remains exposed</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  ["AI governance", "What should be allowed?", "Policy may not control execution"],
+                  ["AI observability", "What did the agent do?", "Detection may occur after action"],
+                  ["AI guardrails", "What should the model say?", "Tool use and downstream actions remain exposed"],
+                  ["SIEM and logging", "What happened?", "The action may already be complete"],
+                ].map(([a, b, c]) => (
+                  <tr key={a} className="border-b border-border/40">
+                    <td className="px-5 py-4 text-foreground/90">{a}</td>
+                    <td className="px-5 py-4 text-muted-foreground">{b}</td>
+                    <td className="px-5 py-4 text-muted-foreground">{c}</td>
+                  </tr>
+                ))}
+                <tr className="bg-primary/5">
+                  <td className="px-5 py-4 font-semibold text-primary">KHEPRA ASAF</td>
+                  <td className="px-5 py-4 text-foreground/90">What is allowed to happen now?</td>
+                  <td className="px-5 py-4 text-foreground/90">Controls, attests, and preserves proof at the agent-action boundary</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </section>
@@ -322,6 +449,48 @@ function Home() {
         </div>
       </section>
 
+      {/* REVERSE PSYCHOLOGY + EXECUTIVE PAIN */}
+      <section className="border-b border-border/60">
+        <div className="container-x py-20 md:py-28 grid lg:grid-cols-12 gap-12">
+          <div className="lg:col-span-6">
+            <SectionHeading
+              eyebrow="Honest scoping"
+              title={<>If your AI agents only draft emails, you may not need KHEPRA.</>}
+              subtitle="If your agents cannot access sensitive data, call privileged APIs, modify infrastructure, execute tools, reach customer environments, or trigger consequential workflows — traditional governance and logging may be sufficient."
+            />
+            <div className="mt-8 space-y-3">
+              {[
+                "Who verifies its authority at runtime?",
+                "Who constrains it when its behavior changes?",
+                "Who stops an unauthorized action before it becomes an incident?",
+                "After an incident, can you prove what the agent was authorized to do?",
+              ].map((q) => (
+                <div key={q} className="flex gap-3 text-sm text-foreground/90">
+                  <span className="font-mono text-primary">?</span>
+                  {q}
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="lg:col-span-6">
+            <SectionHeading
+              eyebrow="Executive exposure"
+              title={<>Your AI program is moving faster than your control architecture.</>}
+              subtitle="Leaders are approving systems that access proprietary data, interact with customers, invoke APIs, modify cloud resources, and execute operational workflows — while relying on policy documents, application-level guardrails, fragmented logs, and manual reconstruction."
+            />
+            <Card className="mt-8 border-primary/30">
+              <p className="text-base text-foreground/90 leading-relaxed">
+                If an autonomous agent takes an unauthorized action tomorrow, can you show what it was
+                allowed to do, what it actually did, and whether your controls intervened?
+              </p>
+              <p className="mt-4 text-sm text-muted-foreground">
+                KHEPRA ASAF is designed to make that answer defensible.
+              </p>
+            </Card>
+          </div>
+        </div>
+      </section>
+
       {/* CTA */}
       <section>
         <div className="container-x py-24">
@@ -332,17 +501,22 @@ function Home() {
             />
             <div className="relative grid lg:grid-cols-12 gap-8 items-center">
               <div className="lg:col-span-8">
-                <Eyebrow>Design partners · Q3 cohort open</Eyebrow>
+                <Eyebrow>AI Agent Authority Assessment</Eyebrow>
                 <h3 className="mt-4 text-3xl md:text-4xl font-semibold tracking-tight max-w-2xl">
-                  Bring cryptographic trust to your autonomous stack.
+                  Before your AI agents receive more authority, give your enterprise a way to control it.
                 </h3>
                 <p className="mt-4 text-muted-foreground max-w-xl">
-                  Join the KHEPRA alpha for early access to AdinKhepra, SouHimBou AI, and the trust protocol SDKs.
+                  We help you identify where autonomous agents operate, what tools and data they can
+                  reach, where authority is inherited or excessive, where prompt injection becomes tool
+                  execution, where policy lacks runtime enforcement, and where forensic replay is incomplete.
                 </p>
               </div>
-              <div className="lg:col-span-4 flex lg:justify-end">
-                <Link to="/developers" className="inline-flex items-center gap-2 rounded-md bg-primary px-6 py-3.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors glow-ring">
-                  Request Access <ArrowRight className="h-4 w-4" />
+              <div className="lg:col-span-4 flex lg:justify-end flex-wrap gap-3">
+                <Link to="/contact" className="inline-flex items-center gap-2 rounded-md bg-primary px-6 py-3.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors glow-ring">
+                  Assess Your Agent Attack Surface <ArrowRight className="h-4 w-4" />
+                </Link>
+                <Link to="/contact" className="inline-flex items-center gap-2 rounded-md border border-border bg-card/60 px-6 py-3.5 text-sm font-medium text-foreground hover:bg-card transition-colors">
+                  Schedule an Architecture Briefing
                 </Link>
               </div>
             </div>
