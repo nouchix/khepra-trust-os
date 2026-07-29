@@ -73,6 +73,25 @@ jobs:
       - name: Run duplicate-primitive guard
         run: bash ops/guards/no_duplicate_primitives.sh
 
+  # ── G-5: containment claims are enforced by the manifest making them ─────────
+  # The sovereign profile asserted "zero egress", "air-gap safe", and "no
+  # internet-facing interface attached" while its network was a plain bridge
+  # with no `internal` key — so every container on it, khepra-mcp included,
+  # could reach the internet. Five prose claims, none of them true, for as long
+  # as the file existed. This guard makes a containment claim an obligation.
+  containment:
+    name: "G-5 containment guard"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install PyYAML
+        # The guard reads compose network wiring properly rather than grepping
+        # for it. Getting that wrong in either direction is worse than not
+        # checking at all.
+        run: python3 -m pip install --quiet pyyaml
+      - name: Run containment guard
+        run: bash ops/guards/containment_guard.sh
+
   # ── core/: build, vet, test ──────────────────────────────────────────────────
   # Runs fully OFFLINE against core/vendor/. GOFLAGS=-mod=vendor and GOPROXY=off
   # mean a missing or incomplete vendor tree fails here rather than silently
