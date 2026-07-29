@@ -1,0 +1,52 @@
+# crypto_allowlist.txt — the ONLY cryptographic primitives core/ may import (guard G-4).
+#
+# Format:  <import path>   <standard>   <role>   <justification>
+# Lines starting with # are comments. Fields are whitespace-separated; the
+# justification runs to end of line.
+#
+# ADDING A LINE HERE IS A SECURITY DECISION, NOT A CHORE. The guard exists so
+# that introducing a new cryptographic primitive requires an explicit, reviewed
+# edit to this file rather than an import someone slips into a pull request.
+#
+# WHY THIS FILE EXISTS
+#   ARCH-013 states the rule: "quantum resistance is 100% the unmodified NIST
+#   primitives." That was prose. In July 2026 an AI-assisted cryptanalysis result
+#   against HAWK — a NIST PQC candidate that was NOT standardized — halved the
+#   scheme's effective key strength after it had survived two years of expert
+#   human review. KHEPRA was unaffected, because it ships only standardized
+#   schemes. But nothing in CI enforced that; it held by discipline alone.
+#   This file plus ops/guards/crypto_inventory_guard.sh makes it a control.
+#
+# THE STANDING RULE
+#   Ship only primitives that are (a) NIST/FIPS standardized, or (b) stdlib
+#   primitives with no known practical break. A PQC *candidate* — however
+#   promising, however compact — is a research artifact until it is standardized.
+#   HAWK is the worked example of why.
+
+# ── Post-quantum signature ───────────────────────────────────────────────────
+github.com/cloudflare/circl/sign/mldsa/mldsa65   FIPS-204   signature   ML-DSA-65 (Dilithium). Module-LWE/Module-SIS. The AEO signing scheme; the root of the evidence chain.
+
+# ── Post-quantum key encapsulation ───────────────────────────────────────────
+github.com/cloudflare/circl/kem/kyber/kyber1024  FIPS-203   kem         ML-KEM-1024 (Kyber). Module-LWE. Key establishment.
+
+# ── Classical, for hybrid defense-in-depth during the PQC transition ─────────
+# NOTE: Ed25519 falls to Shor. It is a hedge against a CLASSICAL break in a
+# lattice scheme, NOT a long-horizon quantum hedge. SLH-DSA (FIPS 205) is the
+# intended structural diversification — hash-based, sharing no hardness
+# assumption with lattices — and is blocked on CIRCL vendoring it.
+crypto/ed25519                                   RFC-8032   signature   Classical EdDSA. Second scheme in the all-must-verify hybrid suite.
+
+# ── Hashing / symmetric / primitives ─────────────────────────────────────────
+crypto/sha256                                    FIPS-180-4 hash        Content addressing for AEOs and the DAG. SHA-256.
+crypto/hmac                                      FIPS-198-1 mac         Hunter signal authentication (core/enforce/intake.go).
+crypto/aes                                       FIPS-197   cipher      Symmetric encryption primitive.
+crypto/cipher                                    stdlib     cipher      AEAD/block-mode wrapper for crypto/aes.
+crypto/rand                                      stdlib     csprng      The only permitted source of cryptographic randomness.
+crypto/subtle                                    stdlib     util        Constant-time comparison.
+
+# ── Pre-approved, not yet imported ───────────────────────────────────────────
+# Listed so that landing SLH-DSA is a vendoring exercise and not also an
+# allowlist debate. The guard does not require an allowlisted entry to be used.
+github.com/cloudflare/circl/sign/slhdsa          FIPS-205   signature   SLH-DSA. Stateless hash-based; shares no hardness assumption with lattices. The structural hedge. Blocked on CIRCL vendoring.
+crypto/sha512                                    FIPS-180-4 hash        SHA-512, permitted alongside SHA-256.
+crypto/sha3                                      FIPS-202   hash        SHA-3/SHAKE, permitted.
