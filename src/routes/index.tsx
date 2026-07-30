@@ -587,6 +587,32 @@ function Home() {
         </div>
       </section>
 
+      {/* FOR SERVICE PROVIDERS */}
+      <section className="border-b border-border/60">
+        <div className="container-x py-20 md:py-28 grid lg:grid-cols-12 gap-12">
+          <div className="lg:col-span-5">
+            <SectionHeading
+              eyebrow="For MSPs & MSSPs"
+              title={<>Four questions your clients are already asking.</>}
+              subtitle="Deliver a security control layer for customer AI systems — not another dashboard. Multi-tenant, client-specific policy domains, and evidence you can hand to their auditor."
+            />
+          </div>
+          <div className="lg:col-span-7 space-y-3">
+            {[
+              ["Can it find AI?", "Yes — AI and agent attack-surface discovery across the client estate."],
+              ["Can it audit AI against policy?", "Yes — continuous policy evaluation and behavioral attestation per tenant."],
+              ["Can it enforce policy?", "Yes — privileged runtime enforcement with approval gates, capability restriction, denial, isolation, and lockdown."],
+              ["Can it prove enforcement occurred?", "Yes — signed, DAG-backed evidence and forensic replay, exportable for client reporting and incident response."],
+            ].map(([q, a]) => (
+              <Card key={q}>
+                <div className="font-display text-lg font-semibold">{q}</div>
+                <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{a}</p>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* REVERSE PSYCHOLOGY + EXECUTIVE PAIN */}
       <section className="border-b border-border/60">
         <div className="container-x py-20 md:py-28 grid lg:grid-cols-12 gap-12">
