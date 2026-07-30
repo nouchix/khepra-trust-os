@@ -58,15 +58,15 @@ function SouHimBouPage() {
           <div className="lg:col-span-6">
             <Eyebrow>Why it matters</Eyebrow>
             <h2 className="mt-4 text-3xl md:text-4xl font-semibold tracking-tight">
-              You can't govern what you can't replay.
+              You can't govern what you can't stop — or replay.
             </h2>
             <ul className="mt-6 space-y-3">
               {[
-                "Full-fidelity capture: prompts, retrievals, tool I/O, external mutations.",
-                "Signed, tamper-evident timeline on the KHEPRA DAG.",
-                "Drift detection across models, prompts, and tool manifests.",
-                "Incident replay with byte-identical reconstruction of any session.",
-                "Redaction and policy-driven access for evidence review.",
+                "Interdiction in the call path: a denied tool call is never invoked, and unapproved egress fails at the transport.",
+                "Adaptive containment: normal, elevated, restricted, quarantined, locked — escalation is monotonic, reinstatement is explicit.",
+                "Human-in-the-loop gates: held actions queue for a named approver, and the approver's identity lands in the evidence.",
+                "Full-fidelity capture: prompts, retrievals, tool I/O, external mutations, and every policy ruling.",
+                "Signed, tamper-evident timeline on the KHEPRA DAG, with forensic replay of any session.",
               ].map((t) => (
                 <li key={t} className="flex items-start gap-3">
                   <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-0.5" />
