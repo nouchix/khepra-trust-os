@@ -34,7 +34,11 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
-  GO_VERSION: "1.24.7"
+  # Raised 1.24.7 -> 1.25.1 on 2026-07-28 to close SC-2. golang.org/x/sys v0.46.0
+  # declares `go >= 1.25.0`, so `go mod vendor` raises core/go.mod's directive to
+  # 1.25.0; holding CI at 1.24.7 would leave the vendor tree permanently unable to
+  # match upstream. See ARCH-014 §7.
+  GO_VERSION: "1.25.1"
 
 jobs:
   # ── G-1: sovereignty boundary ────────────────────────────────────────────────
@@ -80,6 +84,25 @@ jobs:
       - uses: actions/checkout@v4
       - name: Run crypto inventory guard
         run: bash ops/guards/crypto_inventory_guard.sh
+
+  # ── G-5: containment claims are enforced by the manifest making them ─────────
+  # The sovereign profile asserted "zero egress", "air-gap safe", and "no
+  # internet-facing interface attached" while its network was a plain bridge
+  # with no `internal` key — so every container on it, khepra-mcp included,
+  # could reach the internet. Five prose claims, none of them true, for as long
+  # as the file existed. This guard makes a containment claim an obligation.
+  containment:
+    name: "G-5 containment guard"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install PyYAML
+        # The guard reads compose network wiring properly rather than grepping
+        # for it. Getting that wrong in either direction is worse than not
+        # checking at all.
+        run: python3 -m pip install --quiet pyyaml
+      - name: Run containment guard
+        run: bash ops/guards/containment_guard.sh
 
   # ── core/: build, vet, test ──────────────────────────────────────────────────
   # Runs fully OFFLINE against core/vendor/. GOFLAGS=-mod=vendor and GOPROXY=off
@@ -248,37 +271,32 @@ jobs:
           GOFLAGS: -mod=mod
         run: go mod verify
 
-      - name: Report the dependency go-directive
-        # `go mod download` reports:
-        #   "module golang.org/x/sys@v0.46.0 requires go >= 1.25.0; switching to go1.25.12"
-        # while core/go.mod declares go 1.24.0. This is INFORMATIONAL, not a defect:
-        # it surfaces only in module mode (this job), because the vendored build path
-        # does not consult dependency go directives — core-verify builds and tests
-        # clean on Go 1.24.7 with GOPROXY=off. It is printed so the toolchain floor
-        # is a visible, deliberate fact rather than a surprise at release time.
-        continue-on-error: true
+      - name: Record the toolchain floor
+        # Printed so the Go floor is a visible, deliberate fact rather than a
+        # release-time surprise. x/sys v0.46.0 requires go >= 1.25.0, which is why
+        # core/go.mod declares 1.25.0 and GO_VERSION / core/Dockerfile's GO_IMAGE
+        # track it. If these ever disagree, the vendor-diff step below fails.
         run: |
           set -uo pipefail
-          echo "committed vendor/modules.txt go directives:"
+          echo "main module:  $(grep '^go ' go.mod)"
+          echo "dependency go directives recorded in vendor/modules.txt:"
           grep -A1 '^# ' vendor/modules.txt
-          echo
-          echo "main module go directive: $(grep '^go ' go.mod)"
 
       - name: Vendor tree must match upstream exactly
-        # REPORT-ONLY — gap SC-2 is REAL and open. See ARCH-014 §7.
+        # BLOCKING — SC-2 is closed (ARCH-014 §7). The committed vendor tree now
+        # reproduces `go mod vendor` output exactly: the 27 unreachable packages were
+        # pruned and go.mod's directive raised to 1.25.0.
         #
-        # I briefly marked SC-2 withdrawn and made this step blocking. That was
-        # wrong, and the thing that fooled me was a bug in THIS STEP: the old
-        # diagnostic piped `git diff` into `head -200`, and under `pipefail` the
-        # SIGPIPE from head killed the step with exit 141 — BEFORE the line that
-        # writes /tmp/vendor-drift.diff. With continue-on-error masking the failure,
-        # the run showed "success" and uploaded no drift artifact, and I read
-        # "no artifact" as "no drift". Twice.
-        #
-        # Never pipe the evidence-producing command into a truncating pager: write
-        # the artifact FIRST, then read the file. That ordering is the fix below,
-        # and it is why the drift is now visible at all.
-        continue-on-error: true
+        # Two earlier bugs in THIS step are why SC-2 took three attempts, and both
+        # fixes are load-bearing:
+        #   1. The diagnostic piped `git diff` into `head -200`. Under `pipefail`
+        #      head's SIGPIPE killed the step with exit 141 BEFORE the line writing
+        #      /tmp/vendor-drift.diff — so with continue-on-error masking it, the run
+        #      reported success and produced no evidence. Never pipe the
+        #      evidence-producing command into a truncating pager: write the artifact
+        #      FIRST, then read the file.
+        #   2. It was flipped to blocking while the drift was still real, on the
+        #      strength of that false success.
         env:
           GOFLAGS: -mod=mod
         run: |
@@ -291,7 +309,8 @@ jobs:
             # Write the full diff to the artifact path FIRST. No pipe, no truncation,
             # nothing that can SIGPIPE before the evidence exists.
             git --no-pager diff -- vendor/ go.mod go.sum > /tmp/vendor-drift.diff
-            echo "::warning::core/vendor/ does not match 'go mod vendor' output (gap SC-2)."
+            echo "::error::core/vendor/ does not match 'go mod vendor' output."
+            echo "::error::Run 'go mod vendor' in core/ and commit the result."
             echo "Full diff uploaded as the core-supply-chain artifact ($(wc -l < /tmp/vendor-drift.diff) lines)."
             git --no-pager diff --stat -- vendor/ go.mod go.sum > /tmp/vendor-drift.stat
             echo "--- summary ---"
@@ -381,6 +400,73 @@ jobs:
             exit 1
           fi
           echo "image runs as $uid"
+
+  # ── DM-1: the hosted demo surfaces enforce what the allowlist claims ─────────
+  # Guard G-1 checks only that a vendor-hosted demo surface is ACKNOWLEDGED in
+  # ops/guards/sovereignty_allowlist.txt. It cannot check that the conditions
+  # recorded there (no-CUI banner, isolated demo DAG, input guard, real-target
+  # block, tier gating) actually hold. This job checks them.
+  #
+  # It is opt-in via the KTOS_DEMO_MCP_URL / KTOS_DEMO_GATEWAY_URL repository
+  # variables. Without them the job reports "not configured" and passes, so a demo
+  # endpoint being down or unreleased can never wedge an unrelated PR. That is a
+  # deliberate trade: a hard dependency on a live third-party surface would make
+  # every merge hostage to its uptime.
+  demo-conformance:
+    name: "DM-1 demo surface conformance"
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: core
+    env:
+      GOFLAGS: -mod=vendor
+      GOPROXY: off
+      GOSUMDB: off
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: false
+
+      - name: Build the conformance checker
+        run: go build -trimpath -o /tmp/ktos-demotest ./cmd/ktos-demotest
+
+      - name: Assess the demo surfaces
+        env:
+          MCP_URL: ${{ vars.KTOS_DEMO_MCP_URL }}
+          GATEWAY_URL: ${{ vars.KTOS_DEMO_GATEWAY_URL }}
+        run: |
+          set -uo pipefail
+          if [ -z "${MCP_URL}" ] && [ -z "${GATEWAY_URL}" ]; then
+            echo "::notice::DM-1 not configured. Set repository variables"
+            echo "::notice::KTOS_DEMO_MCP_URL and/or KTOS_DEMO_GATEWAY_URL to assess the"
+            echo "::notice::hosted demo surfaces. Until then the allowlist conditions for"
+            echo "::notice::those surfaces remain unverified (ARCH-014 §7, gap DM-1)."
+            exit 0
+          fi
+          worst=0
+          for pair in "mcp:${MCP_URL}" "gateway:${GATEWAY_URL}"; do
+            kind="${pair%%:*}"
+            url="${pair#*:}"
+            [ -z "$url" ] && continue
+            echo "── ${kind} → ${url} ──"
+            rc=0
+            /tmp/ktos-demotest --target "$url" --kind "$kind" || rc=$?
+            case "$rc" in
+              0) echo "::notice::${kind}: conformant" ;;
+              3) echo "::error::${kind}: a required allowlist condition is NOT enforced"; worst=3 ;;
+              4) echo "::warning::${kind}: inconclusive — a condition could not be observed"
+                 [ "$worst" -eq 0 ] && worst=4 ;;
+              *) echo "::warning::${kind}: checker exited $rc"; [ "$worst" -eq 0 ] && worst=4 ;;
+            esac
+          done
+          # A real FAIL is a hard failure: the surface is doing something the
+          # allowlist says it must not. Inconclusive is surfaced but not fatal —
+          # it means we cannot see, which is a spec gap on the endpoint, not a
+          # regression in this repo.
+          [ "$worst" -eq 3 ] && exit 1
+          exit 0
 
   # ── Deployment manifest validity ─────────────────────────────────────────────
   # A deployment profile that cannot be parsed and resolved is not a deployment

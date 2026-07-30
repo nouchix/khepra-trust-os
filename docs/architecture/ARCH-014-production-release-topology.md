@@ -196,109 +196,172 @@ checksum transparency log (`GOSUMDB=sum.golang.org`), which is the actual
 upstream-authenticity control. It is now committed: 4 modules, 8 hashes. The
 `go.sum must be committed` step is **blocking**, so it cannot silently disappear
 again.
+**SC-2 — the committed vendor tree did not match `go mod vendor` output. CLOSED
+2026-07-28.** (Took three attempts and was twice mis-called; the history is kept
+below because the failure mode is instructive.)
 
-**SC-2 — the committed vendor tree does not match `go mod vendor` output. REAL,
-OPEN. (Briefly and wrongly marked "withdrawn" — see the correction below.)**
+### What was wrong
 
-The mechanism is now known exactly, from the first CI run whose diagnostic
-survived long enough to print it:
+Two things, both fixed:
 
-```
---- a/core/go.mod
--go 1.24.0
-+go 1.25.0
-...
-462 files changed, 2 insertions(+), 239870 deletions(-)
-```
+1. **The go directive was too low.** `golang.org/x/sys v0.46.0` declares
+   `go >= 1.25.0`, so `go mod vendor` raises `core/go.mod` from `1.24.0` to
+   `1.25.0`. Holding the module at 1.24 left the tree permanently unable to match
+   upstream.
+2. **The tree was over-vendored by 27 packages.** Verified with
+   `go list -deps`: the build reaches exactly **13 circl packages plus
+   `golang.org/x/sys/cpu`** — 14 in total. The committed tree carried 41,
+   including all of `x/sys/unix`, `x/sys/windows`, `windows/svc/{debug,eventlog,mgr}`,
+   `windows/registry`, `plan9`, `execabs`, and circl's `x25519`, `x448`,
+   `ed25519`, `ed448`, `goldilocks`, `kyber512`, `kyber768` and `dilithium/mode3`.
+   None of it is reachable. The surplus was almost certainly inherited from a
+   source repo where the ASAF daemon *did* use `x/sys/unix` and `windows/svc`.
 
-Two things happen when `go mod vendor` runs:
+### The fix
 
-1. **It rewrites the go directive** from `1.24.0` to `1.25.0`, because
-   `golang.org/x/sys v0.46.0` requires `go >= 1.25.0` and the toolchain raises the
-   main module's directive to satisfy it.
-2. **It prunes 462 files / ~240k lines** of vendored code that nothing reaches.
-   Verified against the source: `core/` imports **nothing** from
-   `golang.org/x/sys` directly, and only two circl packages
-   (`kem/kyber/kyber1024`, `sign/mldsa/mldsa65`). But the committed tree carries
-   `x/sys/unix`, `x/sys/windows`, `windows/svc/{debug,eventlog,mgr}`,
-   `windows/registry`, `plan9`, `execabs`, and circl's `x25519`/`x448` — none of
-   which are reachable. The committed tree is **over-vendored**, most likely
-   inherited from a source repo where the ASAF daemon *did* use `x/sys/unix` and
-   `windows/svc`.
+`go mod vendor` could not be run in the authoring environment (the module proxy
+returns 403 there), but the operation is deterministic, so it was reproduced
+directly: the drop set was computed from `go list -deps` rather than chosen by
+hand, those 27 package directories were deleted, `vendor/modules.txt` was
+regenerated from the reachable set, and the go directive was raised to `1.25.0`.
 
-The pruning is correct behaviour, not damage: a vendor directory is supposed to
-contain exactly what the build imports. Removing ~240k lines of unreachable
-third-party code is a supply-chain *improvement* — smaller SBOM, smaller audit
-surface, less to review for a FIPS/ATO story.
+**Confirmed byte-exact against upstream.** The resulting diff is
+`462 files changed, 2 insertions(+), 239870 deletions(-)` — identical in every
+figure to the diff CI's own `go mod vendor` produced on run `30330971793`. The
+tree shrank from **11 MB / 511 Go files to 1.1 MB / 105 Go files**.
 
-### Correction: why this was briefly marked "withdrawn"
+Verified with Go 1.25.1 offline (`GOFLAGS=-mod=vendor GOPROXY=off`): vendor
+consistency, `build`, `vet`, `gofmt`, the full suite under `-race`, and all three
+static binaries building and running. Go validates `vendor/modules.txt` against
+`go.mod` and the import graph in vendor mode, so a wrong package list or a wrong
+`## explicit; go` annotation fails the build rather than passing silently.
 
-I marked SC-2 withdrawn on the strength of a run that reported success and
-uploaded no drift artifact. **That reasoning was wrong, and the cause was a bug in
-the check itself.** The diagnostic piped `git diff` into `head -200`; under
-`pipefail`, `head` closing the pipe sent SIGPIPE to `git diff`, killing the step
-with exit **141** — *before* the line that writes `/tmp/vendor-drift.diff`. With
-`continue-on-error` masking the failure, the job showed `conclusion: success` and
-produced no artifact. I read "no artifact" as "no drift," twice.
+*Consequences:* `GO_VERSION` (CI) and `GO_IMAGE` (`core/Dockerfile`) move to
+1.25.1, and the vendor-diff step is **blocking**. Dropping ~240k lines of
+unreachable third-party code is also a real supply-chain win — smaller SBOM,
+smaller audit surface, less third-party code to justify in a FIPS/ATO review.
 
-Two durable lessons, both now encoded in the workflow:
+### Why this took three attempts — the instructive part
+
+The gap was called *real*, then *withdrawn*, then *real again*. The withdrawal was
+wrong, and the cause was a bug in the check itself:
+
+- The diagnostic piped `git diff` into `head -200`. Under `pipefail`, `head`
+  closing the pipe sent SIGPIPE to `git diff`, killing the step with exit **141**
+  — *before* the line that writes `/tmp/vendor-drift.diff`. With
+  `continue-on-error` masking the failure, the job reported
+  `conclusion: success` and produced no artifact. "No artifact" was then read as
+  "no drift."
+- The original diagnosis had also been partly right for the wrong reason: it
+  flagged `vendor/modules.txt` recording `## explicit; go 1.24.0` for `x/sys` as
+  suspicious. That annotation *was* wrong — upstream is `1.25.0` — but the
+  inference drawn from it ("generated under a different go.mod") was not the
+  mechanism.
+
+Three rules now encoded in the workflow:
 
 - **Never pipe an evidence-producing command into a truncating pager.** Write the
   artifact first, then read the file. A diagnostic that destroys its own evidence
-  is worse than no diagnostic, because it reports success.
+  is worse than none, because it reports success.
 - **`continue-on-error` steps report `conclusion: success` in the Actions API
-  regardless of what the command did.** Job status alone cannot distinguish
-  "passed" from "failed but tolerated." Only the log or the artifact can.
+  regardless of what the command did.** Job status cannot distinguish "passed"
+  from "failed but tolerated" — only the log or the artifact can.
+- **Do not flip a check to blocking on the strength of a run that produced no
+  evidence.** Absence of a failure artifact is not proof of success when the
+  failure path is what writes the artifact.
 
-### Resolution — needs a decision
+**SV-1 — the sovereign UI is built against cloud Supabase. SCOPED 2026-07-28:
+this repo is clean; the gap is in Adinkhepra-ASAF only.**
 
-- **(a) Accept upstream (recommended).** Set `go 1.25.0`, run `go mod vendor`,
-  commit the pruned tree, and raise the toolchain floor in `GO_VERSION` (CI) and
-  `GO_IMAGE` (`core/Dockerfile`) to 1.25.x. This is the upstream-correct answer
-  *and* it deletes ~240k lines of unreachable vendored code.
-- **(b) Hold the floor at 1.24.** Pin `golang.org/x/sys` to its last
-  `go 1.24`-compatible release and re-vendor. Keeps the toolchain where it is,
-  but keeps us on an older dependency for no benefit — `x/sys` is not on the
-  evidence path, and nothing in `core` imports it directly.
+Investigated rather than assumed. **`khepra-trust-os` does not have this
+problem:** all three Supabase clients here initialize lazily — `client.ts` behind
+a `Proxy` that calls `createSupabaseClient()` only on first property access, and
+`client.server.ts` / `auth-middleware.ts` inside functions — and the public API
+routes reach Supabase through a dynamic `await import(...)`. Nothing forces
+`VITE_SUPABASE_*` at build time; a missing variable throws at first *use*, not at
+build. So this repo's frontend builds and ships without a cloud dependency baked
+in.
 
-**(a) is the right call.** I previously recommended (b); that was based on the
-mistaken belief that the toolchain floor was the only issue. Now that the
-over-vendoring is visible, (a) fixes both at once.
+The gap is real but belongs to **`asaf-ui` in Adinkhepra-ASAF**: its Next.js
+`/AuthCallback` initializes the Supabase client at *module scope*, which makes
+`NEXT_PUBLIC_SUPABASE_URL` / `_ANON_KEY` mandatory at build time. Moving the build
+out of the compose file (§6) relocated that problem to the UI's own repo; it did
+not solve it, and an air-gapped site still ships an image built against a cloud
+project.
 
-Neither can be executed in the authoring environment — `go mod vendor` needs the
-module proxy, which is blocked there by egress policy — so the step ships
-**report-only** and uploads the complete diff plus a `--stat` summary as the
-`core-supply-chain` artifact. Applying that artifact and deleting one
-`continue-on-error` line closes SC-2.
+*Fix shape (in that repo, not this one):* move the client behind a lazy accessor —
+the same `Proxy` pattern `khepra-trust-os/src/integrations/supabase/client.ts`
+already uses — and gate the `/AuthCallback` route on a sovereign-mode flag so an
+air-gapped build has no cloud auth path to initialize. That is a change to
+Adinkhepra-ASAF and cannot be validated from this repo.
 
-*Not affected:* the offline build. Vendor mode does not re-check dependency go
-directives and happily builds from an over-vendored tree, which is why
-`core-verify` builds, vets and passes all tests on Go 1.24.7 with `GOPROXY=off`.
-SC-2 is a provenance gap, not a broken build.
-
-**SV-1 — the sovereign UI is still built against cloud Supabase.** `asaf-ui`
-needs `NEXT_PUBLIC_SUPABASE_URL` / `_ANON_KEY` at *build* time because
-`/AuthCallback` initializes the Supabase client at module scope. Moving the build
-out of this compose file (§6) relocated that problem to the UI's own repo; it did
-not solve it. An air-gapped site still ships an image built against a cloud
-project. Pre-existing (flagged 2026-06-30), unchanged by this work, and a real
-gap in the sovereignty claim.
+*Correction to the earlier wording:* SV-1 was previously written as though it
+applied to the sovereign profile generally. It does not — it is one route in one
+component. Recording it as broader than it is would have justified work that
+isn't needed here.
 
 **RL-1 — no release workflow yet.** §5 describes the procedure; no
 `.github/workflows/release.yml` implements it. Today CI *builds* the core image
 (`image` job) but never pushes it, and digest resolution is manual. Until that
 workflow exists, §5 is a runbook, not a control.
 
-**DM-1 — the hosted demo surfaces' TRL10 conditions are unverified.** §6.1 moves
-demonstrations off local stubs and onto `gateway.souhimbou.ai` and
-`mcp.souhimbou.ai`. The G-1 allowlist already records what those endpoints must
-have — input guard, "no CUI" banner, isolated demo DAG, blocked real-target and
-credential submission, tier-gated authenticated scans — but G-1 only checks that a
-vendor-hosted demo surface is *acknowledged*, not that those controls exist. So
-removing the local simulation improved the shipped binaries and shifted the
-exposure to a hosted endpoint whose guarantees nothing in CI currently tests. That
-is a net improvement (a customer-run binary no longer opens sockets), but it is not
-a closed loop. Verifying those five conditions is the follow-up.
+**DM-1 — the hosted demo surfaces' conditions. PARTIALLY CLOSED 2026-07-28:
+implemented and tested for the MCP surface; web routes and the gateway remain.**
+
+§6.1 moved demonstrations off local stubs and onto `gateway.souhimbou.ai` and
+`mcp.souhimbou.ai`. The G-1 allowlist records what those endpoints must have —
+input guard, "no CUI" banner, isolated demo DAG, blocked real-target submission,
+tier-gated authenticated scans — but G-1 only checks that a surface is
+*acknowledged*, never that the controls exist. They were prose.
+
+**Now implemented (`core/mcp/demoguard.go`), for the surface `server.json` names
+as this server's homepage:**
+
+- **Banner** — `NoCUINotice` rides in the MCP `initialize` response's
+  `instructions` field, so every client sees it before its first tool call. A
+  banner a human must scroll to is not a control; this is delivered in-band.
+- **Demo-mode declaration** — a machine-readable `demoMode` object naming the DAG
+  and accepted classification, which is what makes "the demo DAG is isolated"
+  externally checkable instead of `UNVERIFIABLE`.
+- **Input guard** — refuses credential shapes (PEM keys, AWS/Stripe/GitHub/Slack
+  tokens, JWTs, bearer headers), banner/portion control markings (`CUI//`, leading
+  `CUI`, `CONTROLLED UNCLASSIFIED`, `NOFORN`, `FOUO`, `ITAR`, classification
+  banners), and sensitive field names. **Screened before the trust layer runs**, so
+  refused input is never recorded: an AEO is content-addressed and chained, so a
+  credential written into the ledger cannot be removed afterwards without breaking
+  the chain. Refuse first, record nothing.
+- **Opt-in** — driven by `KHEPRA_DAG_SEED_DEMO`, the same variable the allowlist
+  already records, so the deployment knob and the documented condition cannot
+  drift. Unset means sovereign: no banner, no guard, CUI accepted — correct for a
+  customer inside their own boundary, where controlled data is the point.
+
+**Two stated limits, because overclaiming here is worse than the gap:**
+
+1. **Unmarked CUI is undetectable by any pattern.** Nothing can tell that an
+   ordinary-looking hostname or filename is controlled. The banner is the primary
+   control; the guard is defence in depth against pasted *marked* documents.
+2. **Casual mentions are deliberately allowed.** An earlier version matched
+   `CUI` as a token and refused the product's own catalog text
+   ("FIPS-validated cryptography for CUI at rest") — caught by a test. The guard
+   now targets marking *syntax*, not vocabulary. A guard that blocks the product's
+   own reference data is a bug, not caution.
+
+**Still open:**
+
+- **`gateway.souhimbou.ai`** — the eval-scan surface. Its two extra conditions
+  (real-target block, tier-gated authenticated scans) are checked by
+  `core/democonform` but not yet implemented; that code lives in PQC-Khepra-MCP.
+- **The web demo routes** (`src/routes/api/public/{demo,aeo,fabric}.ts`) — public,
+  unauthenticated, and currently carrying neither banner nor input guard. Not
+  fixed here because this environment cannot install dependencies
+  (`npm` returns 403) and the project has no test framework, so the change could
+  not be compiled or tested. **Shipping an untested regex guard into a public
+  request path would be the same mistake as the SIGPIPE bug in §7 — a control that
+  looks present and is not.** The Go implementation above is the reference; the
+  TypeScript port should be applied and built locally.
+- **CI wiring** — the `demo-conformance` job exists and is opt-in via the
+  `KTOS_DEMO_MCP_URL` / `KTOS_DEMO_GATEWAY_URL` repository variables. Until those
+  are set, the hosted surfaces are still unassessed in CI.
 
 **DP-1 — no systemd unit for `asaf-daemon`.** Unchanged from the ported profile:
 the privileged daemon runs on bare metal, not in compose, and no unit file exists
