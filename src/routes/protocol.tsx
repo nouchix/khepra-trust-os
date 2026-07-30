@@ -1,13 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHero, SectionHeading, Card, Eyebrow } from "@/components/section";
+import { JsonLd, buildBreadcrumbSchema } from "@/components/seo-json-ld";
 
 export const Route = createFileRoute("/protocol")({
   head: () => ({
     meta: [
       { title: "KHEPRA Autonomous Governance Protocol (AGP)" },
       { name: "description", content: "AGP defines Governed State Transitions, Agent Evidence Objects, and the Autonomous Governance Fabric — cryptographic governance for every autonomous action." },
-      { property: "og:title", content: "KHEPRA Autonomous Governance Protocol" },
-      { property: "og:description", content: "GST · AEO · AGF · ASAF Runtime · Proof Ledger · Governance Graph." },
+      { property: "og:title", content: "KHEPRA Autonomous Governance Protocol (AGP)" },
+      { property: "og:description", content: "AGP defines Governed State Transitions, Agent Evidence Objects, and the Autonomous Governance Fabric — cryptographic governance for every autonomous action." },
       { property: "og:type", content: "article" },
     ],
     links: [{ rel: "canonical", href: "https://adinkhepra.com/protocol" }],
@@ -18,9 +19,15 @@ export const Route = createFileRoute("/protocol")({
 function ProtocolPage() {
   return (
     <>
+      <JsonLd
+        data={buildBreadcrumbSchema([
+          { name: "Home", url: "https://adinkhepra.com/" },
+          { name: "Protocol", url: "https://adinkhepra.com/protocol" },
+        ])}
+      />
       <PageHero
         eyebrow="Autonomous Governance Protocol · SDS v3.0"
-        title={<>Cryptographic governance, <br/>not implicit autonomy.</>}
+        title={<>KHEPRA Autonomous Governance Protocol (AGP) — <span className="text-gradient">Cryptographic Governance</span></>}
         subtitle="AGP specifies the Governed State Transition (GST) lifecycle, the canonical Agent Evidence Object (AEO), and the five-plane Autonomous Governance Fabric. Every autonomous state transition SHALL produce independently verifiable cryptographic evidence."
       />
 

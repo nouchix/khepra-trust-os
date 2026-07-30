@@ -2,14 +2,15 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHero, SectionHeading, Card, Eyebrow } from "@/components/section";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 import souImg from "@/assets/souhimbou.jpg";
+import { JsonLd, buildSoftwareAppSchema } from "@/components/seo-json-ld";
 
 export const Route = createFileRoute("/products/souhimbou")({
   head: () => ({
     meta: [
-      { title: "SouHimBou AI — Security Camera & Flight Recorder for AI Agents" },
+      { title: "SouHimBou AI — Security Camera for AI Agents" },
       { name: "description", content: "Record every prompt, retrieval, tool call, and mutation as a replayable signed timeline. Detect drift, prove intent, reconstruct incidents." },
-      { property: "og:title", content: "SouHimBou AI — Flight Recorder for AI Agents" },
-      { property: "og:description", content: "Cryptographic surveillance for autonomous agents on the KHEPRA Trust Network." },
+      { property: "og:title", content: "SouHimBou AI — Security Camera for AI Agents" },
+      { property: "og:description", content: "Record every prompt, retrieval, tool call, and mutation as a replayable signed timeline. Detect drift, prove intent, reconstruct incidents." },
     ],
   }),
   component: SouHimBouPage,
@@ -18,9 +19,17 @@ export const Route = createFileRoute("/products/souhimbou")({
 function SouHimBouPage() {
   return (
     <>
+      <JsonLd
+        data={buildSoftwareAppSchema({
+          name: "SouHimBou AI",
+          description: "Record every prompt, retrieval, tool call, and mutation as a replayable signed timeline. Detect drift, prove intent, reconstruct incidents.",
+          url: "https://adinkhepra.com/products/souhimbou",
+          applicationCategory: "SecurityApplication",
+        })}
+      />
       <PageHero
         eyebrow="Product 02 · SouHimBou AI"
-        title={<>Security camera & <span className="text-gradient">flight recorder</span> for AI agents.</>}
+        title={<>SouHimBou AI — Security Camera & <span className="text-gradient">Flight Recorder</span></>}
         subtitle="SouHimBou records every prompt, retrieval, tool call, and mutation as a signed, replayable timeline — so you can detect drift, prove intent, and reconstruct incidents step by step."
       />
 
@@ -79,7 +88,7 @@ function SouHimBouPage() {
         <div className="container-x py-20">
           <div className="surface-card p-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
             <div>
-              <h3 className="text-2xl font-semibold tracking-tight">Deploying agents to production?</h3>
+              <h2 className="text-2xl font-semibold tracking-tight">Deploying agents to production?</h2>
               <p className="mt-2 text-sm text-muted-foreground max-w-xl">SouHimBou AI drops into your runtime with SDKs for Python, TS, and gRPC sidecar. Alpha access is open to a limited cohort.</p>
             </div>
             <Link to="/developers" className="inline-flex items-center gap-2 rounded-md bg-primary px-5 py-3 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors">

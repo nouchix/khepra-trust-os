@@ -6,9 +6,9 @@ export const Route = createFileRoute("/developers")({
   head: () => ({
     meta: [
       { title: "Developer Portal — KHEPRA Trust Network" },
-      { name: "description", content: "SDKs, connectors, protocol references, and alpha access for the KHEPRA Trust Network." },
-      { property: "og:title", content: "KHEPRA Developer Portal" },
-      { property: "og:description", content: "Build on the KHEPRA trust protocol." },
+      { name: "description", content: "Developer Portal for the KHEPRA Trust Network. Access SDKs, pre-built connectors, protocol specifications, API keys, and alpha developer resources." },
+      { property: "og:title", content: "Developer Portal — KHEPRA Trust Network" },
+      { property: "og:description", content: "Developer Portal for the KHEPRA Trust Network. Access SDKs, pre-built connectors, protocol specifications, API keys, and alpha developer resources." },
     ],
   }),
   component: DevPage,
@@ -19,7 +19,7 @@ function DevPage() {
     <>
       <PageHero
         eyebrow="Developer Portal"
-        title={<>Build on the trust protocol.</>}
+        title={<>Developer Portal — <span className="text-gradient">KHEPRA</span> Trust Network</>}
         subtitle="SDKs, signed connector kits, policy bundles, and reference implementations. Everything you need to attach your stack to the KHEPRA Trust Network."
       />
 

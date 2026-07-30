@@ -14,7 +14,7 @@ export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
       { title: "Sign In · KHEPRA Trust OS Fabric" },
-      { name: "description", content: "Access the KHEPRA Stargate Console — the operator surface for the Trust OS Fabric." },
+      { name: "description", content: "Access the KHEPRA Stargate Console — the operator surface for the Trust OS Fabric. Authenticate to manage cryptographic identities, keys, and policy execution." },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -77,6 +77,7 @@ function AuthPage() {
           </div>
         </div>
         <h1 className="text-xl mb-1" style={{ color: "var(--nx-text)" }}>{mode === "signin" ? "Sign in" : "Create account"}</h1>
+        <h2 className="sr-only">Operator Authentication & Access Control</h2>
         <p className="cs-mono mb-6" style={{ color: "var(--nx-text2)", fontSize: 11 }}>
           {mode === "signin" ? "Access the Trust OS Fabric." : "New tenant provisioned automatically."}
         </p>

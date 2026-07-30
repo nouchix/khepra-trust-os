@@ -7,9 +7,9 @@ export const Route = createFileRoute("/trust-network")({
   head: () => ({
     meta: [
       { title: "The Trust Network — Federated Attestation | KHEPRA" },
-      { name: "description", content: "The KHEPRA Trust Network federates cryptographic attestation across organizations, vendors, and jurisdictions." },
-      { property: "og:title", content: "The KHEPRA Trust Network" },
-      { property: "og:description", content: "Federated attestation across organizations and vendors." },
+      { name: "description", content: "The KHEPRA Trust Network federates cryptographic attestation and governance policies seamlessly across organizations, cloud vendors, and jurisdictions." },
+      { property: "og:title", content: "The Trust Network — Federated Attestation | KHEPRA" },
+      { property: "og:description", content: "The KHEPRA Trust Network federates cryptographic attestation and governance policies seamlessly across organizations, cloud vendors, and jurisdictions." },
     ],
   }),
   component: TrustNetworkPage,
@@ -33,7 +33,7 @@ function TrustNetworkPage() {
     <>
       <PageHero
         eyebrow="The Trust Network"
-        title={<>A federation of <span className="text-gradient">verifiable</span> actors.</>}
+        title={<>The Trust Network — Federated Attestation | <span className="text-gradient">KHEPRA</span></>}
         subtitle="KHEPRA is more than a product. It's a growing network of organizations, auditors, and vendors that emit and verify signed evidence on a shared protocol — no privileged intermediary required."
       />
 
@@ -94,7 +94,7 @@ function TrustNetworkPage() {
         <div className="container-x py-20">
           <div className="surface-card p-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
             <div>
-              <h3 className="text-2xl font-semibold tracking-tight">Apply to the Trust Network.</h3>
+              <h2 className="text-2xl font-semibold tracking-tight">Apply to the Trust Network.</h2>
               <p className="mt-2 text-sm text-muted-foreground max-w-xl">Certification review, technical onboarding, and go-to-market alignment.</p>
             </div>
             <Link to="/contact" className="inline-flex items-center gap-2 rounded-md bg-primary px-5 py-3 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors">

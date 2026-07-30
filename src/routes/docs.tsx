@@ -7,9 +7,9 @@ export const Route = createFileRoute("/docs")({
   head: () => ({
     meta: [
       { title: "Documentation — KHEPRA Trust Network" },
-      { name: "description", content: "Protocol reference, SDK guides, connector authoring, and API documentation for the KHEPRA Trust Network." },
-      { property: "og:title", content: "KHEPRA Documentation" },
-      { property: "og:description", content: "Protocol reference and SDK guides." },
+      { name: "description", content: "Explore documentation for the KHEPRA Trust Network. Access protocol specifications, SDK integration guides, connector authoring manuals, and API references." },
+      { property: "og:title", content: "Documentation — KHEPRA Trust Network" },
+      { property: "og:description", content: "Explore documentation for the KHEPRA Trust Network. Access protocol specifications, SDK integration guides, connector authoring manuals, and API references." },
     ],
   }),
   component: DocsPage,
@@ -77,7 +77,7 @@ function DocsPage() {
     <>
       <PageHero
         eyebrow="Documentation"
-        title={<>Everything to build on the trust protocol.</>}
+        title={<>Documentation — <span className="text-gradient">KHEPRA</span> Trust Network</>}
         subtitle="Protocol reference, SDK guides, and API documentation. Written for the engineer who has to make it work in production on Monday."
       />
 

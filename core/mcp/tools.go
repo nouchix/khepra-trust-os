@@ -13,10 +13,19 @@ import (
 	"github.com/nouchix/khepra-trust-os/core/aeo"
 	"github.com/nouchix/khepra-trust-os/core/citizenship"
 	"github.com/nouchix/khepra-trust-os/core/dag"
+	"github.com/nouchix/khepra-trust-os/core/dataloop"
+	"github.com/nouchix/khepra-trust-os/core/enforce"
 )
 
 // RegistrarName is the human-readable issuer stamped onto passports.
 const RegistrarName = "KHEPRA Trust OS Registrar"
+
+// RegisteredAgentInfo summarizes an internally registered agent identity.
+type RegisteredAgentInfo struct {
+	AgentID   string
+	Name      string
+	PublicKey string
+}
 
 // agentState binds a registered agent's identity to its recorder.
 type agentState struct {
@@ -32,6 +41,7 @@ type TrustServer struct {
 	ledger    *aeo.Ledger
 	registrar *citizenship.Registrar
 	agents    map[string]*agentState
+	dataLoop  *dataloop.DataLoop
 
 	tools map[string]toolDef
 	order []string
@@ -60,6 +70,7 @@ func NewTrustServer() *TrustServer {
 		ledger:    aeo.NewLedger(dag.NewMemory(), ledgerPriv),
 		registrar: citizenship.NewRegistrar(RegistrarName, regPriv, regPub),
 		agents:    make(map[string]*agentState),
+		dataLoop:  dataloop.NewDataLoop(enforce.ViaMCPGateway),
 	}
 	t.registerTools()
 	return t
@@ -235,9 +246,80 @@ func (t *TrustServer) registerTools() {
 		"Aggregate trust metrics across all registered agents: agent count, total anchored AEOs, and mean trust score. Useful for traction/social-proof dashboards.",
 		obj(map[string]any{}),
 		t.handleLedgerStats)
+
+	add("scan_shadow_ai",
+		"Discover unapproved or rogue AI services, agents, LLMs, vector databases, and notebooks across target hosts/CIDRs with signature-based HTTP probes.",
+		obj(map[string]any{
+			"targets":         map[string]any{"type": "array", "description": "list of host IPs or subnets (e.g. ['127.0.0.1', '192.168.1.0/24'])"},
+			"timeout_seconds": map[string]any{"type": "integer", "description": "scan timeout in seconds (default: 10)"},
+		}),
+		t.handleScanShadowAI)
+
+	add("attest_ai_policy",
+		"Evaluate discovered AI asset findings against a customer's AI governance policy, producing deterministic verdicts, audit hashes, and suggested enforcement postures.",
+		obj(map[string]any{
+			"policy":   map[string]any{"type": "object", "description": "customer AI governance policy object"},
+			"findings": map[string]any{"type": "array", "description": "list of discovered AI asset findings"},
+		}, "policy", "findings"),
+		t.handleAttestAIPolicy)
+
+	add("linux_hardening_check",
+		"Run real-time Linux host hardening checks against Trimstray Practical Hardening rules and DISA RHEL 9/10 benchmarks.",
+		obj(map[string]any{
+			"domain": map[string]any{"type": "string", "description": "hardening domain: all | kernel | ssh | pam | filesystem | audit"},
+		}),
+		t.handleLinuxHardeningCheck)
+
+	add("stig_live_query",
+		"Query the live DISA STIG Viewer API v2 for updated benchmarks, CCIs, NIST crosswalks, check contents, and fix texts.",
+		obj(map[string]any{
+			"slug":     map[string]any{"type": "string", "description": "STIG benchmark slug (default: red_hat_enterprise_linux_9)"},
+			"severity": map[string]any{"type": "string", "description": "severity filter: high | medium | low"},
+		}),
+		t.handleSTIGLiveQuery)
+
+	add("agentpack_deploy",
+		"Deploy a declarative agentpack blueprint (agentpack.yaml): parse identity, mission, tools allowed, security policies, and generate governed runtime containment grants.",
+		obj(map[string]any{
+			"agentpack_yaml": map[string]any{"type": "string", "description": "raw agentpack.yaml or JSON string"},
+			"agentpack_json": map[string]any{"type": "string", "description": "raw agentpack JSON string"},
+		}),
+		t.handleAgentpackDeploy)
+
+	add("dataloop_process",
+		"Execute one cycle of the 6-step KHEPRA Autonomous Governance Data Loop Engine (Intent -> PDP Ruling -> ASAF Actuation -> ML-DSA-65 AEO -> Telemetry -> Data Intelligence).",
+		obj(map[string]any{
+			"agent_id":    str,
+			"intent":      map[string]any{"type": "string", "description": "declared operational intent"},
+			"tool":        map[string]any{"type": "string", "description": "tool to invoke"},
+			"target":      map[string]any{"type": "string", "description": "target resource or endpoint"},
+			"capability":  map[string]any{"type": "string", "description": "read | write | exec"},
+			"environment": map[string]any{"type": "string", "description": "railway | aws | hetzner | sovereign_airgap"},
+		}, "agent_id", "intent", "tool", "target"),
+		t.handleDataLoopProcess)
+
+	add("dataloop_intelligence",
+		"Retrieve real-time Data Intelligence Layer metrics and moat analytics (safe remediations, false positive rate, FAIR financial risk score, cross-cloud reliability).",
+		obj(map[string]any{}),
+		t.handleDataLoopIntelligence)
 }
 
 // ─── handlers ───────────────────────────────────────────────────────────────
+
+func (t *TrustServer) registerAgentInternal(name string, pub, priv []byte) (*RegisteredAgentInfo, error) {
+	rec := aeo.NewRecorder(priv, pub)
+	did := rec.AgentID()
+	if name == "" {
+		name = "agent"
+	}
+	t.agents[did] = &agentState{name: name, pub: pub, priv: priv, recorder: rec}
+
+	return &RegisteredAgentInfo{
+		AgentID:   did,
+		Name:      name,
+		PublicKey: hex.EncodeToString(pub),
+	}, nil
+}
 
 func (t *TrustServer) handleAgentRegister(args json.RawMessage) (any, error) {
 	var in struct {
@@ -249,19 +331,17 @@ func (t *TrustServer) handleAgentRegister(args json.RawMessage) (any, error) {
 	if err != nil {
 		return nil, fmt.Errorf("keygen failed: %w", err)
 	}
-	rec := aeo.NewRecorder(priv, pub)
-	did := rec.AgentID()
-	name := in.Name
-	if name == "" {
-		name = "agent"
+
+	info, err := t.registerAgentInternal(in.Name, pub, priv)
+	if err != nil {
+		return nil, err
 	}
-	t.agents[did] = &agentState{name: name, pub: pub, priv: priv, recorder: rec}
 
 	return map[string]any{
-		"agent_id":   did,
-		"name":       name,
+		"agent_id":   info.AgentID,
+		"name":       info.Name,
 		"algorithm":  aeo.AttestAlgorithm,
-		"public_key": hex.EncodeToString(pub),
+		"public_key": info.PublicKey,
 	}, nil
 }
 

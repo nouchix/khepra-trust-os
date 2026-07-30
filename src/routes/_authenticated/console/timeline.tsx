@@ -10,7 +10,13 @@ import { listSessions, getSessionDag } from "@/lib/console/aeos.functions";
 import type { DagNode } from "@/lib/console/types";
 
 export const Route = createFileRoute("/_authenticated/console/timeline")({
-  head: () => ({ meta: [{ title: "Timeline · KHEPRA Stargate" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({
+    meta: [
+      { title: "Timeline · KHEPRA Stargate Console" },
+      { name: "description", content: "Explore real-time evidence DAG timelines and attestation graphs on the KHEPRA Stargate Console." },
+      { name: "robots", content: "noindex" },
+    ],
+  }),
   component: TimelinePage,
 });
 

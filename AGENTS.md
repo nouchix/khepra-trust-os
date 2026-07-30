@@ -46,10 +46,10 @@ vendored deps, builds offline — `cd core && go vet ./... && go test ./...`):
   registrar-signed credential composing identity + verified history +
   behavioral baseline + trust standing. Citizenship is earned by record, not
   asserted: no passport without a fully replayed, verified chain.
-- **`core/adinkra` / `core/dag` / `core/forensics`** — interim support copies
-  (PQC primitives, anchor store, host collector); they collapse into the
-  Sovereign Data plane when it migrates with history.
-- Spec: `docs/AEO_TRUST_EXTENSION.md`.
+- **`core/enforce`** — Privileged Enforcement Plane: PDP/PEP decision engine providing 5 graduated containment postures (`PostureNormal`, `PostureElevated`, `PostureRestricted`, `PostureQuarantined`, `PostureLocked`) and interposition gating (`Allow`, `Constrain`, `RequireApproval`, `Deny`, `Quarantine`, `Lock`).
+- **`core/aidiscovery`** — Shadow AI Asset Discovery & Governance Policy Evaluator: signature catalog (15+ AI models/ rts), HTTP discovery probes, and deterministic policy evaluation citing specific AI-GOV rules. Exposed as native MCP tools `scan_shadow_ai` and `attest_ai_policy`.
+- **`core/adinkra` / `core/dag` / `core/forensics`** — PQC primitives, anchor store, and host collector.
+- Specs: `docs/architecture/DUAL_MCP_ARCHITECTURE.md` & `docs/architecture/LICENSING_ARCHITECTURE.md`.
 
 ## Rules for agents working here
 

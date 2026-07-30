@@ -8,9 +8,9 @@ export const Route = createFileRoute("/empty-lane")({
       {
         name: "description",
         content:
-          "Detect, prevent, or write policy — everyone does one. KHEPRA remediates the host and hands back a post-quantum signed proof, on the same attested ledger it uses to prove what an AI agent did.",
+          "KHEPRA remediates the host and returns post-quantum signed proof on the same attested ledger used to prove AI agent actions. Technical competitive teardown.",
       },
-      { property: "og:title", content: "KHEPRA — The Empty Lane" },
+      { property: "og:title", content: "The Empty Lane — KHEPRA competitive teardown" },
       {
         property: "og:description",
         content:
@@ -178,8 +178,7 @@ function EmptyLanePage() {
         eyebrow="Competitive teardown · Agentic-AI trust market"
         title={
           <>
-            Everyone watches. Almost no one{" "}
-            <span className="text-gradient italic">acts — with proof</span>.
+            The Empty Lane — <span className="text-gradient">KHEPRA</span> Competitive Teardown
           </>
         }
         subtitle={
@@ -360,9 +359,9 @@ function EmptyLanePage() {
           ].map((c) => (
             <Card key={c.k} className="flex flex-col">
               <Eyebrow>{c.k}</Eyebrow>
-              <h3 className="mt-4 font-display text-lg font-semibold leading-snug">
+              <h2 className="mt-4 font-display text-lg font-semibold leading-snug">
                 {c.h}
-              </h3>
+              </h2>
               <p className="mt-3 text-sm text-muted-foreground leading-relaxed">{c.p}</p>
               <div className="mt-6 border-l-2 border-primary/50 pl-3 text-xs italic text-foreground/80 leading-relaxed">
                 {c.q}
@@ -376,9 +375,9 @@ function EmptyLanePage() {
       <section>
         <div className="container-x py-16 flex flex-wrap items-center justify-between gap-6">
           <div>
-            <h3 className="font-display text-2xl md:text-3xl font-semibold tracking-tight">
+            <h2 className="font-display text-2xl md:text-3xl font-semibold tracking-tight">
               Run the lane yourself.
-            </h3>
+            </h2>
             <p className="mt-2 text-muted-foreground">
               Watch KHEPRA remediate and sign proof in real time.
             </p>

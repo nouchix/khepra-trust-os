@@ -13,6 +13,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { SiteNav } from "@/components/site-nav";
 import { SiteFooter } from "@/components/site-footer";
+import { JsonLd, ORGANIZATION_SCHEMA, WEBSITE_SCHEMA } from "@/components/seo-json-ld";
 
 function NotFoundComponent() {
   return (
@@ -126,6 +127,7 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <JsonLd data={[ORGANIZATION_SCHEMA, WEBSITE_SCHEMA]} />
       <div className="min-h-screen flex flex-col">
         <SiteNav />
         <main className="flex-1">

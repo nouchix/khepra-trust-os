@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite dev",
-    "build": "vite build",
+    "build": "vite build && mkdir -p dist && (cp -r .output/public/* dist/ 2>/dev/null || cp -r .output/* dist/ 2>/dev/null || true)",
     "build:dev": "vite build --mode development",
     "preview": "nitro preview",
     "lint": "eslint .",
@@ -69,7 +69,12 @@
     "zod": "^3.24.2"
   },
   "overrides": {
-    "@tanstack/start-plugin-core": "1.170.6"
+    "brace-expansion": "^5.0.8",
+    "@tanstack/start-plugin-core": "1.170.6",
+    "ws": "^8.21.1",
+    "undici": "^7.28.0",
+    "sharp": "^0.35.2",
+    "esbuild": "^0.27.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.32.0",

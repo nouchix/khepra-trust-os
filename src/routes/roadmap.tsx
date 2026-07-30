@@ -5,9 +5,9 @@ export const Route = createFileRoute("/roadmap")({
   head: () => ({
     meta: [
       { title: "Roadmap — KHEPRA Trust Network" },
-      { name: "description", content: "The KHEPRA protocol and product roadmap: identity, attestation, agent runtime, marketplace, and open standards." },
-      { property: "og:title", content: "KHEPRA Roadmap" },
-      { property: "og:description", content: "Where the KHEPRA Trust Network is headed." },
+      { name: "description", content: "Explore the official KHEPRA protocol and product roadmap covering cryptographic identity, attestation, agent runtime, marketplace, and open standards." },
+      { property: "og:title", content: "Roadmap — KHEPRA Trust Network" },
+      { property: "og:description", content: "Explore the official KHEPRA protocol and product roadmap covering cryptographic identity, attestation, agent runtime, marketplace, and open standards." },
     ],
   }),
   component: RoadmapPage,
@@ -68,7 +68,7 @@ function RoadmapPage() {
     <>
       <PageHero
         eyebrow="Roadmap"
-        title={<>Building the trust plane, phase by phase.</>}
+        title={<>Roadmap — <span className="text-gradient">KHEPRA</span> Trust Network</>}
         subtitle="KHEPRA ships in the open. This roadmap tracks protocol milestones, product releases, and ecosystem work."
       />
 
@@ -79,7 +79,7 @@ function RoadmapPage() {
               <div className="md:col-span-3">
                 <Eyebrow>{p.tag}</Eyebrow>
                 <div className="mt-3 font-mono text-sm text-primary">{p.q}</div>
-                <h3 className="mt-2 font-display text-xl font-semibold">{p.title}</h3>
+                <h2 className="mt-2 font-display text-xl font-semibold">{p.title}</h2>
               </div>
               <ul className="md:col-span-9 grid sm:grid-cols-2 gap-x-8 gap-y-2 text-sm text-foreground/90">
                 {p.items.map((it) => (

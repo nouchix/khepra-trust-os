@@ -1,0 +1,69 @@
+{
+  "_comment": "KHEPRA Trust OS, PQC-Khepra-MCP, Hostinger & Cloudflare Integration Config",
+  "mcpServers": {
+    "pqc-khepra-mcp": {
+      "_comment": "Post-Quantum Cryptography MCP Kernel Server",
+      "command": "go",
+      "args": [
+        "run",
+        "/Applications/Whitebox/PQC-Khepra-MCP/cmd/khepra-mcp/main.go"
+      ],
+      "env": {
+        "KHEPRA_MODE": "sovereign",
+        "KHEPRA_NETWORK_POLICY": "lan",
+        "MCP_PQC_ENABLED": "true"
+      }
+    },
+    "ktos-mcp": {
+      "_comment": "KTOS Trust Plane MCP Server (AEOs, Agent Passports, Trust Scores, Attestation)",
+      "command": "go",
+      "args": [
+        "run",
+        "/Applications/Whitebox/khepra-trust-os/core/cmd/ktos-mcp/main.go"
+      ],
+      "env": {
+        "KHEPRA_MODE": "sovereign",
+        "KHEPRA_NETWORK_POLICY": "lan",
+        "MCP_PQC_ENABLED": "true"
+      }
+    },
+    "hostinger-mcp": {
+      "_comment": "Hostinger MCP Server for Domain DNS, Hosting, and VPS Management",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@hostinger/mcp-server"
+      ],
+      "env": {
+        "HOSTINGER_API_TOKEN": "EYKsdycekoOPTsLXtguX5OGLKchHvmj5zYHtgRnqe5ea8be8"
+      }
+    },
+    "cloudflare": {
+      "url": "https://mcp.cloudflare.com/mcp",
+      "env": {
+        "CLOUDFLARE_API_TOKEN": "cfut_occcvkRNiay5V0Z97NYJhDrOMq35E2aYiUCKU1Buc5aa29fa"
+      }
+    },
+    "cloudflare-docs": {
+      "url": "https://docs.mcp.cloudflare.com/mcp"
+    },
+    "cloudflare-bindings": {
+      "url": "https://bindings.mcp.cloudflare.com/mcp",
+      "env": {
+        "CLOUDFLARE_API_TOKEN": "cfut_occcvkRNiay5V0Z97NYJhDrOMq35E2aYiUCKU1Buc5aa29fa"
+      }
+    },
+    "cloudflare-builds": {
+      "url": "https://builds.mcp.cloudflare.com/mcp",
+      "env": {
+        "CLOUDFLARE_API_TOKEN": "cfut_pTfwMEZHrXiupRp7rVS7guyOUdc2wrf6wpQJwUsC6fe1f242"
+      }
+    },
+    "cloudflare-observability": {
+      "url": "https://observability.mcp.cloudflare.com/mcp",
+      "env": {
+        "CLOUDFLARE_API_TOKEN": "cfut_occcvkRNiay5V0Z97NYJhDrOMq35E2aYiUCKU1Buc5aa29fa"
+      }
+    }
+  }
+}

@@ -23,7 +23,7 @@ function AsafPage() {
     <>
       <PageHero
         eyebrow="ASAF Runtime · Privileged Governance Kernel"
-        title={<>The <span className="text-gradient">kernel</span> of autonomous governance.</>}
+        title={<>ASAF Runtime — Privileged Governance Kernel | <span className="text-gradient">KHEPRA</span></>}
         subtitle="ASAF is not a daemon and not a service. It is the privileged governance kernel that authorizes, actuates, verifies, attests, and — on failure — rolls back every Governed State Transition. Sovereign, air-gap-capable, fail-closed by construction."
       />
 

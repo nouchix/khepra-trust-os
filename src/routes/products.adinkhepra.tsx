@@ -2,14 +2,15 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHero, SectionHeading, Card, Eyebrow } from "@/components/section";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 import adinImg from "@/assets/adinkhepra.jpg";
+import { JsonLd, buildSoftwareAppSchema } from "@/components/seo-json-ld";
 
 export const Route = createFileRoute("/products/adinkhepra")({
   head: () => ({
     meta: [
-      { title: "AdinKhepra — CMMC Compliance Autopilot & Attestation Engine" },
+      { title: "AdinKhepra — CMMC Compliance & Attestation Engine" },
       { name: "description", content: "Continuous CMMC control monitoring with signed evidence, auto-generated SSPs, and cryptographic attestation of every control state." },
-      { property: "og:title", content: "AdinKhepra — CMMC Compliance Autopilot" },
-      { property: "og:description", content: "Continuous CMMC controls with cryptographic attestation, on the KHEPRA Trust Network." },
+      { property: "og:title", content: "AdinKhepra — CMMC Compliance & Attestation Engine" },
+      { property: "og:description", content: "Continuous CMMC control monitoring with signed evidence, auto-generated SSPs, and cryptographic attestation of every control state." },
     ],
   }),
   component: AdinKhepraPage,
@@ -18,9 +19,17 @@ export const Route = createFileRoute("/products/adinkhepra")({
 function AdinKhepraPage() {
   return (
     <>
+      <JsonLd
+        data={buildSoftwareAppSchema({
+          name: "AdinKhepra",
+          description: "Continuous CMMC control monitoring with signed evidence, auto-generated SSPs, and cryptographic attestation of every control state.",
+          url: "https://adinkhepra.com/products/adinkhepra",
+          applicationCategory: "SecurityApplication",
+        })}
+      />
       <PageHero
         eyebrow="Product 01 · AdinKhepra"
-        title={<>CMMC compliance, on <span className="text-gradient">autopilot</span>.</>}
+        title={<>AdinKhepra — CMMC Compliance & <span className="text-gradient">Attestation Engine</span></>}
         subtitle="Continuous control monitoring with signed evidence and auto-generated SSPs. Every control state is attested on the KHEPRA DAG — reviewer-ready, always."
       />
 
@@ -77,7 +86,7 @@ function AdinKhepraPage() {
         <div className="container-x py-20">
           <div className="surface-card p-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
             <div>
-              <h3 className="text-2xl font-semibold tracking-tight">Preparing for a CMMC assessment?</h3>
+              <h2 className="text-2xl font-semibold tracking-tight">Preparing for a CMMC assessment?</h2>
               <p className="mt-2 text-sm text-muted-foreground max-w-xl">Join the AdinKhepra pilot cohort. Design-partner slots include implementation support and reviewer onboarding.</p>
             </div>
             <Link to="/developers" className="inline-flex items-center gap-2 rounded-md bg-primary px-5 py-3 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors">

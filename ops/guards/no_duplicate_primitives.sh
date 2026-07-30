@@ -41,7 +41,10 @@ echo
 
 # ── Check 1: adinkra / dag exist exactly once, only under core/ ───────────────
 for pkg in adinkra dag; do
-  mapfile -t dirs < <(find . \( "${PRUNE[@]}" \) -prune -o -type d -name "$pkg" -print 2>/dev/null)
+  dirs=()
+  while IFS= read -r line; do
+    [ -n "$line" ] && dirs+=("$line")
+  done < <(find . \( "${PRUNE[@]}" \) -prune -o -type d -name "$pkg" -print 2>/dev/null)
   n="${#dirs[@]}"
   if [ "$n" -eq 0 ]; then
     fail "primitive package '$pkg' not found at all (expected exactly one under core/)"
@@ -77,13 +80,18 @@ fi
 
 # ── Check 4 (forward): ASAF actuator files only under core/asaf/ ──────────────
 for f in drift.go staging.go ops_catalog.go; do
-  mapfile -t hits < <(find . \( "${PRUNE[@]}" \) -prune -o -type f -name "$f" -print 2>/dev/null)
-  for h in "${hits[@]}"; do
-    [ -z "$h" ] && continue
-    if [[ "$h" != ./core/asaf/* ]]; then
-      fail "ASAF actuator file $f must live under core/asaf/ (found $h)"
-    fi
-  done
+  hits=()
+  while IFS= read -r line; do
+    [ -n "$line" ] && hits+=("$line")
+  done < <(find . \( "${PRUNE[@]}" \) -prune -o -type f -name "$f" -print 2>/dev/null)
+  if [ "${#hits[@]}" -gt 0 ]; then
+    for h in "${hits[@]}"; do
+      [ -z "$h" ] && continue
+      if [[ "$h" != ./core/asaf/* ]]; then
+        fail "ASAF actuator file $f must live under core/asaf/ (found $h)"
+      fi
+    done
+  fi
 done
 [ "$FAIL" -eq 0 ] && ok "no misplaced ASAF actuator primitives"
 

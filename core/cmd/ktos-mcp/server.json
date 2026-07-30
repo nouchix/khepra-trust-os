@@ -26,7 +26,14 @@
     { "name": "passport_issue", "risk_class": "read_only", "summary": "Issue a registrar-signed Agent Passport (earned by record)." },
     { "name": "passport_verify", "risk_class": "read_only", "summary": "Verify a passport document and re-derive its claims against the ledger." },
     { "name": "dual_anchor", "risk_class": "read_only", "summary": "Dual-anchor determinism/drift proof across two transports." },
-    { "name": "ledger_stats", "risk_class": "read_only", "summary": "Aggregate trust metrics for traction dashboards." }
+    { "name": "ledger_stats", "risk_class": "read_only", "summary": "Aggregate trust metrics for traction dashboards." },
+    { "name": "scan_shadow_ai", "risk_class": "read_only", "summary": "Discover unapproved AI services, agents, LLMs, and vector DBs across target CIDRs." },
+    { "name": "attest_ai_policy", "risk_class": "read_only", "summary": "Evaluate discovered AI findings against governance policy, returning verdicts and postures." },
+    { "name": "linux_hardening_check", "risk_class": "read_only", "summary": "Run real-time Linux host hardening checks against Trimstray Practical Hardening & DISA RHEL rules." },
+    { "name": "stig_live_query", "risk_class": "read_only", "summary": "Query the live DISA STIG Viewer API v2 for updated benchmarks, CCIs, and fix texts." },
+    { "name": "agentpack_deploy", "risk_class": "read_only", "summary": "Parse & deploy declarative agentpack blueprint, minting PQC identity and generating containment grants." },
+    { "name": "dataloop_process", "risk_class": "read_only", "summary": "Execute 6-step Autonomous Governance Data Loop Engine cycle (Intent -> Ruling -> Actuation -> Proof -> Telemetry -> Moat)." },
+    { "name": "dataloop_intelligence", "risk_class": "read_only", "summary": "Query real-time Data Intelligence Layer metrics, FAIR financial risk score, and cross-cloud reliability." }
   ],
   "crypto": {
     "signature": "ML-DSA-65 (FIPS 204)",

@@ -1,14 +1,15 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHero, SectionHeading, Card, Eyebrow } from "@/components/section";
 import { EgyptianDivider } from "@/components/egyptian-divider";
+import { JsonLd, buildBreadcrumbSchema } from "@/components/seo-json-ld";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
       { title: "About — KHEPRA Autonomous Governance Platform" },
-      { name: "description", content: "KHEPRA is building cryptographic governance for autonomous systems: bounded privilege, fail-closed actuation, and independently verifiable evidence of every state transition." },
-      { property: "og:title", content: "About KHEPRA" },
-      { property: "og:description", content: "Cryptographic governance for autonomous systems." },
+      { name: "description", content: "KHEPRA builds cryptographic governance for autonomous systems: bounded privilege, fail-closed actuation, and verifiable evidence for every state transition." },
+      { property: "og:title", content: "About — KHEPRA Autonomous Governance Platform" },
+      { property: "og:description", content: "KHEPRA builds cryptographic governance for autonomous systems: bounded privilege, fail-closed actuation, and verifiable evidence for every state transition." },
       { property: "og:type", content: "website" },
     ],
     links: [{ rel: "canonical", href: "https://adinkhepra.com/about" }],
@@ -19,9 +20,15 @@ export const Route = createFileRoute("/about")({
 function AboutPage() {
   return (
     <>
+      <JsonLd
+        data={buildBreadcrumbSchema([
+          { name: "Home", url: "https://adinkhepra.com/" },
+          { name: "About", url: "https://adinkhepra.com/about" },
+        ])}
+      />
       <PageHero
-        eyebrow="About"
-        title={<>We build the <span className="text-gradient">governance</span> autonomous systems will run under.</>}
+        eyebrow="About KHEPRA"
+        title={<>About — KHEPRA Autonomous <span className="text-gradient">Governance</span> Platform</>}
         subtitle="KHEPRA is a protocol-first company. Named for the scarab that rolls the sun into a new day, we're building the cryptographic governance primitives that let autonomous systems act — under bounded privilege, with provable evidence of every state transition."
       />
 
@@ -86,7 +93,7 @@ function AboutPage() {
         <div className="container-x py-16">
           <div className="surface-card p-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
             <div>
-              <h3 className="text-2xl font-semibold tracking-tight">Want to build this with us?</h3>
+              <h2 className="text-2xl font-semibold tracking-tight">Want to build this with us?</h2>
               <p className="mt-2 text-sm text-muted-foreground max-w-xl">We hire protocol engineers, cryptographers, and design partners.</p>
             </div>
             <Link to="/contact" className="inline-flex items-center gap-2 rounded-md bg-primary px-5 py-3 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors">

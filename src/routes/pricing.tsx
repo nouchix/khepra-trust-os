@@ -6,9 +6,9 @@ export const Route = createFileRoute("/pricing")({
   head: () => ({
     meta: [
       { title: "Pricing — Enterprise & Alpha | KHEPRA" },
-      { name: "description", content: "KHEPRA Trust Network pricing for alpha, growth, and enterprise deployments." },
-      { property: "og:title", content: "KHEPRA Pricing" },
-      { property: "og:description", content: "Alpha, growth, and enterprise plans for the KHEPRA Trust Network." },
+      { name: "description", content: "Transparent pricing for the KHEPRA Trust Network. Flexible deployment tiers for alpha developers, scaling teams, and enterprise autonomous systems." },
+      { property: "og:title", content: "Pricing — Enterprise & Alpha | KHEPRA" },
+      { property: "og:description", content: "Transparent pricing for the KHEPRA Trust Network. Flexible deployment tiers for alpha developers, scaling teams, and enterprise autonomous systems." },
     ],
   }),
   component: PricingPage,
@@ -69,8 +69,8 @@ function PricingPage() {
   return (
     <>
       <PageHero
-        eyebrow="Pricing"
-        title={<>Priced for <span className="text-gradient">attestation volume</span>, not seats you don't use.</>}
+        eyebrow="Pricing & Tiers"
+        title={<>Pricing — Enterprise & Alpha | <span className="text-gradient">KHEPRA</span></>}
         subtitle="KHEPRA is metered on signed attestations and connectors, not per-user tax. Alpha access is free for design partners; enterprise deployments are quoted for the topology you actually run."
       />
 

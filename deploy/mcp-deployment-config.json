@@ -1,0 +1,117 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "KHEPRA Cross-Platform MCP Deployment Configuration Matrix",
+  "version": "1.0.0",
+  "description": "Modular deployment configuration for KHEPRA Trust OS & PQC-Khepra-MCP across OS targets (Windows, Linux, macOS, Air-Gapped Sovereign Unix).",
+  "environments": {
+    "macos": {
+      "os": "darwin",
+      "architecture": ["arm64", "amd64"],
+      "default_paths": {
+        "binary_dir": "/Applications/Whitebox/khepra-trust-os/core/bin",
+        "log_dir": "~/Library/Logs/khepra",
+        "config_dir": "~/.khepra"
+      },
+      "mcpServers": {
+        "pqc-khepra-mcp": {
+          "command": "go",
+          "args": ["run", "/Applications/Whitebox/PQC-Khepra-MCP/cmd/khepra-mcp/main.go"],
+          "env": {
+            "KHEPRA_MODE": "sovereign",
+            "KHEPRA_NETWORK_POLICY": "lan",
+            "MCP_PQC_ENABLED": "true"
+          }
+        },
+        "ktos-mcp": {
+          "command": "go",
+          "args": ["run", "/Applications/Whitebox/khepra-trust-os/core/cmd/ktos-mcp/main.go"],
+          "env": {
+            "KHEPRA_MODE": "sovereign",
+            "KHEPRA_NETWORK_POLICY": "lan",
+            "MCP_PQC_ENABLED": "true"
+          }
+        }
+      }
+    },
+    "windows": {
+      "os": "windows",
+      "architecture": ["amd64"],
+      "default_paths": {
+        "binary_dir": "C:\\Program Files\\Khepra\\bin",
+        "log_dir": "%LOCALAPPDATA%\\Khepra\\logs",
+        "config_dir": "%APPDATA%\\Khepra"
+      },
+      "mcpServers": {
+        "pqc-khepra-mcp": {
+          "command": "C:\\Program Files\\Khepra\\bin\\khepra-mcp.exe",
+          "args": [],
+          "env": {
+            "KHEPRA_MODE": "sovereign",
+            "KHEPRA_NETWORK_POLICY": "lan",
+            "MCP_PQC_ENABLED": "true"
+          }
+        },
+        "ktos-mcp": {
+          "command": "C:\\Program Files\\Khepra\\bin\\ktos-mcp.exe",
+          "args": [],
+          "env": {
+            "KHEPRA_MODE": "sovereign",
+            "KHEPRA_NETWORK_POLICY": "lan",
+            "MCP_PQC_ENABLED": "true"
+          }
+        }
+      }
+    },
+    "linux": {
+      "os": "linux",
+      "architecture": ["amd64", "arm64"],
+      "default_paths": {
+        "binary_dir": "/usr/local/bin",
+        "log_dir": "/var/log/khepra",
+        "config_dir": "/etc/khepra"
+      },
+      "mcpServers": {
+        "pqc-khepra-mcp": {
+          "command": "/usr/local/bin/khepra-mcp",
+          "args": [],
+          "env": {
+            "KHEPRA_MODE": "sovereign",
+            "KHEPRA_NETWORK_POLICY": "lan",
+            "MCP_PQC_ENABLED": "true"
+          }
+        },
+        "ktos-mcp": {
+          "command": "/usr/local/bin/ktos-mcp",
+          "args": [],
+          "env": {
+            "KHEPRA_MODE": "sovereign",
+            "KHEPRA_NETWORK_POLICY": "lan",
+            "MCP_PQC_ENABLED": "true"
+          }
+        }
+      }
+    },
+    "sovereign_scif": {
+      "os": "unix",
+      "architecture": ["amd64"],
+      "description": "Zero-egress, hardware-bound SCIF deployment with pinned ML-DSA-65 keys and no external network calls.",
+      "default_paths": {
+        "binary_dir": "/opt/khepra/bin",
+        "log_dir": "/var/log/khepra/audit",
+        "config_dir": "/etc/khepra/sovereign"
+      },
+      "mcpServers": {
+        "ktos-mcp-sovereign": {
+          "command": "/opt/khepra/bin/ktos-mcp",
+          "args": ["--sovereign", "--airgap"],
+          "env": {
+            "KHEPRA_MODE": "sovereign",
+            "KHEPRA_NETWORK_POLICY": "airgap",
+            "MCP_PQC_ENABLED": "true",
+            "KHEPRA_LICENSE_KEY": "${KHEPRA_LICENSE_KEY}"
+          }
+        }
+      }
+    }
+  }
+}

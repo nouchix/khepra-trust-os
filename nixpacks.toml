@@ -1,0 +1,10 @@
+# Nixpacks configuration for Railway deployment of TanStack Start + Nitro app
+
+[phases.setup]
+nixPkgs = ["nodejs_20"]
+
+[phases.build]
+cmds = ["npm run build"]
+
+[start]
+cmd = "node .output/server/index.mjs"

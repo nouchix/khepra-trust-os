@@ -84,7 +84,7 @@ function DemoPage() {
     <>
       <PageHero
         eyebrow="Public Demo · No login"
-        title={<>"Trust me" → <span className="text-gradient">"Prove it."</span></>}
+        title={<>KHEPRA Trust OS — <span className="text-gradient">Live Public Demo</span></>}
         subtitle="Watch an AI agent build a verifiable proof-of-work history through the KHEPRA Trust OS Fabric — post-quantum identity, hash-chained evidence, dual-anchor determinism. Every record is built, hashed, and signed by the server evidence gateway; your browser only renders it. No login."
       />
 
@@ -108,7 +108,7 @@ function DemoPage() {
         <div className="container-x pb-16 grid lg:grid-cols-2 gap-8">
           <Card>
             <Eyebrow>Tool · list_controls</Eyebrow>
-            <h3 className="mt-3 font-display text-xl font-semibold">CMMC 2.0 control catalog</h3>
+            <h2 className="mt-3 font-display text-xl font-semibold">CMMC 2.0 control catalog</h2>
             <p className="mt-2 text-sm text-muted-foreground">
               Returns the canonical control set the AdinKhepra engine assesses against. Filter by family to narrow.
             </p>
@@ -132,7 +132,7 @@ function DemoPage() {
 
           <Card>
             <Eyebrow>Tool · khepra_query_stig</Eyebrow>
-            <h3 className="mt-3 font-display text-xl font-semibold">DISA STIG lookup</h3>
+            <h2 className="mt-3 font-display text-xl font-semibold">DISA STIG lookup</h2>
             <p className="mt-2 text-sm text-muted-foreground">
               Proxied read against the STIG Viewer catalog. The response is hashed and anchored on the DAG so downstream replays can prove parity.
             </p>
@@ -183,6 +183,12 @@ function DemoPage() {
               className="inline-flex items-center rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground"
             >
               Open the Console →
+            </Link>
+            <Link
+              to="/evidence-brief"
+              className="inline-flex items-center rounded-md border border-primary text-primary px-5 py-2.5 text-sm font-medium"
+            >
+              View Forensic Chain of Custody
             </Link>
             <Link
               to="/protocol"

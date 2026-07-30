@@ -6,9 +6,9 @@ export const Route = createFileRoute("/connectors")({
   head: () => ({
     meta: [
       { title: "Certified Connectors — KHEPRA Trust Network" },
-      { name: "description", content: "Signed, capability-scoped connectors across cloud, identity, data, model, and workflow providers." },
-      { property: "og:title", content: "KHEPRA Certified Connectors" },
-      { property: "og:description", content: "Every integration is signed, scoped, and per-call attested." },
+      { name: "description", content: "Certified Connectors for the KHEPRA Trust Network. Signed, capability-scoped integration connectors across cloud, identity, data, model, and workflow providers." },
+      { property: "og:title", content: "Certified Connectors — KHEPRA Trust Network" },
+      { property: "og:description", content: "Certified Connectors for the KHEPRA Trust Network. Signed, capability-scoped integration connectors across cloud, identity, data, model, and workflow providers." },
     ],
   }),
   component: ConnectorsPage,
@@ -92,7 +92,7 @@ function ConnectorsPage() {
     <>
       <PageHero
         eyebrow="Certified Connectors"
-        title={<>Signed integrations, <span className="text-gradient">scoped</span> per session.</>}
+        title={<>Certified Connectors — <span className="text-gradient">KHEPRA</span> Trust Network</>}
         subtitle="Every KHEPRA connector ships with a signed manifest, declared capability scope, and per-call attestation. Your systems participate on the trust network without changing their APIs."
       />
 
@@ -120,7 +120,10 @@ function ConnectorsPage() {
         <div className="container-x py-16 space-y-14">
           {CATEGORIES.map((cat) => (
             <div key={cat.title}>
-              <Eyebrow>{cat.title}</Eyebrow>
+              <h2 className="font-mono text-xs uppercase tracking-[0.2em] text-primary/90 flex items-center gap-2">
+                <span className="h-px w-8 bg-gradient-to-r from-primary/80 to-transparent" />
+                {cat.title}
+              </h2>
               <div className="mt-6 grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {cat.items.map((c) => (
                   <Card key={c.name} className="!p-5 grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
@@ -143,7 +146,7 @@ function ConnectorsPage() {
         <div className="container-x py-16">
           <div className="surface-card p-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
             <div>
-              <h3 className="text-2xl font-semibold tracking-tight">Ship your own certified connector.</h3>
+              <h2 className="text-2xl font-semibold tracking-tight">Ship your own certified connector.</h2>
               <p className="mt-2 text-sm text-muted-foreground max-w-xl">
                 The connector SDK lets you publish signed, scoped integrations to the KHEPRA Marketplace.
               </p>

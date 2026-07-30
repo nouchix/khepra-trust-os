@@ -32,7 +32,11 @@ Each migration PR must:
 | Plane | Source PRs | Lands as | Status |
 |---|---|---|---|
 | Digital Citizenship / Trust | PQC-Khepra-MCP#57 (`pkg/aeo`, `pkg/citizenship`), Adinkhepra-ASAF#7 (spec) | `core/aeo/`, `core/citizenship/` + `docs/AEO_TRUST_EXTENSION.md` | ✅ landed, 13 tests green |
-| Trust MCP server (MVP) | this repo | `core/mcp/`, `core/cmd/ktos-mcp/` | ✅ landed — stdio MCP server exposing the trust layer as 9 tools; `go run ./cmd/ktos-mcp --demo` |
+| Enforcement & AI Discovery | this repo | `core/enforce/`, `core/aidiscovery/` | ✅ landed — PDP/PEP interposition daemon + Shadow AI scanner + Policy Evaluator |
+| Agentpacks & Autonomous Data Loop | this repo | `core/agentpack/`, `core/dataloop/` | ✅ landed — `agentpack.yaml` blueprint parser + 6-step Autonomous Governance Data Loop Engine |
+| Trust MCP server (MVP) | this repo | `core/mcp/`, `core/cmd/ktos-mcp/` | ✅ landed — stdio MCP server exposing 16 native tools; `go run ./cmd/ktos-mcp --demo` |
+
+Full migration audit & tool survey spec: [`docs/architecture/TOOL_SURVEY_AND_MIGRATION_AUDIT.md`](../docs/architecture/TOOL_SURVEY_AND_MIGRATION_AUDIT.md).
 
 The MCP server (`core/mcp`) is the pitchable surface: any MCP client drives the
 trust layer through it (`agent_register`, `aeo_record`, `trust_score`,

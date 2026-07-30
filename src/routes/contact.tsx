@@ -7,9 +7,9 @@ export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
       { title: "Contact — KHEPRA Trust Network" },
-      { name: "description", content: "Contact KHEPRA about alpha access, enterprise deployments, certification, or press." },
-      { property: "og:title", content: "Contact KHEPRA" },
-      { property: "og:description", content: "Reach the KHEPRA team." },
+      { name: "description", content: "Contact the KHEPRA team regarding alpha access, enterprise deployments, connector certification, technical partnerships, and media inquiries." },
+      { property: "og:title", content: "Contact — KHEPRA Trust Network" },
+      { property: "og:description", content: "Contact the KHEPRA team regarding alpha access, enterprise deployments, connector certification, technical partnerships, and media inquiries." },
     ],
   }),
   component: ContactPage,
@@ -20,8 +20,8 @@ function ContactPage() {
   return (
     <>
       <PageHero
-        eyebrow="Contact"
-        title={<>Let's talk about your trust plane.</>}
+        eyebrow="Contact KHEPRA"
+        title={<>Contact KHEPRA Trust Network — <span className="text-gradient">Get in Touch</span></>}
         subtitle="Alpha access, enterprise deployment, connector partnership, certification, or press — reach the right person on the first hop."
       />
 

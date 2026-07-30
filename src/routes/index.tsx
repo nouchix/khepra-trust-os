@@ -9,7 +9,7 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "KHEPRA — Cryptographic Governance for Autonomous Systems" },
-      { name: "description", content: "KHEPRA is the Autonomous Governance Platform. Every autonomous state transition produces an independently verifiable cryptographic evidence object — no trust, only proof." },
+      { name: "description", content: "KHEPRA is the Autonomous Governance Platform. Autonomous state transitions produce independently verifiable cryptographic evidence — no trust, only proof." },
       { property: "og:title", content: "KHEPRA — Cryptographic Governance for Autonomous Systems" },
       { property: "og:description", content: "Autonomous Governance Fabric, ASAF Runtime, and Agent Evidence Objects: bounded privilege and provable state transitions for AI agents and enterprise systems." },
       { property: "og:type", content: "website" },
@@ -38,7 +38,7 @@ function Home() {
         <div className="container-x relative py-24 md:py-36">
           <Eyebrow>Autonomous Governance Platform · SDS v3.0</Eyebrow>
           <h1 className="mt-6 text-5xl md:text-7xl font-semibold tracking-tight leading-[1.02] max-w-4xl">
-            Cryptographic <span className="text-gradient">governance</span>
+            KHEPRA — Cryptographic <span className="text-gradient">governance</span>
             <br />
             for autonomous systems.
           </h1>
@@ -181,7 +181,7 @@ function Home() {
             <a
               href="https://smithery.ai/servers/skone/pqc-khepra-mcp#usage"
               target="_blank"
-              rel="noreferrer"
+              rel="noopener noreferrer nofollow"
               className="inline-flex items-center gap-1.5 text-sm text-primary hover:text-primary/80 transition-colors font-mono"
             >
               View on Smithery <ExternalLink className="h-3.5 w-3.5" />
