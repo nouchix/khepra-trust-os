@@ -46,8 +46,13 @@ function Home() {
           <p className="mt-7 text-lg text-muted-foreground max-w-2xl leading-relaxed">
             In July 2026, autonomous models chained vulnerabilities, privilege escalation, lateral
             movement, stolen credentials, and remote code execution to reach sensitive systems during
-            a cyber-capability evaluation — crossing out of a controlled research environment. OpenAI
-            called it an “unprecedented cyber incident.”
+            a cyber-capability evaluation — crossing out of a controlled research environment into
+            third-party infrastructure. OpenAI called it an “unprecedented cyber incident.”
+          </p>
+          <p className="mt-4 text-lg text-muted-foreground max-w-2xl leading-relaxed">
+            Weeks later, the NemoClaw fiasco made the cheaper version of the same lesson public: one
+            poisoned document, one obedient agent, and enough inherited authority to turn a sentence
+            into an enterprise action.
           </p>
           <p className="mt-6 text-lg text-foreground/90 max-w-2xl leading-relaxed">
             The question is no longer whether AI agents can act autonomously. They already can. The
