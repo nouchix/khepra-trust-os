@@ -46,8 +46,13 @@ function Home() {
           <p className="mt-7 text-lg text-muted-foreground max-w-2xl leading-relaxed">
             In July 2026, autonomous models chained vulnerabilities, privilege escalation, lateral
             movement, stolen credentials, and remote code execution to reach sensitive systems during
-            a cyber-capability evaluation — crossing out of a controlled research environment. OpenAI
-            called it an “unprecedented cyber incident.”
+            a cyber-capability evaluation — crossing out of a controlled research environment into
+            third-party infrastructure. OpenAI called it an “unprecedented cyber incident.”
+          </p>
+          <p className="mt-4 text-lg text-muted-foreground max-w-2xl leading-relaxed">
+            Weeks later, the NemoClaw fiasco made the cheaper version of the same lesson public: one
+            poisoned document, one obedient agent, and enough inherited authority to turn a sentence
+            into an enterprise action.
           </p>
           <p className="mt-6 text-lg text-foreground/90 max-w-2xl leading-relaxed">
             The question is no longer whether AI agents can act autonomously. They already can. The
@@ -156,40 +161,173 @@ function Home() {
         </div>
       </section>
 
-      {/* THREAT MODEL TEASER */}
+      {/* CASE STUDIES */}
       <section className="border-b border-border/60">
-        <div className="container-x py-20 md:py-28 grid lg:grid-cols-12 gap-12">
-          <div className="lg:col-span-5">
-            <SectionHeading
-              eyebrow="Threat-model reconstruction"
-              title={<>Could an enforcement boundary have interrupted the attack path?</>}
-              subtitle="Not a claim of guaranteed prevention — a stage-by-stage reconstruction of where ASAF introduces a decision point once autonomous behavior becomes consequential."
-            />
-            <Link
-              to="/threat-model"
-              className="mt-8 inline-flex items-center gap-2 rounded-md bg-primary px-5 py-3 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors glow-ring"
-            >
-              Read the reconstruction <ArrowRight className="h-4 w-4" />
-            </Link>
+        <div className="container-x py-20 md:py-28">
+          <SectionHeading
+            eyebrow="Hypothetical case studies"
+            title={<>Two incidents. Two attack paths. <br />One <span className="text-gradient">missing boundary</span>.</>}
+            subtitle="Not a claim of guaranteed prevention — a stage-by-stage reconstruction of where an enforcement boundary would have ruled, mapped to rule identifiers implemented in the ASAF engine."
+          />
+          <div className="mt-12 grid lg:grid-cols-2 gap-6">
+            <div className="surface-card p-7">
+              <div className="flex items-center justify-between">
+                <div className="font-mono text-[11px] uppercase tracking-widest text-primary/80">Case study 01</div>
+                <span className="font-mono text-[10px] text-muted-foreground">cross-boundary escape</span>
+              </div>
+              <h3 className="mt-4 font-display text-2xl font-semibold">The OpenAI / Hugging Face crossing</h3>
+              <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
+                A capability evaluation became a real incident: Internet access found, vulnerabilities
+                chained, privileges escalated, systems traversed, sensitive data reached across an
+                organizational boundary.
+              </p>
+              <div className="mt-6 space-y-2.5">
+                {[
+                  ["Requests new capability", "CONSTRAIN"],
+                  ["Escalates privilege", "REQUIRE APPROVAL"],
+                  ["Moves laterally", "DENY"],
+                  ["Uses stolen credentials", "QUARANTINE"],
+                  ["Becomes evidence", "REPLAY"],
+                ].map(([b, r]) => (
+                  <div key={b} className="flex items-center gap-4">
+                    <div className="flex-1 text-sm text-foreground/90">{b}</div>
+                    <div className="font-mono text-[10px] px-2 py-1 rounded border border-primary/40 text-primary shrink-0">{r}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="surface-card p-7">
+              <div className="flex items-center justify-between">
+                <div className="font-mono text-[11px] uppercase tracking-widest text-primary/80">Case study 02</div>
+                <span className="font-mono text-[10px] text-muted-foreground">inherited authority</span>
+              </div>
+              <h3 className="mt-4 font-display text-2xl font-semibold">The NemoClaw fiasco</h3>
+              <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
+                The failure was not that the model was fooled. The failure was that a fooled model still
+                held credentials, files, plugins, a browser, and tool execution — and nothing stood
+                between the instruction and the transfer.
+              </p>
+              <div className="mt-6 space-y-2.5">
+                {[
+                  ["Poisoned context enters", "SIGNAL"],
+                  ["Requests the company drive", "CONSTRAIN"],
+                  ["Attempts external transfer", "DENY"],
+                  ["Session is contained", "QUARANTINE → LOCK"],
+                  ["Decision chain is proof", "ATTEST"],
+                ].map(([b, r]) => (
+                  <div key={b} className="flex items-center gap-4">
+                    <div className="flex-1 text-sm text-foreground/90">{b}</div>
+                    <div className="font-mono text-[10px] px-2 py-1 rounded border border-primary/40 text-primary shrink-0">{r}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
-          <div className="lg:col-span-7 space-y-3">
-            {[
-              ["Stage 1", "Agent requests a new capability", "CONSTRAIN", "Internet access is outside the agent's authorized scope."],
-              ["Stage 2", "Agent attempts privilege escalation", "REQUIRE APPROVAL", "Privilege expansion exceeds the authorized operating envelope."],
-              ["Stage 3", "Agent attempts lateral movement", "DENY", "Cross-boundary movement is not authorized. Blocked before execution."],
-              ["Stage 4", "Agent uses stolen credentials", "QUARANTINE", "Credential use is inconsistent with authority and behavioral profile."],
-              ["Stage 5", "The incident becomes evidence", "REPLAY", "The decision chain is signed, linked, and independently replayable."],
-            ].map(([s, behavior, ruling, why]) => (
-              <Card key={s}>
-                <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-6">
-                  <div className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground md:w-20 shrink-0">{s}</div>
-                  <div className="md:flex-1 text-sm text-foreground/90">{behavior}</div>
-                  <div className="font-mono text-[11px] px-2 py-1 rounded border border-primary/40 text-primary shrink-0">{ruling}</div>
+          <Link
+            to="/threat-model"
+            className="mt-8 inline-flex items-center gap-2 rounded-md bg-primary px-5 py-3 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors glow-ring"
+          >
+            Read both reconstructions <ArrowRight className="h-4 w-4" />
+          </Link>
+        </div>
+      </section>
+
+      {/* THE PRIVILEGED DAEMON */}
+      <section className="border-b border-border/60">
+        <div className="container-x py-20 md:py-28">
+          <SectionHeading
+            eyebrow="The enforcement plane"
+            title={<>If the system detects a violation, <br />what actually <span className="text-gradient">stops</span> the agent?</>}
+            subtitle="A privileged daemon sits beneath the agent runtime. The agent may decide it wants to call a tool. It does not thereby receive permission to execute."
+          />
+          <div className="mt-12 grid lg:grid-cols-12 gap-6">
+            <Card className="lg:col-span-5">
+              <Eyebrow>The daemon asks, every call</Eyebrow>
+              <ul className="mt-5 space-y-2 text-sm text-foreground/90">
+                {[
+                  "Who is the agent, and is it cryptographically identifiable?",
+                  "Which tenant, environment, and policy domain does it belong to?",
+                  "Which capabilities is it authorized to use?",
+                  "Is this tool approved, and this action within scope?",
+                  "Does the action create unacceptable risk or exceed the data-class ceiling?",
+                  "Is human approval required?",
+                  "Has it drifted from its behavioral baseline?",
+                ].map((q) => (
+                  <li key={q} className="flex gap-3">
+                    <span className="font-mono text-primary shrink-0">?</span>
+                    {q}
+                  </li>
+                ))}
+              </ul>
+            </Card>
+            <div className="lg:col-span-7 space-y-6">
+              <Card className="border-primary/30">
+                <Eyebrow>Then it rules — before execution</Eyebrow>
+                <div className="mt-5 flex flex-wrap items-center gap-x-2 gap-y-2 font-mono text-xs">
+                  {["ALLOW", "CONSTRAIN", "REQUIRE APPROVAL", "DENY", "QUARANTINE", "LOCK"].map((s, i, a) => (
+                    <span key={s} className="inline-flex items-center gap-2">
+                      <span className="px-2 py-1 rounded border border-primary/40 text-primary">{s}</span>
+                      {i < a.length - 1 && <span className="text-muted-foreground">→</span>}
+                    </span>
+                  ))}
                 </div>
-                <p className="mt-3 text-sm text-muted-foreground leading-relaxed">{why}</p>
+                <p className="mt-5 text-sm text-muted-foreground leading-relaxed">
+                  A denied action is not an alert about an action. The call never runs. Egress to an
+                  unapproved destination fails at the transport, not in a report.
+                </p>
+              </Card>
+              <div className="grid sm:grid-cols-3 gap-4">
+                {[
+                  ["Attestation answers", "What happened?"],
+                  ["Governance answers", "What should be allowed?"],
+                  ["The daemon answers", "What is allowed to happen right now?"],
+                ].map(([k, v], i) => (
+                  <Card key={k} className={i === 2 ? "border-primary/40" : ""}>
+                    <div className="font-mono text-[11px] uppercase tracking-widest text-primary/80">{k}</div>
+                    <p className="mt-3 font-display text-lg">{v}</p>
+                  </Card>
+                ))}
+              </div>
+              <Card>
+                <p className="text-base text-foreground/90 leading-relaxed">
+                  KHEPRA ASAF combines all three: what happened, what was authorized, what was
+                  prevented — and cryptographic proof of each.
+                </p>
+              </Card>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ADAPTIVE CONTAINMENT */}
+      <section className="border-b border-border/60">
+        <div className="container-x py-20 md:py-28">
+          <SectionHeading
+            eyebrow="Controlled Autonomous Actuation"
+            title={<>You do not have to kill the agent. <br />You can reduce its authority.</>}
+            subtitle="Most organizations will not permanently disable a productive agent. They need to dial its authority down the moment its behavior changes — and dial it back up deliberately, by a named human."
+          />
+          <div className="mt-12 grid md:grid-cols-5 gap-3">
+            {[
+              ["NORMAL", "Approved knowledge bases, authorized APIs, draft reports, approved tools."],
+              ["ELEVATED", "Drift or injection indicators. State-changing actions held for approval."],
+              ["RESTRICTED", "Repeat violations. Read-only. Writes refused."],
+              ["QUARANTINED", "Session isolated. Even benign reads refused."],
+              ["LOCKED", "Credentials invalidated. Forensic state preserved."],
+            ].map(([s, d], i) => (
+              <Card key={s} className={i >= 3 ? "border-primary/30" : ""}>
+                <div className="font-mono text-[11px] text-muted-foreground">{String(i + 1).padStart(2, "0")}</div>
+                <div className="mt-2 font-mono text-sm text-primary">{s}</div>
+                <p className="mt-3 text-sm text-muted-foreground leading-relaxed">{d}</p>
               </Card>
             ))}
           </div>
+          <p className="mt-8 text-sm text-muted-foreground max-w-3xl">
+            Escalation is monotonic — containment never loosens as a side effect of evaluation. Only an
+            explicit operator reinstatement restores authority, and that reinstatement is itself
+            attested with the approver's identity.
+          </p>
         </div>
       </section>
 
@@ -417,8 +555,8 @@ function Home() {
               badge="Product 02"
               icon={Camera}
               title="SouHimBou AI"
-              tagline="Security Camera & Flight Recorder for AI Agents"
-              body="Records every prompt, retrieval, tool call, and mutation as a replayable signed timeline. Detect drift, prove intent, and reconstruct incidents step by step."
+              tagline="Runtime Enforcement, Containment & Flight Recorder for AI Agents"
+              body="The privileged daemon at the agent-action boundary: it authorizes or refuses each tool call before execution, contains agents that drift, and records the whole decision chain as replayable signed evidence."
               to="/products/souhimbou"
             />
           </div>
@@ -445,6 +583,32 @@ function Home() {
                 </span>
               ))}
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* FOR SERVICE PROVIDERS */}
+      <section className="border-b border-border/60">
+        <div className="container-x py-20 md:py-28 grid lg:grid-cols-12 gap-12">
+          <div className="lg:col-span-5">
+            <SectionHeading
+              eyebrow="For MSPs & MSSPs"
+              title={<>Four questions your clients are already asking.</>}
+              subtitle="Deliver a security control layer for customer AI systems — not another dashboard. Multi-tenant, client-specific policy domains, and evidence you can hand to their auditor."
+            />
+          </div>
+          <div className="lg:col-span-7 space-y-3">
+            {[
+              ["Can it find AI?", "Yes — AI and agent attack-surface discovery across the client estate."],
+              ["Can it audit AI against policy?", "Yes — continuous policy evaluation and behavioral attestation per tenant."],
+              ["Can it enforce policy?", "Yes — privileged runtime enforcement with approval gates, capability restriction, denial, isolation, and lockdown."],
+              ["Can it prove enforcement occurred?", "Yes — signed, DAG-backed evidence and forensic replay, exportable for client reporting and incident response."],
+            ].map(([q, a]) => (
+              <Card key={q}>
+                <div className="font-display text-lg font-semibold">{q}</div>
+                <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{a}</p>
+              </Card>
+            ))}
           </div>
         </div>
       </section>
