@@ -555,8 +555,8 @@ function Home() {
               badge="Product 02"
               icon={Camera}
               title="SouHimBou AI"
-              tagline="Security Camera & Flight Recorder for AI Agents"
-              body="Records every prompt, retrieval, tool call, and mutation as a replayable signed timeline. Detect drift, prove intent, and reconstruct incidents step by step."
+              tagline="Runtime Enforcement, Containment & Flight Recorder for AI Agents"
+              body="The privileged daemon at the agent-action boundary: it authorizes or refuses each tool call before execution, contains agents that drift, and records the whole decision chain as replayable signed evidence."
               to="/products/souhimbou"
             />
           </div>
