@@ -12,10 +12,16 @@ export function SiteFooter() {
             <span className="font-display font-semibold">KHEPRA</span>
           </div>
           <p className="mt-3 text-sm text-muted-foreground max-w-xs">
-            The Trust Operating System for Autonomous Work.
+            Cryptographic governance for autonomous systems. See. Control. Prove.
           </p>
-          <p className="mt-4 font-mono text-xs text-muted-foreground/70">
-            khepra.network · v0.1.0-alpha
+          <p className="mt-4 text-xs text-muted-foreground/80 max-w-xs leading-relaxed">
+            SecRed Knowledge Inc. d/b/a NouchiX — veteran-led cybersecurity and sovereign
+            engineering.
+          </p>
+          <p className="mt-4 font-mono text-[11px] text-muted-foreground/70 leading-relaxed">
+            adinkhepra.com · souhimbou.ai · nouchix.com
+            <br />
+            UEI 24M6XQCZLYM7 · DUNS 119450090
           </p>
         </div>
 
@@ -42,15 +48,17 @@ export function SiteFooter() {
           items={[
             { to: "/developers", label: "Developer Portal" },
             { to: "/docs", label: "Documentation" },
-            { to: "/about", label: "About" },
-            { to: "/contact", label: "Contact" },
+            { to: "/about", label: "Company" },
+            { to: "/contact", label: "Book a briefing" },
           ]}
         />
       </div>
       <div className="border-t border-border/60">
         <div className="container-x py-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 text-xs text-muted-foreground">
-          <div>© {new Date().getFullYear()} KHEPRA Trust Network. All rights reserved.</div>
-          <div className="font-mono">Protocol-first · PQC-ready · Evidence-native</div>
+          <div>© {new Date().getFullYear()} SecRed Knowledge Inc. (NouchiX). All rights reserved.</div>
+          <div className="font-mono">
+            USPTO Patent Pending #73565085 · Pending SDVOSB · NIST/CMMC-ready
+          </div>
         </div>
       </div>
     </footer>
