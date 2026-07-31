@@ -82,12 +82,12 @@
       .linkWidth(1)
       .linkDirectionalParticles(2)
       .linkDirectionalParticleColor(() => '#1a9fe8')
-      .nodeLabel(n => \`
-        <div style="background: rgba(8,15,28,0.95); border: 1px solid \${NODE_COLORS[n.type]}; padding: 12px; border-radius: 8px; font-family: monospace; color: #fff; max-width: 280px;">
-          <div style="font-weight: bold; color: \${NODE_COLORS[n.type]}; font-size: 14px; margin-bottom: 6px;">\${n.label}</div>
-          <div style="font-size: 11px; color: #cbd5e1; line-height: 1.4;">\${n.desc}</div>
+      .nodeLabel(n => `
+        <div style="background: rgba(8,15,28,0.95); border: 1px solid ${NODE_COLORS[n.type]}; padding: 12px; border-radius: 8px; font-family: monospace; color: #fff; max-width: 280px;">
+          <div style="font-weight: bold; color: ${NODE_COLORS[n.type]}; font-size: 14px; margin-bottom: 6px;">${n.label}</div>
+          <div style="font-size: 11px; color: #cbd5e1; line-height: 1.4;">${n.desc}</div>
         </div>
-      \`);
+      `);
 
     setTimeout(() => { Graph.zoomToFit(800, 100); }, 1500);
     window.addEventListener('resize', () => { Graph.width(elem.clientWidth).height(elem.clientHeight); });
