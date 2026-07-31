@@ -8,14 +8,10 @@ import { EgyptianDivider } from "@/components/egyptian-divider";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "KHEPRA ASAF — AI Agent Runtime Security & Enforcement" },
-      { name: "description", content: "KHEPRA ASAF places a cryptographic enforcement and proof boundary between autonomous AI agents and the systems they can affect. See. Control. Prove." },
-      { property: "og:title", content: "KHEPRA ASAF — AI Agent Runtime Security & Enforcement" },
-      { property: "og:description", content: "Autonomous capability should not automatically become autonomous authority. Control agent actions before execution, contain the agent, and prove the decision." },
-      { title: "KHEPRA — Cryptographic Governance for Autonomous Systems" },
-      { name: "description", content: "KHEPRA is the Autonomous Governance Platform. Autonomous state transitions produce independently verifiable cryptographic evidence — no trust, only proof." },
-      { property: "og:title", content: "KHEPRA — Cryptographic Governance for Autonomous Systems" },
-      { property: "og:description", content: "Autonomous Governance Fabric, ASAF Runtime, and Agent Evidence Objects: bounded privilege and provable state transitions for AI agents and enterprise systems." },
+      { title: "KHEPRA — AI Agent Runtime Enforcement & Cryptographic Proof" },
+      { name: "description", content: "KHEPRA ASAF places a cryptographic enforcement and proof boundary between autonomous AI agents and the systems they can affect. Discover, verify, control, and prove — See. Control. Prove." },
+      { property: "og:title", content: "KHEPRA — AI Agent Runtime Enforcement & Cryptographic Proof" },
+      { property: "og:description", content: "Your AI program is moving faster than your control architecture. Rule every agent action before execution: allow, constrain, require approval, deny, quarantine, lock — with ML-DSA-65 signed evidence." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
