@@ -16,6 +16,7 @@ const links = [
   { to: "/connectors", label: "Connectors" },
   { to: "/docs", label: "Docs" },
   { to: "/developers", label: "Developers" },
+  { to: "/about", label: "Company" },
 ] as const;
 
 export function SiteNav() {
@@ -52,12 +53,12 @@ export function SiteNav() {
         </nav>
 
         <div className="hidden lg:flex items-center gap-2">
-          <a
-            href="mailto:hello@khepra.network"
+          <Link
+            to="/contact"
             className="text-sm text-muted-foreground hover:text-foreground transition-colors px-3 py-2"
           >
-            Contact
-          </a>
+            Book a briefing
+          </Link>
           {authed ? (
             <Link
               to="/console/timeline"
