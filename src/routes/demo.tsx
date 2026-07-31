@@ -116,31 +116,3 @@ function DemoPage() {
     </>
   );
 }
-
-function ResultBlock({ r }: { r: DemoResult }) {
-  const preview = JSON.stringify(r.result, null, 2);
-  return (
-    <div className="mt-4 space-y-3">
-      <div className="flex flex-wrap gap-x-6 gap-y-1 text-xs">
-        <span>
-          verdict:{" "}
-          <span className={r.verdict === "ok" ? "text-emerald-400" : "text-red-400"}>
-            {r.verdict}
-          </span>
-        </span>
-        <span className="text-muted-foreground">{r.durationMs}ms</span>
-        <span className="font-mono text-muted-foreground truncate max-w-full">
-          sha256:{r.responseSha256.slice(0, 24)}…
-        </span>
-        {r.evidence.sessionRef && (
-          <span className="text-muted-foreground">
-            session: <span className="font-mono">{r.evidence.sessionRef}</span>
-          </span>
-        )}
-      </div>
-      <pre className="max-h-72 overflow-auto rounded-md border border-border bg-background/60 p-3 text-xs font-mono leading-relaxed">
-        {preview.length > 4000 ? preview.slice(0, 4000) + "\n…" : preview}
-      </pre>
-    </div>
-  );
-}
