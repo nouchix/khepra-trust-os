@@ -77,6 +77,12 @@ function Home() {
               Run an AI Agent Risk Assessment <ArrowRight className="h-4 w-4" />
             </Link>
             <Link
+              to="/demo"
+              className="inline-flex items-center gap-2 rounded-md border border-primary/50 bg-primary/10 px-5 py-3 text-sm font-medium text-primary hover:bg-primary/20 transition-colors"
+            >
+              View Interactive Demos
+            </Link>
+            <Link
               to="/threat-model"
               className="inline-flex items-center gap-2 rounded-md border border-border bg-card/60 px-5 py-3 text-sm font-medium text-foreground hover:bg-card transition-colors"
             >

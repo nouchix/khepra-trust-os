@@ -58,21 +58,29 @@ function AuthPage() {
   }
 
   async function handleGoogle() {
-    setErr(null);
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo: `${window.location.origin}${redirectTo}` }
-    });
-    if (error) { setErr(error.message ?? "Google sign-in failed"); }
+    try {
+      setErr(null);
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: { redirectTo: `${window.location.origin}${redirectTo}` }
+      });
+      if (error) { setErr(error.message ?? "Google sign-in failed"); }
+    } catch (e: unknown) {
+      setErr(e instanceof Error ? e.message : "An unexpected error occurred");
+    }
   }
 
   async function handleGithub() {
-    setErr(null);
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "github",
-      options: { redirectTo: `${window.location.origin}${redirectTo}` }
-    });
-    if (error) { setErr(error.message ?? "GitHub sign-in failed"); }
+    try {
+      setErr(null);
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "github",
+        options: { redirectTo: `${window.location.origin}${redirectTo}` }
+      });
+      if (error) { setErr(error.message ?? "GitHub sign-in failed"); }
+    } catch (e: unknown) {
+      setErr(e instanceof Error ? e.message : "An unexpected error occurred");
+    }
   }
 
   return (
