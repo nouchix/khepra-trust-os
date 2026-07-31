@@ -7,16 +7,12 @@ import { JsonLd, buildSoftwareAppSchema } from "@/components/seo-json-ld";
 export const Route = createFileRoute("/products/souhimbou")({
   head: () => ({
     meta: [
-      { title: "SouHimBou AI — Runtime Enforcement & Flight Recorder for AI Agents" },
+      { title: "SouHimBou AI — Agentic SOC: Hub & Fleet Runtime Enforcement" },
       { name: "description", content: "Authorize or refuse every agent tool call before execution, contain agents that drift, and prove the decision with signed, replayable evidence." },
-      { property: "og:title", content: "SouHimBou AI — Runtime Enforcement for AI Agents" },
-      { property: "og:description", content: "See what AI agents are doing. Control what they are allowed to do. Prove what happened." },
+      { property: "og:title", content: "SouHimBou AI — Agentic SOC: Hub & Fleet" },
+      { property: "og:description", content: "Runtime enforcement, containment, and flight recorder for AI agents. See what agents are doing, control what they may do, prove what happened." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { title: "SouHimBou AI — Security Camera for AI Agents" },
-      { name: "description", content: "Record every prompt, retrieval, tool call, and mutation as a replayable signed timeline. Detect drift, prove intent, reconstruct incidents." },
-      { property: "og:title", content: "SouHimBou AI — Security Camera for AI Agents" },
-      { property: "og:description", content: "Record every prompt, retrieval, tool call, and mutation as a replayable signed timeline. Detect drift, prove intent, reconstruct incidents." },
     ],
   }),
   component: SouHimBouPage,
@@ -34,7 +30,7 @@ function SouHimBouPage() {
         })}
       />
       <PageHero
-        eyebrow="Product 02 · SouHimBou AI"
+        eyebrow="Product 02 · SouHimBou AI — Agentic SOC · Hub & Fleet"
         title={<>See it. <span className="text-gradient">Control</span> it. Prove it.</>}
         subtitle="SouHimBou AI is the privileged enforcement and proof plane at the agent-action boundary. It authorizes or refuses each tool call before execution, contains agents whose behavior changes, and records the entire decision chain as signed, replayable evidence. The security camera and flight recorder are what it leaves behind — the daemon is what it does."
       />
