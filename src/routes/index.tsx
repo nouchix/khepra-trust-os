@@ -563,26 +563,59 @@ function Home() {
         <div className="container-x py-20 md:py-28">
           <SectionHeading
             eyebrow="Products on the network"
-            title={<>Two flagships. One protocol.</>}
-            subtitle="Built on KHEPRA's trust primitives. Interoperable with your existing stack via certified connectors."
+            title={<>Three products. One attested ledger.</>}
+            subtitle="One PQC-signed substrate underneath: agent enforcement above it, compliance attestation beside it, certified connectors around it."
           />
-          <div className="mt-12 grid lg:grid-cols-2 gap-6">
+          <div className="mt-12 grid lg:grid-cols-3 gap-6">
             <ProductCard
-              badge="Product 01"
-              icon={Shield}
-              title="AdinKhepra"
-              tagline="CMMC Compliance Autopilot & Attestation Engine"
-              body="Continuous CMMC control monitoring with signed evidence, auto-generated SSPs, and cryptographic attestation of every control state — reviewer-ready, always."
-              to="/products/adinkhepra"
+              badge="Product 01 · Production"
+              icon={Cpu}
+              title="KHEPRA Trust OS"
+              tagline="The PQC-signed MCP server underneath both products"
+              body="~90 tools, ML-DSA-65 attestation on every call, air-gappable modes. Live on Smithery and GHCR, with 34 tools exposed publicly today."
+              to="/protocol"
             />
             <ProductCard
               badge="Product 02"
               icon={Camera}
-              title="SouHimBou AI"
-              tagline="Runtime Enforcement, Containment & Flight Recorder for AI Agents"
-              body="The privileged daemon at the agent-action boundary: it authorizes or refuses each tool call before execution, contains agents that drift, and records the whole decision chain as replayable signed evidence."
+              title="Agentic SOC — Hub & Fleet"
+              tagline="Runtime enforcement, containment & flight recorder"
+              body="SouHimBou AI authorizes or refuses each tool call before execution, contains agents that drift, and records the whole decision chain as replayable signed evidence."
               to="/products/souhimbou"
             />
+            <ProductCard
+              badge="Product 03"
+              icon={Shield}
+              title="ASAF Stargate"
+              tagline="Sovereign, bare-metal CMMC compliance engine"
+              body="AdinKhepra runs continuous control monitoring, auto-generates SSPs and POA&Ms, and cryptographically attests every control state — reviewer-ready, always."
+              to="/products/adinkhepra"
+            />
+          </div>
+
+          <div className="mt-10 grid lg:grid-cols-2 gap-4">
+            <Card>
+              <Eyebrow>Sovereign architecture · the PQC edge</Eyebrow>
+              <h3 className="mt-3 font-display text-xl font-semibold">
+                Standard TLS at the perimeter. Post-quantum inside.
+              </h3>
+              <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
+                Public access speaks ordinary TLS. The internal agentic network is encapsulated in
+                military-grade post-quantum cryptography — ML-KEM key establishment and ML-DSA-65
+                signatures — so a harvested transcript stays useless after the cryptographic break.
+              </p>
+            </Card>
+            <Card className="border-primary/30">
+              <Eyebrow>SEKHEM Gateway & PQC-WAF</Eyebrow>
+              <h3 className="mt-3 font-display text-xl font-semibold">
+                The payload is inspected before the agent ever sees it.
+              </h3>
+              <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
+                SEKHEM intercepts inbound payloads for SSRF and prompt-injection patterns and acts as
+                a blackhole VPN for the agent fleet: unapproved egress has nowhere to resolve, and
+                every interception is written to the Proof Ledger as evidence.
+              </p>
+            </Card>
           </div>
         </div>
       </section>
