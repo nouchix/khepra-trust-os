@@ -65,9 +65,6 @@ function SouHimBouPage() {
           </div>
         </div>
       </section>
-      title={<>SouHimBou AI — Security Camera & <span className="text-gradient">Flight Recorder</span></>}
-      subtitle="SouHimBou records every prompt, retrieval, tool call, and mutation as a signed, replayable timeline — so you can detect drift, prove intent, and reconstruct incidents step by step."
-      />
 
       <section className="border-b border-border/60">
         <div className="container-x py-16 grid lg:grid-cols-12 gap-10 items-center">

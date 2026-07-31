@@ -111,7 +111,7 @@ function EvidenceBriefPage() {
                { e: "Event 6", desc: "Session Isolation & Credential Revocation" },
                { e: "Event 7", desc: "Cryptographic Attestation & Passport Update" }
              ].map((evt, idx) => (
-                <div key={idx} className={\`p-4 rounded border \${evt.isRed ? 'border-red-500/30 bg-red-500/5 text-red-200' : 'border-border bg-background/50'}\`}>
+                <div key={idx} className={`p-4 rounded border ${evt.isRed ? 'border-red-500/30 bg-red-500/5 text-red-200' : 'border-border bg-background/50'}`}>
                    <div className="font-mono text-xs uppercase opacity-70">{evt.e}</div>
                    <div className="font-semibold text-lg">{evt.desc}</div>
                 </div>
@@ -130,7 +130,7 @@ function EvidenceBriefPage() {
              Our cryptographic evidence chains are fully exportable to standard defense-grade compliance formats. This includes full mapping to NIST SP 800-53, CMMC 2.0, and Post-Quantum guarantees under FIPS 204.
           </p>
           <div className="mt-8 p-6 bg-[#0f172a] rounded-xl border border-slate-800 text-emerald-400 font-mono text-xs overflow-x-auto whitespace-pre">
-{\`"attestations": [
+{`"attestations": [
   {
     "summary": "KHEPRA ASAF Autonomous Agent Governance Attestation",
     "assessor": "did:khepra:registrar-01",
@@ -149,7 +149,7 @@ function EvidenceBriefPage() {
       }
     ]
   }
-]\`}
+]`}
           </div>
         </div>
       </section>
