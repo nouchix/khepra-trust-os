@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 const links = [
   { to: "/threat-model", label: "Threat Model" },
   { to: "/protocol", label: "Protocol" },
+  { to: "/evidence-brief", label: "Evidence" },
   { to: "/asaf", label: "ASAF" },
   { to: "/trust-network", label: "Trust Network" },
   { to: "/empty-lane", label: "The Lane" },

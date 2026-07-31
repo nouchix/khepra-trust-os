@@ -2,7 +2,6 @@ import { createFileRoute, useNavigate, useSearch, Link } from "@tanstack/react-r
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { NxShield } from "@/components/console/NxShield";
@@ -60,10 +59,20 @@ function AuthPage() {
 
   async function handleGoogle() {
     setErr(null);
-    const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin });
-    if (result.error) { setErr(result.error.message ?? "Google sign-in failed"); return; }
-    if (result.redirected) return;
-    navigate({ to: redirectTo, replace: true });
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: `${window.location.origin}${redirectTo}` }
+    });
+    if (error) { setErr(error.message ?? "Google sign-in failed"); }
+  }
+
+  async function handleGithub() {
+    setErr(null);
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "github",
+      options: { redirectTo: `${window.location.origin}${redirectTo}` }
+    });
+    if (error) { setErr(error.message ?? "GitHub sign-in failed"); }
   }
 
   return (
@@ -114,9 +123,13 @@ function AuthPage() {
           <div className="flex-1 h-px" style={{ background: "var(--nx-border)" }} />
         </div>
 
-        <Button type="button" onClick={handleGoogle} variant="outline" className="w-full"
+        <Button type="button" onClick={handleGoogle} variant="outline" className="w-full mb-2"
           style={{ borderColor: "var(--nx-border2)", color: "var(--nx-text)", background: "var(--nx-bg3)" }}>
           Continue with Google
+        </Button>
+        <Button type="button" onClick={handleGithub} variant="outline" className="w-full"
+          style={{ borderColor: "var(--nx-border2)", color: "var(--nx-text)", background: "var(--nx-bg3)" }}>
+          Continue with GitHub
         </Button>
 
         <div className="mt-6 text-center cs-mono" style={{ fontSize: 11, color: "var(--nx-text2)" }}>
