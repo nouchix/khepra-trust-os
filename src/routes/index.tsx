@@ -86,7 +86,23 @@ function Home() {
             </Link>
           </div>
 
-          <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-6 max-w-3xl">
+          <div className="mt-14 flex flex-wrap gap-x-5 gap-y-2 font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+            {[
+              "Veteran-led",
+              "Active DoD Secret clearance",
+              "USPTO patent pending #73565085",
+              "SAM.gov UEI 24M6XQCZLYM7",
+              "Pending SDVOSB",
+              "FIPS 140-3 · air-gap capable",
+            ].map((c) => (
+              <span key={c} className="inline-flex items-center gap-2">
+                <span className="h-1 w-1 rounded-full bg-primary" />
+                {c}
+              </span>
+            ))}
+          </div>
+
+          <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-6 max-w-3xl">
             {[
               ["DISCOVER", "what the agent is"],
               ["VERIFY", "what it is authorized to do"],
