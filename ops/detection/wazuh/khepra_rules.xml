@@ -1,0 +1,274 @@
+<!--
+  KHEPRA Trust OS — Wazuh detection ruleset
+  ==========================================
+
+  Every control this repo added in response to the July 2026 Hugging Face
+  intrusion is PREVENTIVE: egress closed, metadata range unreachable, auth on
+  by default, telemetry opt-in. Prevention alone would have been a poor answer
+  to that incident. The agent operated inside the victim's infrastructure for
+  four and a half days across ~17,600 actions before anyone knew. What was
+  missing was not another block — it was somebody being told.
+
+  These rules alarm on the attempts the new controls refuse, plus the
+  post-compromise behaviours neither control covers.
+
+  RULE ID SPACE
+    100200-100209  KHEPRA application security events (refusals we emit)
+    100210-100219  Cloud instance metadata access
+    100220-100229  Covert relay and protocol tunnelling
+    100230-100239  Container escape and host privilege
+    100240-100249  DLL side-loading (Windows endpoints)
+
+  A NOTE ON WHAT THESE RULES MATCH
+
+  Rules 100200-100202 match log lines this codebase emits, whose exact text is
+  fixed in source — SOARCA's controller.go and pkg/utils/http/ssrf.go. Those
+  are reliable.
+
+  The remaining rules match behaviour observed through data sources Wazuh does
+  not collect by default: auditd syscall rules, Sysmon, and firewall or proxy
+  logs. They are inert until those sources are configured. README.md gives the
+  exact configuration each one needs. A rule that silently never fires is worse
+  than no rule, so verify each with the test procedure documented there before
+  relying on it.
+
+  NO INDICATORS OF COMPROMISE ARE ENCODED HERE. The Nimbus Manticore tooling
+  referenced below (NightLedger, BridgeHead, ArcBridge) was described in a
+  social-media summary rather than a primary advisory, and unverified hashes or
+  domains in a ruleset are worse than absent ones — they create the impression
+  of coverage. These rules target the behaviour those tools exhibit: a workload
+  becoming a relay. Add IOC rules separately when you have a source you trust.
+-->
+
+<group name="khepra,">
+
+  <!-- ─── 100200-100209: application security events ────────────────────── -->
+
+  <!--
+    SOARCA's playbook execution API is reachable without authentication.
+    Emitted by intializeAuthenticationMiddleware when AUTH_ENABLED=false.
+    The default is now true, so this line means somebody turned it off — which
+    is legitimate for local development and close to catastrophic anywhere
+    else, because the API executes HTTP, SSH, and PowerShell against arbitrary
+    targets.
+  -->
+  <rule id="100200" level="12">
+    <match>SOARCA_SECURITY_EVENT auth_disabled</match>
+    <description>SOARCA started with API authentication DISABLED — the playbook execution API is exposed unauthenticated</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>khepra_appsec,authentication_failures,</group>
+  </rule>
+
+  <!--
+    A playbook tried to reach an address the outbound policy denies. Emitted by
+    SSRFPolicy.DialControl. Benign causes exist — a misconfigured target, a
+    playbook written against a lab — so this is a lower level than the
+    metadata-specific rule that follows it.
+  -->
+  <rule id="100201" level="7">
+    <match>SOARCA outbound policy refused a connection</match>
+    <description>SOARCA refused an outbound connection by policy</description>
+    <mitre>
+      <id>T1190</id>
+    </mitre>
+    <group>khepra_appsec,</group>
+  </rule>
+
+  <!--
+    The refusal was for link-local space. There is no benign reading of a
+    playbook aiming at 169.254.169.254: that is the instance metadata service,
+    and reading it yields cloud role credentials. This is the exact pivot the
+    Hugging Face intrusion used to move from a workload foothold into the cloud
+    account. Escalated over its parent accordingly.
+  -->
+  <rule id="100202" level="13">
+    <if_sid>100201</if_sid>
+    <match>link-local address</match>
+    <description>SOARCA playbook attempted to reach the cloud instance metadata service — credential theft attempt</description>
+    <mitre>
+      <id>T1552.005</id>
+    </mitre>
+    <group>khepra_appsec,khepra_imds,</group>
+  </rule>
+
+  <!-- ─── 100210-100219: cloud instance metadata access ─────────────────── -->
+
+  <!--
+    Any process on a monitored host connecting to 169.254.169.254. Requires the
+    auditd connect-syscall rule in README.md §3; inert without it.
+
+    This is deliberately broad. Legitimate metadata access exists — cloud agents
+    and SDKs poll it — so expect to tune with rule 100212 rather than to run
+    this at level 12 untouched. Tune by PROCESS, never by dropping the rule:
+    "the metadata service gets read sometimes" is precisely the assumption that
+    makes the real read invisible.
+  -->
+  <rule id="100210" level="10">
+    <if_sid>80700</if_sid>
+    <field name="audit.addr">169.254.169.254</field>
+    <description>Connection to the cloud instance metadata service from $(audit.exe)</description>
+    <mitre>
+      <id>T1552.005</id>
+    </mitre>
+    <group>khepra_imds,</group>
+  </rule>
+
+  <!--
+    The same access from inside a container. A containerised workload has even
+    less business reading instance metadata than a host process, and in the
+    Hugging Face intrusion this is what the compromised worker pod did.
+  -->
+  <rule id="100211" level="13">
+    <if_sid>100210</if_sid>
+    <field name="audit.cwd">^/var/lib/docker|^/run/containerd</field>
+    <description>Containerised process read cloud instance metadata — workload credential theft pattern</description>
+    <mitre>
+      <id>T1552.005</id>
+    </mitre>
+    <group>khepra_imds,</group>
+  </rule>
+
+  <!--
+    Tuning stub. Add the cloud agents that legitimately poll metadata on your
+    fleet, then this rule downgrades them instead of you weakening 100210.
+    Left empty on purpose: an allowlist somebody has to fill in is honest,
+    whereas a pre-populated one silences processes you never audited.
+  -->
+  <rule id="100212" level="0">
+    <if_sid>100210</if_sid>
+    <field name="audit.exe">NO_PROCESS_ALLOWLISTED_YET_SEE_README</field>
+    <description>Known-good instance metadata access (tuning allowlist)</description>
+    <group>khepra_imds,</group>
+  </rule>
+
+  <!-- ─── 100220-100229: covert relay and protocol tunnelling ───────────── -->
+
+  <!--
+    Nimbus Manticore's BridgeHead and ArcBridge turn a victim host into a
+    covert relay: a SOCKS5 proxy tunnelling arbitrary TCP, with the C2 server
+    initiating the connection so the traffic appears to originate inside the
+    trusted network.
+
+    That inbound-initiated direction is what makes it worth a rule of its own.
+    Egress controls — including the internal:true networks this repo just
+    enforced — constrain what a workload can dial OUT to. They do nothing about
+    a session opened from outside and then used as a tunnel, and monitoring
+    built solely around "unexpected outbound connection" will not see it.
+
+    Requires firewall or proxy logging (README.md §4).
+  -->
+  <rule id="100220" level="10">
+    <if_group>firewall,</if_group>
+    <field name="dstport">^1080$|^9050$|^9150$</field>
+    <description>Traffic to a common SOCKS proxy port — possible covert relay</description>
+    <mitre>
+      <id>T1090</id>
+    </mitre>
+    <group>khepra_relay,</group>
+  </rule>
+
+  <!--
+    A server-class host beginning to LISTEN on a port it did not previously
+    serve is the clearest host-side signal of a relay being installed. Requires
+    the netstat/ss collection in README.md §5.
+  -->
+  <rule id="100221" level="10">
+    <if_sid>533</if_sid>
+    <description>New listening port opened on a monitored host — verify against the expected service inventory</description>
+    <mitre>
+      <id>T1090</id>
+    </mitre>
+    <group>khepra_relay,</group>
+  </rule>
+
+  <!--
+    WebSocket upgrade from a server workload to an external host. Both named
+    tunnellers use WebSockets, chosen because the traffic blends with ordinary
+    web activity and survives most egress proxies.
+
+    Scope this to SERVER workloads. On user endpoints outbound WebSockets are
+    constant background noise and this rule will drown you.
+
+    Requires proxy or web-gateway logging (README.md §4).
+  -->
+  <rule id="100222" level="8">
+    <if_group>web,</if_group>
+    <match>Upgrade: websocket</match>
+    <description>Outbound WebSocket upgrade from a server workload — review destination against the egress allowlist</description>
+    <mitre>
+      <id>T1071.001</id>
+      <id>T1572</id>
+    </mitre>
+    <group>khepra_relay,</group>
+  </rule>
+
+  <!-- ─── 100230-100239: container escape and host privilege ────────────── -->
+
+  <!--
+    Creation of a privileged container, or one mounting the host filesystem or
+    the Docker socket. In the Hugging Face intrusion this step took the agent
+    from a workload foothold to root on the node in a single API call, because
+    no admission policy rejected it.
+
+    G-5 (ops/guards/containment_guard.sh) blocks this in committed compose
+    files. This rule covers what G-5 structurally cannot: a container created
+    at runtime, by hand or by a compromised process, which no manifest in the
+    repository ever described.
+
+    Requires Docker listener or auditd execve collection (README.md §6).
+  -->
+  <rule id="100230" level="12">
+    <if_group>docker,</if_group>
+    <match>privileged|/var/run/docker.sock|hostPath|--pid=host</match>
+    <description>Privileged or host-mounting container created — container escape primitive</description>
+    <mitre>
+      <id>T1610</id>
+      <id>T1611</id>
+    </mitre>
+    <group>khepra_container_escape,</group>
+  </rule>
+
+  <!--
+    Direct access to the Docker socket by a process that is not the Docker
+    client or daemon. Writing to this socket is equivalent to root on the host.
+  -->
+  <rule id="100231" level="12">
+    <if_sid>80700</if_sid>
+    <field name="audit.file.name">/var/run/docker.sock</field>
+    <description>Process accessed the Docker socket directly — equivalent to host root</description>
+    <mitre>
+      <id>T1611</id>
+    </mitre>
+    <group>khepra_container_escape,</group>
+  </rule>
+
+  <!-- ─── 100240-100249: DLL side-loading (Windows endpoints) ───────────── -->
+
+  <!--
+    Nimbus Manticore launches the NightLedger backdoor by DLL side-loading: a
+    legitimately signed executable is placed alongside a malicious DLL it will
+    load by name, so execution inherits the trust of the signed binary.
+
+    Sysmon Event 7 (ImageLoad) is the detection surface. The signal is an
+    UNSIGNED image loaded from a user-writable directory — Sysmon must be
+    configured to log ImageLoad, which its default configurations often omit
+    because the event is high-volume (README.md §7).
+
+    Included even though this repository's own workloads are Linux containers:
+    if Wazuh is watching the fleet, it is watching the Windows endpoints where
+    the phishing lure described in that advisory actually lands.
+  -->
+  <rule id="100240" level="10">
+    <if_group>sysmon_event7,</if_group>
+    <field name="win.eventdata.signed">^false$</field>
+    <field name="win.eventdata.imageLoaded">(?i)\\\\(Users|ProgramData|Temp|AppData)\\\\</field>
+    <description>Unsigned DLL loaded from a user-writable path — possible DLL side-loading</description>
+    <mitre>
+      <id>T1574.002</id>
+    </mitre>
+    <group>khepra_sideload,</group>
+  </rule>
+
+</group>

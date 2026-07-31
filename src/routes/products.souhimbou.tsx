@@ -7,6 +7,12 @@ import { JsonLd, buildSoftwareAppSchema } from "@/components/seo-json-ld";
 export const Route = createFileRoute("/products/souhimbou")({
   head: () => ({
     meta: [
+      { title: "SouHimBou AI — Runtime Enforcement & Flight Recorder for AI Agents" },
+      { name: "description", content: "Authorize or refuse every agent tool call before execution, contain agents that drift, and prove the decision with signed, replayable evidence." },
+      { property: "og:title", content: "SouHimBou AI — Runtime Enforcement for AI Agents" },
+      { property: "og:description", content: "See what AI agents are doing. Control what they are allowed to do. Prove what happened." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: "SouHimBou AI — Security Camera for AI Agents" },
       { name: "description", content: "Record every prompt, retrieval, tool call, and mutation as a replayable signed timeline. Detect drift, prove intent, reconstruct incidents." },
       { property: "og:title", content: "SouHimBou AI — Security Camera for AI Agents" },
@@ -29,8 +35,38 @@ function SouHimBouPage() {
       />
       <PageHero
         eyebrow="Product 02 · SouHimBou AI"
-        title={<>SouHimBou AI — Security Camera & <span className="text-gradient">Flight Recorder</span></>}
-        subtitle="SouHimBou records every prompt, retrieval, tool call, and mutation as a signed, replayable timeline — so you can detect drift, prove intent, and reconstruct incidents step by step."
+        title={<>See it. <span className="text-gradient">Control</span> it. Prove it.</>}
+        subtitle="SouHimBou AI is the privileged enforcement and proof plane at the agent-action boundary. It authorizes or refuses each tool call before execution, contains agents whose behavior changes, and records the entire decision chain as signed, replayable evidence. The security camera and flight recorder are what it leaves behind — the daemon is what it does."
+      />
+
+      <section className="border-b border-border/60">
+        <div className="container-x py-16">
+          <SectionHeading
+            eyebrow="Three functions, one architecture"
+            title={<>Detection tells you an agent crossed the line. <br />Enforcement is what keeps it from crossing.</>}
+          />
+          <div className="mt-10 grid md:grid-cols-3 gap-4">
+            {[
+              ["01 · See", "Discover agentic systems, map their tools and reachable data, baseline behavior, and flag drift and injection indicators."],
+              ["02 · Control", "Evaluate each action before execution and rule: ALLOW → CONSTRAIN → REQUIRE APPROVAL → DENY → QUARANTINE → LOCK. Denied calls never run."],
+              ["03 · Prove", "Every ruling — including the ones that refused an action — becomes a signed, hash-chained evidence object you can replay and export."],
+            ].map(([t, d]) => (
+              <Card key={t} className="hover:border-primary/40 transition-colors">
+                <div className="font-mono text-[11px] uppercase tracking-widest text-primary/80">{t}</div>
+                <p className="mt-4 text-sm text-muted-foreground leading-relaxed">{d}</p>
+              </Card>
+            ))}
+          </div>
+          <div className="mt-8 surface-card p-6">
+            <p className="text-base text-foreground/90 leading-relaxed max-w-3xl">
+              Other platforms tell you what an agent did. SouHimBou AI is designed to control what the
+              agent is permitted to do — and prove the control was enforced.
+            </p>
+          </div>
+        </div>
+      </section>
+      title={<>SouHimBou AI — Security Camera & <span className="text-gradient">Flight Recorder</span></>}
+      subtitle="SouHimBou records every prompt, retrieval, tool call, and mutation as a signed, replayable timeline — so you can detect drift, prove intent, and reconstruct incidents step by step."
       />
 
       <section className="border-b border-border/60">
@@ -38,15 +74,15 @@ function SouHimBouPage() {
           <div className="lg:col-span-6">
             <Eyebrow>Why it matters</Eyebrow>
             <h2 className="mt-4 text-3xl md:text-4xl font-semibold tracking-tight">
-              You can't govern what you can't replay.
+              You can't govern what you can't stop — or replay.
             </h2>
             <ul className="mt-6 space-y-3">
               {[
-                "Full-fidelity capture: prompts, retrievals, tool I/O, external mutations.",
-                "Signed, tamper-evident timeline on the KHEPRA DAG.",
-                "Drift detection across models, prompts, and tool manifests.",
-                "Incident replay with byte-identical reconstruction of any session.",
-                "Redaction and policy-driven access for evidence review.",
+                "Interdiction in the call path: a denied tool call is never invoked, and unapproved egress fails at the transport.",
+                "Adaptive containment: normal, elevated, restricted, quarantined, locked — escalation is monotonic, reinstatement is explicit.",
+                "Human-in-the-loop gates: held actions queue for a named approver, and the approver's identity lands in the evidence.",
+                "Full-fidelity capture: prompts, retrievals, tool I/O, external mutations, and every policy ruling.",
+                "Signed, tamper-evident timeline on the KHEPRA DAG, with forensic replay of any session.",
               ].map((t) => (
                 <li key={t} className="flex items-start gap-3">
                   <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-0.5" />

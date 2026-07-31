@@ -1,0 +1,480 @@
+# ARCH-014 — Production Release Topology
+
+**Date:** 2026-07-27
+**Status:** Accepted (implemented and CI-enforced in this change)
+**Builds on:** ARCH-010 (the split decision), ARCH-013 (public/private boundary), ADR-012 (ASAF migration)
+**Enforced by:** guard G-2 (`ops/guards/module_boundary_guard.sh`), CI jobs `core-verify`, `supply-chain`, `image`, `deploy-manifests`
+
+## 1. The question this answers
+
+> *"Now that there is separation between trust-os and the PQC-MCP repo, how do we
+> ship this production release? Do we have an import module of the MCP repo in
+> khepra-trust-os? Which is the production deployment repo for the official
+> release?"*
+
+Three answers, in order:
+
+1. **We did have an "import module" — an accidental, broken, and dangerous one.**
+2. **`khepra-trust-os` is the production deployment repo.**
+3. **The public kernel is consumed as a pinned artifact, never as source.**
+
+## 2. What we found (the reason this document exists)
+
+`khepra-trust-os` tracked `PQC-Khepra-MCP` on `main` as a **git submodule
+gitlink**:
+
+```
+$ git ls-files -s PQC-Khepra-MCP
+160000 ea4c044649c978c0394d8ce6ad6be94a4998c4ce 0	PQC-Khepra-MCP
+```
+
+Mode `160000` is a gitlink. But there was **no `.gitmodules` file**, so there was
+no URL and nothing could resolve it. Introduced by commit `6008b36` ("Changes") —
+a stray `git add` of a sibling clone, not a decision.
+
+Four consequences, escalating:
+
+| | Consequence |
+|---|---|
+| 1 | A fresh clone gets an empty directory and a permanently dirty tree. |
+| 2 | `git submodule update --init` fails; CI with `submodules: true` fails. |
+| 3 | The pin was 5 commits stale (`ea4c044`, 2026-07-11). |
+| 4 | **The pin predates `871fe42` "Remove live credentials" (2026-07-24).** The pinned commit still contains both leaked secrets — the MCP bearer token and the STIG Viewer integrity key. |
+
+Row 4 is the actual hazard. The obvious "fix" — adding a `.gitmodules` so the
+submodule resolves — would have **resurrected two credentials we had just
+removed**, inside the private repo, where nobody would think to look for them.
+
+It survived for two weeks because **nothing checked**. That is the failure this
+document and guard G-2 exist to prevent, and it is a concrete instance of the
+project's own TRL10 rule: a boundary asserted in prose is not a control.
+
+**Resolution:** the gitlink is deleted (`git rm --cached PQC-Khepra-MCP`), and
+G-2 fails CI if any gitlink is ever tracked in this repo again.
+
+## 3. The topology
+
+```
+  PQC-Khepra-MCP (public)                khepra-trust-os (private)
+  ─────────────────────────              ──────────────────────────────
+  source of the MCP kernel               THE PRODUCT + THE DEPLOYMENT
+  Apache-2.0 (proposed)                  proprietary
+  72 kernel tools                        core/ (enforcement, DFIR, evidence)
+  unmodified NIST primitives             deploy/profiles/*
+                                         ops/guards/* (assurance)
+        │                                         │
+        │  builds & publishes                     │  consumes
+        ▼                                         ▼
+  ghcr.io/nouchix/pqc-khepra-mcp  ──────►  KHEPRA_MCP_IMAGE=...@sha256:...
+       (container image, digest-pinned)
+```
+
+**The rule: khepra-trust-os builds what it owns and consumes everything else as a
+pinned image.**
+
+There is exactly **one** dependency from private → public, and it is an
+**artifact** dependency: the `khepra-mcp` service in
+`deploy/profiles/sovereign/docker-compose.yml`. No submodule. No Go import. No
+`replace` directive.
+
+### Why not a Go module dependency?
+
+Both directions are illegal, for different reasons:
+
+- **private → public (importing the kernel as a module):** re-imports the public
+  repo's git history into the private repo's dependency graph, including anything
+  scrubbed from it — exactly the row-4 hazard above, in a form `go mod` would
+  refresh automatically. It also couples the private release cadence to public
+  tags.
+- **public → private (kernel importing `core/`):** destroys the split. ARCH-010
+  §4 condition 3 requires the kernel to compile **standalone** behind interfaces;
+  ARCH-013 forbids it. This is what the `kernelports` spike (PQC issue #60) is
+  for.
+
+`core/go.mod` therefore requires exactly two things, and G-2 keeps it that way:
+
+```
+require (
+	github.com/cloudflare/circl v1.6.4
+	golang.org/x/sys v0.46.0
+)
+```
+
+Cross-boundary coupling is a **protocol**, not a link. The canonical example
+already exists: KASA lives in the public repo and drives private enforcement by
+POSTing HMAC-authenticated `ThreatSignal`s to `core/enforce.SignalIntake` — see
+the header comment in `core/enforce/intake.go`, which states the same three
+reasons at the code site.
+
+## 4. The two MCP servers are two planes, not a duplication
+
+This was genuinely ambiguous and is now decided.
+
+| | `ktos-mcp` | `khepra-mcp` |
+|---|---|---|
+| Repo | khepra-trust-os (private) | PQC-Khepra-MCP (public) |
+| Tools | **9** | **72** |
+| Plane | **Evidence / trust fabric** | **Kernel operations** |
+| Surface | AEO record/verify, ledger replay, trust score, agent passports, dual-anchor determinism | scanning, compliance, reporting, ops tooling |
+| Risk class | all 9 are `read_only` | mixed |
+| Transport | stdio | stdio + HTTP/SSE (:8765) |
+
+They do not overlap. `ktos-mcp` answers *"what did this agent do, and can you
+prove it?"*; `khepra-mcp` answers *"scan/assess/report on this environment."* A
+sovereign deployment runs both, side by side, writing into the same DAG.
+
+**Decision:** keep both, and stop describing either as "the" KHEPRA MCP server.
+Public docs say **"the KHEPRA MCP kernel (72 tools)"**; private/product docs say
+**"the KTOS trust-fabric server (9 evidence tools)."**
+
+Verified, not assumed: all 9 tools are registered in `core/mcp/tools.go` and the
+server completes `initialize` + `tools/list` over stdio (CI job `core-verify`
+drives it on every PR).
+
+## 5. How a release is cut
+
+1. **Public kernel** — tag `PQC-Khepra-MCP`, its workflow builds and pushes
+   `ghcr.io/nouchix/pqc-khepra-mcp`, and **records the digest**.
+2. **Private core** — tag `khepra-trust-os`. Its workflow builds
+   `core/Dockerfile` → `ktos-core` and records that digest.
+3. **Resolve every consumed digest** into `deploy/profiles/sovereign/.env`
+   (`ASAF_API_IMAGE`, `ASAF_UI_IMAGE`, `KHEPRA_MCP_IMAGE`, `OLLAMA_IMAGE`).
+   Digest, not tag:
+   ```
+   crane digest ghcr.io/nouchix/pqc-khepra-mcp:v0.1.0
+   ```
+4. **The release manifest** is the private tag plus that set of digests. That
+   tuple is the thing an evidence chain is rooted in: given a replayed AEO, you
+   can name the exact bytes that produced it.
+
+**The official release artifact is a tag in `khepra-trust-os` that pins a set of
+image digests.** Nothing crosses as source.
+
+### Fail-closed pins
+
+Every consumed image is declared `${VAR:?message}`. Compose **refuses to start**
+when a pin is missing, rather than silently resolving `:latest`. An unpinned
+deployment cannot produce replayable evidence, because you cannot later say which
+bytes ran. `deploy/profiles/sovereign/.env.example` documents all four, and CI
+asserts both that the profile resolves with pins supplied *and* that it fails
+without them.
+
+## 6. What this change fixed
+
+| Defect | State before | Now |
+|---|---|---|
+| Stray submodule gitlink pinning a commit with live credentials | on `main`, unnoticed 2 weeks | deleted; G-2 blocks recurrence |
+| CI never built or tested `core/` | 1 job (G-1 only); **91 tests never ran on a PR** | `core-verify`: gofmt, vet, build, `test -race`, static-link check, binary smoke tests |
+| No Dockerfile anywhere in the repo | `core/` had no deployment representation | `core/Dockerfile` — 3 static binaries on `scratch`, non-root, offline build |
+| Sovereign profile referenced `Dockerfile.adinkhepra` / `Dockerfile.dashboard`, which have never existed here | `docker compose build` could not work | consumed as pinned images; G-2 check 3 blocks unresolvable build contexts |
+| 4 images pinned `:latest` | unknowable deployed bytes | fail-closed digest pins + `.env.example` |
+| Two MCP servers, no stated relationship | ambiguous product story | §4 above |
+| `gofmt` violation in `core/pqcsuite` | nothing checked formatting | fixed; CI checks |
+
+## 7. Open gaps (stated, not hidden)
+
+**CI-1 — `cancel-in-progress` was cancelling `main` verification. FIXED
+2026-07-28.** The workflow shipped with `cancel-in-progress: true` unconditionally.
+Within a day it cost exactly what this workflow exists to provide: PR #18 merged at
+04:24:41, a dependabot PR merged 16 seconds later, and the newer push **cancelled
+the #18 merge run**. A commit landed on `main` with its verification killed
+mid-flight — a silent hole in the evidence chain the TRL10 claim rests on, since a
+guard that is cancelled cannot fail loudly. Now
+`cancel-in-progress: ${{ github.event_name == 'pull_request' }}`: superseding is
+correct on a PR (the newer commit replaces the old one, and nothing is claimed
+about the old one), but on `main` each commit is a distinct artifact whose
+green-ness is asserted independently.
+
+**SC-1 — `core/go.sum` did not exist. CLOSED 2026-07-28.** The module vendors its
+dependencies (`core/vendor/`), which is what makes offline/air-gapped builds work.
+But vendor mode consults `vendor/modules.txt`, **not** `go.sum`, so the vendored
+bytes had no local cryptographic record of what they should hash to, and nothing
+noticed because nothing ran `go mod verify`.
+
+The `supply-chain` job generated it on its first successful run — against the Go
+checksum transparency log (`GOSUMDB=sum.golang.org`), which is the actual
+upstream-authenticity control. It is now committed: 4 modules, 8 hashes. The
+`go.sum must be committed` step is **blocking**, so it cannot silently disappear
+again.
+**SC-2 — the committed vendor tree did not match `go mod vendor` output. CLOSED
+2026-07-28.** (Took three attempts and was twice mis-called; the history is kept
+below because the failure mode is instructive.)
+
+### What was wrong
+
+Two things, both fixed:
+
+1. **The go directive was too low.** `golang.org/x/sys v0.46.0` declares
+   `go >= 1.25.0`, so `go mod vendor` raises `core/go.mod` from `1.24.0` to
+   `1.25.0`. Holding the module at 1.24 left the tree permanently unable to match
+   upstream.
+2. **The tree was over-vendored by 27 packages.** Verified with
+   `go list -deps`: the build reaches exactly **13 circl packages plus
+   `golang.org/x/sys/cpu`** — 14 in total. The committed tree carried 41,
+   including all of `x/sys/unix`, `x/sys/windows`, `windows/svc/{debug,eventlog,mgr}`,
+   `windows/registry`, `plan9`, `execabs`, and circl's `x25519`, `x448`,
+   `ed25519`, `ed448`, `goldilocks`, `kyber512`, `kyber768` and `dilithium/mode3`.
+   None of it is reachable. The surplus was almost certainly inherited from a
+   source repo where the ASAF daemon *did* use `x/sys/unix` and `windows/svc`.
+
+### The fix
+
+`go mod vendor` could not be run in the authoring environment (the module proxy
+returns 403 there), but the operation is deterministic, so it was reproduced
+directly: the drop set was computed from `go list -deps` rather than chosen by
+hand, those 27 package directories were deleted, `vendor/modules.txt` was
+regenerated from the reachable set, and the go directive was raised to `1.25.0`.
+
+**Confirmed byte-exact against upstream.** The resulting diff is
+`462 files changed, 2 insertions(+), 239870 deletions(-)` — identical in every
+figure to the diff CI's own `go mod vendor` produced on run `30330971793`. The
+tree shrank from **11 MB / 511 Go files to 1.1 MB / 105 Go files**.
+
+Verified with Go 1.25.1 offline (`GOFLAGS=-mod=vendor GOPROXY=off`): vendor
+consistency, `build`, `vet`, `gofmt`, the full suite under `-race`, and all three
+static binaries building and running. Go validates `vendor/modules.txt` against
+`go.mod` and the import graph in vendor mode, so a wrong package list or a wrong
+`## explicit; go` annotation fails the build rather than passing silently.
+
+*Consequences:* `GO_VERSION` (CI) and `GO_IMAGE` (`core/Dockerfile`) move to
+1.25.1, and the vendor-diff step is **blocking**. Dropping ~240k lines of
+unreachable third-party code is also a real supply-chain win — smaller SBOM,
+smaller audit surface, less third-party code to justify in a FIPS/ATO review.
+
+### Why this took three attempts — the instructive part
+
+The gap was called *real*, then *withdrawn*, then *real again*. The withdrawal was
+wrong, and the cause was a bug in the check itself:
+
+- The diagnostic piped `git diff` into `head -200`. Under `pipefail`, `head`
+  closing the pipe sent SIGPIPE to `git diff`, killing the step with exit **141**
+  — *before* the line that writes `/tmp/vendor-drift.diff`. With
+  `continue-on-error` masking the failure, the job reported
+  `conclusion: success` and produced no artifact. "No artifact" was then read as
+  "no drift."
+- The original diagnosis had also been partly right for the wrong reason: it
+  flagged `vendor/modules.txt` recording `## explicit; go 1.24.0` for `x/sys` as
+  suspicious. That annotation *was* wrong — upstream is `1.25.0` — but the
+  inference drawn from it ("generated under a different go.mod") was not the
+  mechanism.
+
+Three rules now encoded in the workflow:
+
+- **Never pipe an evidence-producing command into a truncating pager.** Write the
+  artifact first, then read the file. A diagnostic that destroys its own evidence
+  is worse than none, because it reports success.
+- **`continue-on-error` steps report `conclusion: success` in the Actions API
+  regardless of what the command did.** Job status cannot distinguish "passed"
+  from "failed but tolerated" — only the log or the artifact can.
+- **Do not flip a check to blocking on the strength of a run that produced no
+  evidence.** Absence of a failure artifact is not proof of success when the
+  failure path is what writes the artifact.
+
+**SV-1 — the sovereign UI is built against cloud Supabase. SCOPED 2026-07-28:
+this repo is clean; the gap is in Adinkhepra-ASAF only.**
+
+Investigated rather than assumed. **`khepra-trust-os` does not have this
+problem:** all three Supabase clients here initialize lazily — `client.ts` behind
+a `Proxy` that calls `createSupabaseClient()` only on first property access, and
+`client.server.ts` / `auth-middleware.ts` inside functions — and the public API
+routes reach Supabase through a dynamic `await import(...)`. Nothing forces
+`VITE_SUPABASE_*` at build time; a missing variable throws at first *use*, not at
+build. So this repo's frontend builds and ships without a cloud dependency baked
+in.
+
+The gap is real but belongs to **`asaf-ui` in Adinkhepra-ASAF**: its Next.js
+`/AuthCallback` initializes the Supabase client at *module scope*, which makes
+`NEXT_PUBLIC_SUPABASE_URL` / `_ANON_KEY` mandatory at build time. Moving the build
+out of the compose file (§6) relocated that problem to the UI's own repo; it did
+not solve it, and an air-gapped site still ships an image built against a cloud
+project.
+
+*Fix shape (in that repo, not this one):* move the client behind a lazy accessor —
+the same `Proxy` pattern `khepra-trust-os/src/integrations/supabase/client.ts`
+already uses — and gate the `/AuthCallback` route on a sovereign-mode flag so an
+air-gapped build has no cloud auth path to initialize. That is a change to
+Adinkhepra-ASAF and cannot be validated from this repo.
+
+*Correction to the earlier wording:* SV-1 was previously written as though it
+applied to the sovereign profile generally. It does not — it is one route in one
+component. Recording it as broader than it is would have justified work that
+isn't needed here.
+
+**RL-1 — no release workflow yet.** §5 describes the procedure; no
+`.github/workflows/release.yml` implements it. Today CI *builds* the core image
+(`image` job) but never pushes it, and digest resolution is manual. Until that
+workflow exists, §5 is a runbook, not a control.
+
+**DM-1 — the hosted demo surfaces' conditions. PARTIALLY CLOSED 2026-07-28:
+implemented and tested for the MCP surface; web routes and the gateway remain.**
+
+§6.1 moved demonstrations off local stubs and onto `gateway.souhimbou.ai` and
+`mcp.souhimbou.ai`. The G-1 allowlist records what those endpoints must have —
+input guard, "no CUI" banner, isolated demo DAG, blocked real-target submission,
+tier-gated authenticated scans — but G-1 only checks that a surface is
+*acknowledged*, never that the controls exist. They were prose.
+
+**Now implemented (`core/mcp/demoguard.go`), for the surface `server.json` names
+as this server's homepage:**
+
+- **Banner** — `NoCUINotice` rides in the MCP `initialize` response's
+  `instructions` field, so every client sees it before its first tool call. A
+  banner a human must scroll to is not a control; this is delivered in-band.
+- **Demo-mode declaration** — a machine-readable `demoMode` object naming the DAG
+  and accepted classification, which is what makes "the demo DAG is isolated"
+  externally checkable instead of `UNVERIFIABLE`.
+- **Input guard** — refuses credential shapes (PEM keys, AWS/Stripe/GitHub/Slack
+  tokens, JWTs, bearer headers), banner/portion control markings (`CUI//`, leading
+  `CUI`, `CONTROLLED UNCLASSIFIED`, `NOFORN`, `FOUO`, `ITAR`, classification
+  banners), and sensitive field names. **Screened before the trust layer runs**, so
+  refused input is never recorded: an AEO is content-addressed and chained, so a
+  credential written into the ledger cannot be removed afterwards without breaking
+  the chain. Refuse first, record nothing.
+- **Opt-in** — driven by `KHEPRA_DAG_SEED_DEMO`, the same variable the allowlist
+  already records, so the deployment knob and the documented condition cannot
+  drift. Unset means sovereign: no banner, no guard, CUI accepted — correct for a
+  customer inside their own boundary, where controlled data is the point.
+
+**Two stated limits, because overclaiming here is worse than the gap:**
+
+1. **Unmarked CUI is undetectable by any pattern.** Nothing can tell that an
+   ordinary-looking hostname or filename is controlled. The banner is the primary
+   control; the guard is defence in depth against pasted *marked* documents.
+2. **Casual mentions are deliberately allowed.** An earlier version matched
+   `CUI` as a token and refused the product's own catalog text
+   ("FIPS-validated cryptography for CUI at rest") — caught by a test. The guard
+   now targets marking *syntax*, not vocabulary. A guard that blocks the product's
+   own reference data is a bug, not caution.
+
+**Still open:**
+
+- **`gateway.souhimbou.ai`** — the eval-scan surface. Its two extra conditions
+  (real-target block, tier-gated authenticated scans) are checked by
+  `core/democonform` but not yet implemented; that code lives in PQC-Khepra-MCP.
+- **The web demo routes** (`src/routes/api/public/{demo,aeo,fabric}.ts`) — public,
+  unauthenticated, and currently carrying neither banner nor input guard. Not
+  fixed here because this environment cannot install dependencies
+  (`npm` returns 403) and the project has no test framework, so the change could
+  not be compiled or tested. **Shipping an untested regex guard into a public
+  request path would be the same mistake as the SIGPIPE bug in §7 — a control that
+  looks present and is not.** The Go implementation above is the reference; the
+  TypeScript port should be applied and built locally.
+- **CI wiring** — the `demo-conformance` job exists and is opt-in via the
+  `KTOS_DEMO_MCP_URL` / `KTOS_DEMO_GATEWAY_URL` repository variables. Until those
+  are set, the hosted surfaces are still unassessed in CI.
+
+**DP-1 — no systemd unit for `asaf-daemon`.** Unchanged from the ported profile:
+the privileged daemon runs on bare metal, not in compose, and no unit file exists
+in any repo. Same family of gap as "no real installer bundle."
+
+**Not claimed:** the `core/Dockerfile` image build is **unverified locally** —
+there is no Docker daemon in the authoring environment. What *was* verified is
+the exact build it performs: `CGO_ENABLED=0 GOFLAGS=-mod=vendor GOPROXY=off go
+build -trimpath -ldflags "-s -w"` produces three statically linked binaries
+(6.2M / 3.4M / 2.7M), and all three run — `ktos-aiscan --demo`, `ktos-enforce
+--demo`, and `ktos-mcp` answering `initialize` + `tools/list` over stdio. The
+`image` CI job is what proves the container layer, and it must go green before
+this is described as a shippable image.
+
+## 6.1 No simulation in shipped binaries
+
+**Decision: `ktos-aiscan --demo` and its stub-service harness are deleted. Demos
+run against a real deployed service.**
+
+The removed code (~95 lines: `setupDemo`, `newStub`, `stub`, `splitURL`) started
+stub HTTP servers on `127.0.0.1` pretending to be Ollama and Jupyter, then
+"discovered" them. Four reasons it had to go, in order of severity:
+
+1. **It never exercised the shipped detection.** `setupDemo` built its *own*
+   `Scanner` with a two-signature pack synthesized from the stubs' ephemeral
+   ports, bypassing the real 15-signature pack entirely. A green demo proved
+   nothing about whether the product detects anything.
+2. **It made a read-only scanner open listening sockets.** The tool's stated
+   guarantee is *"never authenticates, never writes, never exploits."* Shipping
+   `net.Listen` inside it contradicted that in the binary an MSP runs on a client
+   network. The doc comment now also promises **never LISTENS**, and there is no
+   longer any code that could break that promise.
+3. **It hardcoded a named customer** ("Groff NetWorks AI Governance Policy") into
+   the shipped binary.
+4. **It panicked on listen failure** — an unrecoverable crash path in a release
+   artifact, reachable on any port-exhausted or restricted host.
+
+It also cost two CI cycles. `ktos-aiscan` exits **3** on policy violations by
+design (so it can gate a pipeline like a linter), and the demo deliberately
+planted a violating service — so 3 was the *passing* result, which the first smoke
+test got backwards. The local pre-commit check had piped the demo through `head`,
+so the pipeline returned `head`'s status and the real exit code was never
+observed. That is the general hazard the user named: **a simulation generates its
+own bugs, and they are bugs about the simulation, not about the product.**
+
+### What replaced it
+
+- **In the binaries:** nothing. `--targets` is now required; a missing target is a
+  usage error (exit 2). Exit 3 on violations is unchanged — that is real product
+  behaviour, not demo scaffolding.
+- **In CI:** the smoke test exercises the two real, deterministic, network-free
+  paths — `--print-policy` must emit valid policy JSON, and no `--targets` must
+  exit 2. It also asserts `--demo` is **still rejected**, so the simulation cannot
+  silently return. Scanner behaviour is covered by the `aidiscovery` unit tests,
+  where `httptest` fixtures legitimately belong: a fixture inside a test is scoped
+  to the test, whereas a fixture inside `main` ships to customers.
+- **In the container:** the default `CMD` is `ktos-aiscan --print-policy`, not a
+  demo.
+- **For demonstrations:** the two external surfaces already allowlisted by guard
+  G-1 in `ops/guards/sovereignty_allowlist.txt`:
+
+  | Host | Class | Purpose |
+  |---|---|---|
+  | `gateway.souhimbou.ai` | `demo-discovery` / `DEMO` | public eval scan (`ASAF_ALLOW_EVAL_WITHOUT_LICENSE=true`) |
+  | `mcp.souhimbou.ai` | `demo-discovery` / `DEMO` | public MCP tool endpoint (`KHEPRA_DAG_SEED_DEMO=true`) |
+
+  Both carry pre-existing TRL10 conditions in the allowlist that this decision now
+  depends on: input guard, a "no CUI" banner, an isolated demo DAG, and — for the
+  eval scan — blocking real-target/credential submission and tier-gating
+  authenticated scans. **Those conditions are not verified by this change.** Moving
+  the demo surface off the laptop and onto a hosted endpoint makes them load-bearing
+  rather than aspirational; see gap DM-1 in §7.
+
+### What was deliberately NOT deleted
+
+`ktos-enforce --demo` and `mcp.RunDemo` stay. They are not simulations: neither
+opens a socket, fabricates a service, or substitutes a synthetic pack. They drive
+the real `enforce` and `mcp` packages in-process and print the real rulings and
+AEOs, and `RunDemo` is covered by `TestDemoRuns`. Deleting them would remove
+genuine coverage and the only offline way to exercise the enforcement plane, which
+is not what "clean" means here. If the intent is that these move to the hosted
+surface too, that is a separate, larger change — the MCP demo in particular is
+what `mcp.souhimbou.ai` would serve.
+
+## 8. Guard G-2
+
+`ops/guards/module_boundary_guard.sh` — three checks, deny-by-default:
+
+1. **No source coupling to the public repo**: no gitlink (mode 160000), no
+   checked-in `PQC-Khepra-MCP/` tree, no `require`/`replace` in `core/go.mod`, no
+   Go import of the public module path.
+2. **No floating image tags in `deploy/`**: `:latest` and bare untagged names
+   fail. Two pin forms are legitimate — `${VAR:?...}` for a consumed artifact,
+   `${VAR:-tag}` for an image built from this repo (its bytes are fixed by the git
+   commit). *Stated limit:* this proves references are not floating, not that they
+   are digests; digest resolution is a release-workflow step (§5), not something a
+   static check can establish.
+3. **No unsatisfiable build contexts**: a `build:` stanza may only name a
+   Dockerfile that exists in this repo.
+
+Negative-tested: the guard exits 1 on a synthetic gitlink, a `:latest` image, and
+a missing Dockerfile, and 0 on the current tree. (The first version of check 3
+silently passed everything because bash regex is POSIX ERE and `\S` never
+matches — noted inline in the script so it is not reintroduced.)
+
+## 9. Consequences
+
+- `khepra-trust-os` is the release repo. Release engineering, deploy profiles, and
+  the guard suite live here.
+- `PQC-Khepra-MCP` is a **publishing** repo: its output is a container image and
+  (later, per ARCH-010 condition 3) a standalone Go module. It never consumes
+  private core.
+- Adding a submodule to this repo is now a CI failure, not a code-review comment.
+- A deployment without digest pins cannot start. This is intended.
+- `docs/architecture/ARCH-013` §"Component delineation" is unchanged; this
+  document adds *how the boundary is shipped*, not *where it sits*.

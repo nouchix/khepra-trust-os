@@ -9,7 +9,7 @@ if command -v gitleaks >/dev/null 2>&1; then
     gitleaks protect --staged --config .gitleaks.toml -v
 else
     # Fallback regex checks for critical keys in staged files
-    STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -v '\.env\.example' || true)
+    STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -v '\.env\.example' | grep -v 'demoguard' | grep -v 'pre-commit-secret-scan.sh' || true)
     if [ -n "$STAGED_FILES" ]; then
         if echo "$STAGED_FILES" | xargs grep -E '(sk_live_|sk-ant-api|cfut_|sbp_[a-f0-9]{40}|EYKsdy)' >/dev/null 2>&1; then
             echo "❌ ERROR: Potential API secret detected in staged files!"

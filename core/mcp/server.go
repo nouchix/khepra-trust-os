@@ -89,6 +89,13 @@ type initializeResult struct {
 	ProtocolVersion string       `json:"protocolVersion"`
 	Capabilities    capabilities `json:"capabilities"`
 	ServerInfo      serverInfo   `json:"serverInfo"`
+	// Instructions carries the no-CUI banner on a public demo surface (DM-1).
+	// Omitted entirely on a sovereign deployment, where it would be wrong.
+	Instructions string `json:"instructions,omitempty"`
+	// DemoMode is the machine-readable posture declaration a conformance checker
+	// reads (core/democonform). Without it, "the demo DAG is isolated" is not
+	// externally observable and is reported as UNVERIFIABLE rather than as a pass.
+	DemoMode DemoModeInfo `json:"demoMode"`
 }
 
 // toolDescriptor is one entry in a tools/list response (MCP-standard shape).
@@ -116,7 +123,18 @@ type callToolResult struct {
 type Server struct {
 	trust  *TrustServer
 	logger *log.Logger
+	// Demo carries the public-surface posture (DM-1). Its zero value is a
+	// sovereign deployment: no banner, no input guard, CUI accepted — correct for
+	// a customer running inside their own boundary. SetDemoMode turns it on.
+	demo DemoMode
 }
+
+// SetDemoMode marks this process as a public demonstration surface, enabling the
+// no-CUI banner and the input guard (see demoguard.go). Call it before Serve.
+func (s *Server) SetDemoMode(d DemoMode) { s.demo = d }
+
+// DemoMode reports the current public-surface posture.
+func (s *Server) DemoMode() DemoMode { return s.demo }
 
 // NewServer creates an MCP server over a fresh in-memory trust ledger.
 // logger receives human-readable logs (send it to stderr; stdout is reserved
@@ -210,10 +228,16 @@ func (s *Server) handleInitialize(req rpcRequest) *rpcResponse {
 			}
 		}
 	}
+	// The no-CUI banner rides in `instructions`, which MCP clients surface to the
+	// model and the user before the first tool call. A banner on a web page a
+	// human must scroll to is not a control; this one is delivered in-band on
+	// every connection.
 	return okResp(req.ID, initializeResult{
 		ProtocolVersion: negotiated,
 		Capabilities:    capabilities{Tools: &toolsCapability{ListChanged: false}},
 		ServerInfo:      serverInfo{Name: ServerName, Version: ServerVersion},
+		Instructions:    s.demo.Instructions(),
+		DemoMode:        s.demo.Info(),
 	})
 }
 
@@ -224,6 +248,18 @@ func (s *Server) handleToolsCall(req rpcRequest) *rpcResponse {
 	}
 	if err := json.Unmarshal(req.Params, &params); err != nil {
 		return errResp(req.ID, errInvalidParams, "invalid tool call params: "+err.Error())
+	}
+
+	// DM-1 input guard. Screened BEFORE the trust layer runs, so refused input is
+	// never recorded as evidence: an AEO is content-addressed and chained, so a
+	// credential written into the ledger cannot be deleted afterwards without
+	// breaking the chain. Refuse first, record nothing.
+	if rej := s.demo.Screen(params.Arguments); rej != nil {
+		s.logger.Printf("demo guard refused a %s in tool %q (value not logged)", rej.Category, params.Name)
+		return okResp(req.ID, callToolResult{
+			Content: []contentItem{{Type: "text", Text: rej.Message}},
+			IsError: true,
+		})
 	}
 
 	result, err := s.trust.Call(params.Name, params.Arguments)
