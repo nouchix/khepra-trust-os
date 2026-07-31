@@ -29,8 +29,6 @@ const registrations = [
 
 const naics = ["541512", "541511", "541519", "561621", "SIN 54151HACS"];
 
-export default function _unused() { return null; }
-
 function AboutPage() {
   return (
     <>
