@@ -475,14 +475,16 @@ function Home() {
             </a>
           </div>
 
-          <div className="mt-12 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+          <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
               { k: "93", suffix: "/100", label: "Registry score" },
               { k: "99.9", suffix: "%", label: "Uptime (30d)" },
-              { k: "418", suffix: "ms", label: "p50 latency" },
-              { k: "72", suffix: "", label: "Tools exposed" },
-              { k: "944", suffix: "", label: "Attested calls" },
-              { k: "2,341", suffix: "", label: "Sessions" },
+              { k: "407", suffix: "ms", label: "p50 latency" },
+              { k: "34", suffix: "", label: "Live MCP tools" },
+              { k: "1,047", suffix: "", label: "Tool calls served" },
+              { k: "2,316", suffix: "", label: "Sessions" },
+              { k: "432", suffix: "", label: "GHCR container pulls" },
+              { k: "36,195", suffix: "", label: "STIG / NIST / CMMC mappings" },
             ].map((m) => (
               <div key={m.label} className="surface-card p-5">
                 <div className="font-mono text-2xl md:text-3xl text-primary tracking-tight">
