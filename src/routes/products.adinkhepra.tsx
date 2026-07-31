@@ -7,10 +7,12 @@ import { JsonLd, buildSoftwareAppSchema } from "@/components/seo-json-ld";
 export const Route = createFileRoute("/products/adinkhepra")({
   head: () => ({
     meta: [
-      { title: "AdinKhepra — CMMC Compliance & Attestation Engine" },
-      { name: "description", content: "Continuous CMMC control monitoring with signed evidence, auto-generated SSPs, and cryptographic attestation of every control state." },
-      { property: "og:title", content: "AdinKhepra — CMMC Compliance & Attestation Engine" },
-      { property: "og:description", content: "Continuous CMMC control monitoring with signed evidence, auto-generated SSPs, and cryptographic attestation of every control state." },
+      { title: "AdinKhepra ASAF Stargate — Sovereign CMMC Compliance Engine" },
+      { name: "description", content: "Sovereign, bare-metal CMMC compliance: continuous control monitoring, auto-generated SSPs and POA&Ms, and cryptographic attestation of every control state across 36,195 reproducible mappings." },
+      { property: "og:title", content: "AdinKhepra ASAF Stargate — Sovereign CMMC Compliance Engine" },
+      { property: "og:description", content: "Continuous control monitoring, auto-generated SSPs, and ML-DSA-65 attestation of every control state. Air-gap capable, FIPS 140-3." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: AdinKhepraPage,
@@ -28,10 +30,26 @@ function AdinKhepraPage() {
         })}
       />
       <PageHero
-        eyebrow="Product 01 · AdinKhepra"
-        title={<>AdinKhepra — CMMC Compliance & <span className="text-gradient">Attestation Engine</span></>}
-        subtitle="Continuous control monitoring with signed evidence and auto-generated SSPs. Every control state is attested on the KHEPRA DAG — reviewer-ready, always."
+        eyebrow="Product 03 · AdinKhepra — ASAF Stargate"
+        title={<>Sovereign, bare-metal <span className="text-gradient">CMMC compliance</span> engine.</>}
+        subtitle="Continuous control monitoring with signed evidence and auto-generated SSPs. Every control state is attested on the KHEPRA DAG — reviewer-ready, always. Air-gap capable FIPS 140-3 binaries for DIB and CUI environments, alongside SaaS for rapid assessment."
       />
+
+      <section className="border-b border-border/60">
+        <div className="container-x py-12 grid grid-cols-2 md:grid-cols-4 gap-4">
+          {[
+            ["36,195", "STIG ↔ NIST 800-53 ↔ CCI ↔ CMMC mappings"],
+            ["PQC-01-STIG", "first public DoD-style STIG for post-quantum crypto"],
+            ["FIPS 140-3", "air-gap capable, no phone-home"],
+            ["ML-DSA-65", "signature over every control state"],
+          ].map(([k, v]) => (
+            <div key={v} className="surface-card p-5">
+              <div className="font-mono text-xl md:text-2xl text-primary tracking-tight">{k}</div>
+              <div className="mt-2 text-xs text-muted-foreground leading-relaxed">{v}</div>
+            </div>
+          ))}
+        </div>
+      </section>
 
       <section className="border-b border-border/60">
         <div className="container-x py-16 grid lg:grid-cols-12 gap-10 items-center">
