@@ -82,8 +82,30 @@ function AdinKhepraPage() {
 
       <section className="border-b border-border/60">
         <div className="container-x py-20">
+          <SectionHeading
+            eyebrow="Stargate console"
+            title="STARGATE — the live compliance graph."
+            subtitle="Real capture from the AdinKhepra ASAF Stargate console: the CMMC journey rail, live finding graph, and APDL protocol snippet with ML-DSA-65 / ML-KEM-768 ready."
+          />
+          <figure className="mt-10 surface-card overflow-hidden">
+            <img
+              src={stargateShot.url}
+              alt="AdinKhepra STARGATE console showing the CMMC compliance graph, CAT I cryptographic protection finding, cross-references, and APDL protocol snippet"
+              loading="lazy"
+              width={1920}
+              height={1199}
+              className="w-full h-auto"
+            />
+            <figcaption className="border-t border-border/60 px-5 py-3 font-mono text-[11px] text-muted-foreground">
+              STARGATE v1.1.1 · CMMC Level 2 · 110 practices · 25,185 STIG/CCI/NIST mappings · SPRS 105
+            </figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section className="border-b border-border/60">
+        <div className="container-x py-20">
           <SectionHeading eyebrow="Capabilities" title="Built for regulated operations." />
-          <div className="sr-only" />
           <div className="mt-10 grid md:grid-cols-3 gap-4">
             {[
               ["Control library", "Prebuilt mappings for CMMC L1/L2 with delta tracking as frameworks evolve."],
