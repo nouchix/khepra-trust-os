@@ -8,7 +8,7 @@ import (
 	"crypto/sha512"
 	"fmt"
 
-	"github.com/nouchix/PQC-Khepra-MCP/pkg/adinkra"
+	"github.com/nouchix/khepra-trust-os/core/adinkra"
 )
 
 // PremiumBackend implements CryptoBackend using proprietary AdinKhepra algorithms

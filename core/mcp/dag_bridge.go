@@ -24,7 +24,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/nouchix/PQC-Khepra-MCP/pkg/dag"
+	"github.com/nouchix/khepra-trust-os/core/dag"
 )
 
 // DAGBridge hooks into the Router's EventEmitter and writes each attested

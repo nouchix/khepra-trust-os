@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/nouchix/PQC-Khepra-MCP/pkg/adinkra"
+	"github.com/nouchix/khepra-trust-os/core/adinkra"
 )
 
 // HSMBackend implements CryptoBackend using Hardware Security Module integration
