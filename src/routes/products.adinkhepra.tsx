@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHero, SectionHeading, Card, Eyebrow } from "@/components/section";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 import adinImg from "@/assets/adinkhepra.jpg";
+import stargateShot from "@/assets/adinkhepra-stargate-console.png.asset.json";
 import { JsonLd, buildSoftwareAppSchema } from "@/components/seo-json-ld";
 
 export const Route = createFileRoute("/products/adinkhepra")({
