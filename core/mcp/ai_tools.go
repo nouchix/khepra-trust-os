@@ -2,6 +2,8 @@ package mcp
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"time"
@@ -33,10 +35,8 @@ func (t *TrustServer) handleScanShadowAI(args json.RawMessage) (any, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(timeoutSec)*time.Second)
 	defer cancel()
 
-	report, err := aidiscovery.ScanTargets(ctx, in.Targets, aidiscovery.DefaultSignatures())
-	if err != nil {
-		return nil, fmt.Errorf("scan failed: %w", err)
-	}
+	s := &aidiscovery.Scanner{}
+	report := s.Scan(ctx, in.Targets)
 
 	return map[string]any{
 		"targets":       report.Targets,
@@ -58,7 +58,10 @@ func (t *TrustServer) handleAttestAIPolicy(args json.RawMessage) (any, error) {
 		return nil, fmt.Errorf("invalid arguments: %w", err)
 	}
 
-	audit := in.Policy.Evaluate(in.Findings)
+	rep := aidiscovery.Report{
+		Findings: in.Findings,
+	}
+	audit := aidiscovery.Evaluate(rep, in.Policy)
 
 	// Map audit findings to Privileged Enforcement Posture
 	posture := enforce.PostureNormal
@@ -69,12 +72,16 @@ func (t *TrustServer) handleAttestAIPolicy(args json.RawMessage) (any, error) {
 		posture = enforce.PostureRestricted
 	}
 
+	payload := audit.AttestationPayload()
+	h := sha256.Sum256(payload)
+	verdictHash := hex.EncodeToString(h[:])
+
 	return map[string]any{
 		"policy_name":        audit.PolicyName,
 		"policy_version":     audit.PolicyVersion,
 		"policy_hash":        audit.PolicyHash,
-		"verdict_hash":       audit.Hash(),
-		"evaluated_findings": audit.Evaluated,
+		"verdict_hash":       verdictHash,
+		"evaluated_findings": len(audit.Verdicts),
 		"violations":         audit.Violations,
 		"verdicts":           audit.Verdicts,
 		"suggested_posture":  string(posture),
