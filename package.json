@@ -1,6 +1,10 @@
 {
-  "name": "tanstack_start_ts",
-  "private": true,
+  "name": "@nouchix/khepra-trust-os",
+  "version": "1.0.0",
+  "private": false,
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "sideEffects": false,
   "type": "module",
   "scripts": {
