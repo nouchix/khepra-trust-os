@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHero, SectionHeading, Card, Eyebrow } from "@/components/section";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 import adinImg from "@/assets/adinkhepra.jpg";
+import stargateShot from "@/assets/adinkhepra-stargate-console.png.asset.json";
 import { JsonLd, buildSoftwareAppSchema } from "@/components/seo-json-ld";
 
 export const Route = createFileRoute("/products/adinkhepra")({
@@ -76,6 +77,29 @@ function AdinKhepraPage() {
               ))}
             </ul>
           </div>
+        </div>
+      </section>
+
+      <section className="border-b border-border/60">
+        <div className="container-x py-20">
+          <SectionHeading
+            eyebrow="Stargate console"
+            title="STARGATE — the live compliance graph."
+            subtitle="Real capture from the AdinKhepra ASAF Stargate console: the CMMC journey rail, live finding graph, and APDL protocol snippet with ML-DSA-65 / ML-KEM-768 ready."
+          />
+          <figure className="mt-10 surface-card overflow-hidden">
+            <img
+              src={stargateShot.url}
+              alt="AdinKhepra STARGATE console showing the CMMC compliance graph, CAT I cryptographic protection finding, cross-references, and APDL protocol snippet"
+              loading="lazy"
+              width={1920}
+              height={1199}
+              className="w-full h-auto"
+            />
+            <figcaption className="border-t border-border/60 px-5 py-3 font-mono text-[11px] text-muted-foreground">
+              STARGATE v1.1.1 · CMMC Level 2 · 110 practices · 25,185 STIG/CCI/NIST mappings · SPRS 105
+            </figcaption>
+          </figure>
         </div>
       </section>
 
