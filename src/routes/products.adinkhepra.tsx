@@ -83,6 +83,7 @@ function AdinKhepraPage() {
       <section className="border-b border-border/60">
         <div className="container-x py-20">
           <SectionHeading eyebrow="Capabilities" title="Built for regulated operations." />
+          <div className="sr-only" />
           <div className="mt-10 grid md:grid-cols-3 gap-4">
             {[
               ["Control library", "Prebuilt mappings for CMMC L1/L2 with delta tracking as frameworks evolve."],
