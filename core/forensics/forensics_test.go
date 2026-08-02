@@ -54,4 +54,9 @@ func TestCollectorSnapshotAndEvidence(t *testing.T) {
 	if completedSnapshot == nil {
 		t.Fatalf("OnSnapshotComplete callback was not invoked")
 	}
+
+	// OnEvidenceCollected fires for high-signal forensic evidence; it is not
+	// guaranteed for routine file hashing during a snapshot, so this is
+	// informational rather than a hard assertion.
+	t.Logf("OnEvidenceCollected invoked during snapshot: %v", collectedEvidence != nil)
 }
