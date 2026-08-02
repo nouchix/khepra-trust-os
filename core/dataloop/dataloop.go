@@ -29,11 +29,11 @@ type Intent struct {
 
 // TelemetryFrame captures runtime observations and environmental signals.
 type TelemetryFrame struct {
-	FIMDiffCount  int      `json:"fim_diff_count"`
-	EgressTarget  string   `json:"egress_target"`
-	LatencyMS     int64    `json:"latency_ms"`
-	DriftFactor   float64  `json:"drift_factor"`
-	StateDiffHash string   `json:"state_diff_hash"`
+	FIMDiffCount   int      `json:"fim_diff_count"`
+	EgressTarget   string   `json:"egress_target"`
+	LatencyMS      int64    `json:"latency_ms"`
+	DriftFactor    float64  `json:"drift_factor"`
+	StateDiffHash  string   `json:"state_diff_hash"`
 	RiskIndicators []string `json:"risk_indicators"`
 }
 
@@ -50,33 +50,33 @@ type IntelligenceSummary struct {
 	TotalCycles           int64              `json:"total_cycles"`
 	SafeRemediations      int64              `json:"safe_remediations"`
 	FalsePositiveBlocks   int64              `json:"false_positive_blocks"`
-	FAIRRiskScore         float64            `json:"fair_risk_score"` // 0.0 - 100.0 financial & operational risk score
+	FAIRRiskScore         float64            `json:"fair_risk_score"`   // 0.0 - 100.0 financial & operational risk score
 	CloudReliability      map[string]float64 `json:"cloud_reliability"` // env -> reliability score (0.0 - 1.0)
 	RecommendedMaxPosture enforce.Posture    `json:"recommended_max_posture"`
 }
 
 // CycleResult captures the complete 6-step data loop record.
 type CycleResult struct {
-	CycleID           string             `json:"cycle_id"`
-	AgentID           string             `json:"agent_id"`
-	Environment       string             `json:"environment"`
-	IntentHash        string             `json:"intent_hash"`
-	Ruling            enforce.Ruling     `json:"ruling"`
-	Actuation         ActuationOutcome   `json:"actuation"`
-	Evidence          aeo.EvidenceObject `json:"evidence"`
-	Telemetry         TelemetryFrame     `json:"telemetry"`
-	FAIRRiskScore     float64            `json:"fair_risk_score"`
-	ProcessedAt       time.Time          `json:"processed_at"`
+	CycleID       string             `json:"cycle_id"`
+	AgentID       string             `json:"agent_id"`
+	Environment   string             `json:"environment"`
+	IntentHash    string             `json:"intent_hash"`
+	Ruling        enforce.Ruling     `json:"ruling"`
+	Actuation     ActuationOutcome   `json:"actuation"`
+	Evidence      aeo.EvidenceObject `json:"evidence"`
+	Telemetry     TelemetryFrame     `json:"telemetry"`
+	FAIRRiskScore float64            `json:"fair_risk_score"`
+	ProcessedAt   time.Time          `json:"processed_at"`
 }
 
 // DataLoop Engine orchestrates the 6-step governance loop and maintains the Data Moat.
 type DataLoop struct {
-	mu            sync.RWMutex
-	pdpEngine     *enforce.Engine
-	parentHashes  map[string]string            // agentID -> last AEO hash
-	cycles        []CycleResult
-	envStats      map[string]*envStatsTracker
-	modelSafety   map[string]int64
+	mu             sync.RWMutex
+	pdpEngine      *enforce.Engine
+	parentHashes   map[string]string // agentID -> last AEO hash
+	cycles         []CycleResult
+	envStats       map[string]*envStatsTracker
+	modelSafety    map[string]int64
 	falsePositives int64
 }
 

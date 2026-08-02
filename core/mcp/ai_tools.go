@@ -51,7 +51,7 @@ func (t *TrustServer) handleScanShadowAI(args json.RawMessage) (any, error) {
 // and maps findings to enforcement containment postures (PostureNormal .. PostureLocked).
 func (t *TrustServer) handleAttestAIPolicy(args json.RawMessage) (any, error) {
 	var in struct {
-		Policy   aidiscovery.Policy   `json:"policy"`
+		Policy   aidiscovery.Policy    `json:"policy"`
 		Findings []aidiscovery.Finding `json:"findings"`
 	}
 	if err := json.Unmarshal(args, &in); err != nil {
