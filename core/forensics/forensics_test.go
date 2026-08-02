@@ -54,4 +54,10 @@ func TestCollectorSnapshotAndEvidence(t *testing.T) {
 	if completedSnapshot == nil {
 		t.Fatalf("OnSnapshotComplete callback was not invoked")
 	}
+
+	// Evidence for the monitored critical path should have been captured via the
+	// OnEvidenceCollected callback during the snapshot.
+	if collectedEvidence == nil {
+		t.Error("OnEvidenceCollected callback was not invoked for the monitored critical path")
+	}
 }

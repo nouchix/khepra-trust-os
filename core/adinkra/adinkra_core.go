@@ -37,6 +37,18 @@ func GenerateDilithiumKey() ([]byte, []byte, error) {
 	return pkBytes, skBytes, nil
 }
 
+// GenerateKeyPair generates an agent-identity key pair using ML-DSA-65
+// (Dilithium3) and returns it as (privateKey, publicKey). This is the canonical
+// signing key pair used for agent DIDs across KTOS. It wraps GenerateDilithiumKey
+// and reorders the result to the (private, public) convention callers expect.
+func GenerateKeyPair() (privateKey, publicKey []byte, err error) {
+	pub, priv, err := GenerateDilithiumKey()
+	if err != nil {
+		return nil, nil, err
+	}
+	return priv, pub, nil
+}
+
 // Sign signs a message using a ML-DSA-65 private key.
 func Sign(skBytes []byte, msg []byte) ([]byte, error) {
 	if len(skBytes) != mldsa65.PrivateKeySize {
