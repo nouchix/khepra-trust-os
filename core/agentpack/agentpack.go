@@ -238,7 +238,7 @@ func yamlToJSON(yamlStr string) ([]byte, error) {
 		}
 
 		if strings.HasPrefix(trimmedLine, "- ") {
-			// Handle slice element under last key
+			// Handle slice element under last key.
 			if len(keys) == 0 {
 				continue
 			}
@@ -246,11 +246,19 @@ func yamlToJSON(yamlStr string) ([]byte, error) {
 			val := strings.TrimSpace(strings.TrimPrefix(trimmedLine, "- "))
 			val = strings.Trim(val, "\"'")
 
-			existing, exists := currentMap[lastKey]
-			if !exists {
-				currentMap[lastKey] = []interface{}{val}
-			} else if slice, ok := existing.([]interface{}); ok {
-				currentMap[lastKey] = append(slice, val)
+			// A key with no inline value is provisionally treated as a nested map
+			// (see the scalar/map branch below) and pushed onto the stack. When its
+			// children turn out to be list items, the key is actually an array on its
+			// PARENT map — so target the parent (stack top) and replace the empty map
+			// that was created for it with the slice.
+			targetMap := currentMap
+			if len(stack) > 0 {
+				targetMap = stack[len(stack)-1]
+			}
+			if slice, ok := targetMap[lastKey].([]interface{}); ok {
+				targetMap[lastKey] = append(slice, val)
+			} else {
+				targetMap[lastKey] = []interface{}{val}
 			}
 			continue
 		}
