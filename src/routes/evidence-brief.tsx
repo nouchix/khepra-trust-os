@@ -12,17 +12,17 @@ function EvidenceBriefPage() {
         eyebrow="Proprietary / Prospect-Shareable"
         title={
           <>
-            KHEPRA ASAF — Complete Forensic <span className="text-gradient">Chain of Custody</span> & Executive Evidence Brief
+            KHEPRA — The Full <span className="text-gradient">Chain of Proof</span>, Start to Finish
           </>
         }
-        subtitle="A complete, unbroken chain of custody from the moment we connected to the external test environment through every tool execution, every policy decision, every cryptographic seal."
+        subtitle="Every step, signed and unbroken. From the moment we connected to the test system, through every tool used, every decision made, every seal applied."
       />
 
       <section className="border-b border-border/60">
         <div className="container-x py-16">
           <SectionHeading
-            eyebrow="Evaluation Metadata"
-            title="Execution Context"
+            eyebrow="What We Tested"
+            title="The Setup"
           />
           <div className="mt-8 grid md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm font-mono">
              <Card>
@@ -48,15 +48,15 @@ function EvidenceBriefPage() {
       <section className="border-b border-border/60">
         <div className="container-x py-16">
           <div className="max-w-4xl">
-            <h2 className="text-2xl font-semibold mb-6">Part I: Why This Matters — The Business Case</h2>
+            <h2 className="text-2xl font-semibold mb-6">Part I: Why This Should Scare You</h2>
             <p className="text-muted-foreground leading-relaxed mb-6">
-              Your company uses AI agents. Those agents have credentials. Those credentials give them access to databases, file systems, APIs, and customer records. <strong>Right now, nobody is watching what those agents actually do with that access.</strong>
+              Your company uses AI agents. Those agents have logins. Those logins reach your databases, files, APIs, and customer records. <strong>Right now, nobody is watching what those agents actually do with that access.</strong>
             </p>
             <p className="text-muted-foreground leading-relaxed mb-8">
-              When an AI agent misuses access — whether tricked by a malicious document or hallucinating a bad decision — you have nothing. No logs. No proof. No defense. That gap is a financial exposure problem.
+              If an AI agent misuses that access, tricked by a bad file or just wrong, you have nothing. No logs. No proof. No defense. That gap can cost you real money.
             </p>
             
-            <h3 className="text-xl font-semibold mb-4">The FAIR Risk Math</h3>
+            <h3 className="text-xl font-semibold mb-4">The Risk, By the Numbers (FAIR)</h3>
             <div className="overflow-x-auto rounded-lg border border-border bg-background/50">
               <table className="w-full text-left text-sm">
                 <thead className="bg-muted/50 text-muted-foreground">

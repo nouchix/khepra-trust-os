@@ -5,10 +5,10 @@ import { JsonLd, buildBreadcrumbSchema } from "@/components/seo-json-ld";
 export const Route = createFileRoute("/protocol")({
   head: () => ({
     meta: [
-      { title: "KHEPRA Autonomous Governance Protocol (AGP)" },
-      { name: "description", content: "AGP defines Governed State Transitions, Agent Evidence Objects, and the Autonomous Governance Fabric — cryptographic governance for every autonomous action." },
-      { property: "og:title", content: "KHEPRA Autonomous Governance Protocol (AGP)" },
-      { property: "og:description", content: "AGP defines Governed State Transitions, Agent Evidence Objects, and the Autonomous Governance Fabric — cryptographic governance for every autonomous action." },
+      { title: "AGP: Proof for Every AI Action, No Exceptions" },
+      { name: "description", content: "AGP forces every AI action to leave signed proof behind. No proof, no action. No exceptions." },
+      { property: "og:title", content: "AGP: Proof for Every AI Action, No Exceptions" },
+      { property: "og:description", content: "AGP forces every AI action to leave signed proof behind. No proof, no action. No exceptions." },
       { property: "og:type", content: "article" },
     ],
     links: [{ rel: "canonical", href: "https://adinkhepra.com/protocol" }],
@@ -27,24 +27,24 @@ function ProtocolPage() {
       />
       <PageHero
         eyebrow="Autonomous Governance Protocol · SDS v3.0"
-        title={<>KHEPRA Autonomous Governance Protocol (AGP) — <span className="text-gradient">Cryptographic Governance</span></>}
-        subtitle="AGP specifies the Governed State Transition (GST) lifecycle, the canonical Agent Evidence Object (AEO), and the five-plane Autonomous Governance Fabric. Every autonomous state transition SHALL produce independently verifiable cryptographic evidence."
+        title={<>No proof, no action. <span className="text-gradient">That's the whole rule.</span></>}
+        subtitle="AGP is the rulebook behind KHEPRA. Every step an AI agent takes (a Governed State Transition, or GST) must leave a signed record (an Agent Evidence Object, or AEO). If it can't prove what happened, the action never happens."
       />
 
       <section className="border-b border-border/60">
         <div className="container-x py-20 grid lg:grid-cols-12 gap-12">
           <div className="lg:col-span-4">
             <Eyebrow>Design principles</Eyebrow>
-            <h2 className="mt-4 text-3xl font-semibold tracking-tight">Non-negotiables.</h2>
+            <h2 className="mt-4 text-3xl font-semibold tracking-tight">Rules we will never bend.</h2>
           </div>
           <div className="lg:col-span-8 space-y-4">
             {[
-              ["Proof, not trust", "Bitcoin replaced trusted third parties with cryptographic proof. AGP does the same for autonomous state."],
-              ["Bounded privilege", "No unbounded agent authority. The Adinkra symbol hierarchy brokers every privilege acquisition."],
-              ["Fail-closed actuation", "The ASAF Runtime refuses to execute unless intent, policy, and privilege all resolve. There is no default-allow."],
-              ["Canonical serialization", "Every AEO is deterministically encoded so any verifier reproduces the same bytes and signature check."],
+              ["Proof, not trust", "Trust is not enough. Bitcoin proved this with money. AGP does the same for AI actions."],
+              ["Bounded privilege", "No agent gets full control. Every permission is limited and tracked."],
+              ["Fail-closed actuation", "If anything is unclear, the action is blocked. There is no default yes."],
+              ["Canonical serialization", "Every record is built the same exact way, every time. Anyone can check it and get the same result."],
               ["Independently verifiable", "You don't have to trust us. You can run your own checker and replay any chain of proof yourself."],
-              ["Post-quantum by design", "ML-DSA-65 signatures over canonical GST bytes. Crypto-agile envelope for future FIPS 203/204/205 rotation."],
+              ["Post-quantum by design", "Locked with ML-DSA-65, a signature future quantum computers can't crack. Ready to upgrade as standards change."],
             ].map(([t, d]) => (
               <Card key={t}>
                 <div className="flex flex-col md:flex-row md:items-start gap-3 md:gap-8">
@@ -61,8 +61,8 @@ function ProtocolPage() {
         <div className="container-x py-20">
           <SectionHeading
             eyebrow="Canonical AEO"
-            title="One state transition. One evidence object."
-            subtitle="Every Governed State Transition emits exactly one Agent Evidence Object — canonically serialized, content-addressed, hash-linked to its parent, and signed with ML-DSA-65 over the canonical bytes."
+            title="One action. One signed record. No gaps."
+            subtitle="Every action an agent takes creates exactly one record. It's locked to the record before it and signed with ML-DSA-65, so no one can slip an action past it."
           />
           <div className="mt-10 surface-card p-0 overflow-hidden">
             <div className="flex items-center justify-between px-5 py-3 border-b border-border/60 bg-background/40">
@@ -105,17 +105,17 @@ function ProtocolPage() {
         <div className="container-x py-20">
           <SectionHeading
             eyebrow="Governed State Transition"
-            title="State₀ → Intent → Policy → Privilege → Actuation → Verification → Attestation → State₁"
+            title="Seven checks stand between an idea and an action."
           />
           <div className="mt-12 grid md:grid-cols-7 gap-4">
             {[
-              ["01", "Intent", "Mission and desired end-state declared and signed before any execution."],
-              ["02", "Policy", "Authorization evaluated against versioned bundle; obligations attached."],
-              ["03", "Privilege", "ASAF brokers an Adinkra symbol scoped to this GST. Bounded, revocable."],
-              ["04", "Actuation", "ASAF Runtime executes fail-closed. Rollback armed on any verification failure."],
-              ["05", "Verification", "Pre/post state equality confirmed against declared desired state."],
-              ["06", "Attestation", "ML-DSA-65 signature over canonical GST bytes."],
-              ["07", "Evidence", "AEO written to Proof Ledger; edges added to the Governance Graph."],
+              ["01", "Intent", "The agent states what it wants to do, and that gets signed first."],
+              ["02", "Policy", "The request is checked against the rules. Extra conditions get added if needed."],
+              ["03", "Privilege", "ASAF hands out a limited permission just for this one action. It can be taken back."],
+              ["04", "Actuation", "ASAF runs the action carefully. If a check fails, it undoes the action right away."],
+              ["05", "Verification", "The system checks the result matches exactly what was promised."],
+              ["06", "Attestation", "The whole action gets signed and locked with ML-DSA-65."],
+              ["07", "Evidence", "The signed record is saved for good. It can never be quietly erased."],
             ].map(([n, t, d]) => (
               <Card key={n}>
                 <div className="font-mono text-primary">{n}</div>
