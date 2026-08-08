@@ -98,8 +98,8 @@ function EvidenceBriefPage() {
         <div className="container-x py-16">
            <SectionHeading
             eyebrow="Target 2: PentestGPT"
-            title="Complete AEO Chain of Custody"
-            subtitle="7 Events: Agent Registration → Exfiltration Attempt → Session Isolation & Attestation"
+            title="The Full Signed Record"
+            subtitle="7 events, start to finish: agent signs in, tries to steal data, gets locked down, gets proven."
           />
           <div className="mt-8 space-y-4">
              {[
@@ -124,10 +124,10 @@ function EvidenceBriefPage() {
         <div className="container-x py-16">
           <SectionHeading
             eyebrow="Attestations"
-            title="Machine-Ingestible OSCAL & CycloneDX Evidence"
+            title="Proof Your Auditor's Software Can Read"
           />
           <p className="mt-4 text-muted-foreground max-w-3xl">
-             Our cryptographic evidence chains are fully exportable to standard defense-grade compliance formats. This includes full mapping to NIST SP 800-53, CMMC 2.0, and Post-Quantum guarantees under FIPS 204.
+             You can export our signed proof straight into the formats your auditors already use. That means full mapping to NIST SP 800-53, CMMC 2.0 (the defense contractor security rulebook), and quantum-safe signatures under FIPS 204.
           </p>
           <div className="mt-8 p-6 bg-[#0f172a] rounded-xl border border-slate-800 text-emerald-400 font-mono text-xs overflow-x-auto whitespace-pre">
 {`"attestations": [
@@ -158,8 +158,8 @@ function EvidenceBriefPage() {
         <div className="container-x py-16">
           <SectionHeading
             eyebrow="Interactive"
-            title="3D Forensic Visualization (FAIR DAG)"
-            subtitle="Interact with the full forensic chains of custody below. Click, drag, and rotate the nodes. Hover over events to view cryptographic details."
+            title="See the Whole Attack, In 3D"
+            subtitle="Click, drag, and spin the chain below to explore it yourself. Hover any event to see the signed details."
           />
           <div className="mt-8 space-y-12">
             <div>
