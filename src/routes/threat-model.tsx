@@ -5,10 +5,10 @@ import { PageHero, SectionHeading, Card, Eyebrow } from "@/components/section";
 export const Route = createFileRoute("/threat-model")({
   head: () => ({
     meta: [
-      { title: "Two Incidents, One Missing Boundary — KHEPRA ASAF Threat Model" },
-      { name: "description", content: "Hypothetical case studies of the OpenAI/Hugging Face cyber incident and the NemoClaw agent fiasco: where a runtime enforcement boundary would have constrained, denied, quarantined, or locked the agent — and proved it." },
-      { property: "og:title", content: "Two Incidents, One Missing Boundary — KHEPRA ASAF" },
-      { property: "og:description", content: "Threat-model-led case studies: enforcement decision points between an autonomous agent and the systems it can affect." },
+      { title: "2 Attacks, 1 Missing Wall — KHEPRA Threat Model" },
+      { name: "description", content: "See two real AI attacks. See where a live enforcement wall could have stopped them cold and proved it." },
+      { property: "og:title", content: "2 Attacks, 1 Missing Wall — KHEPRA" },
+      { property: "og:description", content: "Step-by-step case studies showing where AI agents get stopped before harm happens." },
       { property: "og:type", content: "article" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
