@@ -7,10 +7,10 @@ import { EgyptianDivider } from "@/components/egyptian-divider";
 export const Route = createFileRoute("/asaf")({
   head: () => ({
     meta: [
-      { title: "ASAF Runtime — Privileged Governance Kernel | KHEPRA" },
-      { name: "description", content: "The ASAF Runtime is the privileged governance kernel at the heart of KHEPRA — fail-closed actuation, pre/post state verification, and ML-DSA-65 attestation of every Governed State Transition." },
-      { property: "og:title", content: "ASAF Runtime — Privileged Governance Kernel" },
-      { property: "og:description", content: "Authorization, actuation, verification, attestation, and rollback in one sovereign kernel." },
+      { title: "ASAF Runtime: The Kernel That Says No" },
+      { name: "description", content: "ASAF checks every AI action before it runs. If it can't confirm the action is safe, it refuses. Every step gets signed." },
+      { property: "og:title", content: "ASAF Runtime: The Kernel That Says No" },
+      { property: "og:description", content: "Checks, blocks, and signs every AI action, or reverses it. All in your own system." },
       { property: "og:type", content: "article" },
     ],
     links: [{ rel: "canonical", href: "https://adinkhepra.com/asaf" }],
@@ -23,8 +23,8 @@ function AsafPage() {
     <>
       <PageHero
         eyebrow="ASAF Runtime · Privileged Governance Kernel"
-        title={<>ASAF Runtime — Privileged Governance Kernel | <span className="text-gradient">KHEPRA</span></>}
-        subtitle="ASAF is not a daemon and not a service. It is the privileged governance kernel that authorizes, actuates, verifies, attests, and — on failure — rolls back every Governed State Transition. Sovereign, air-gap-capable, fail-closed by construction."
+        title={<>If it can't prove an action is safe, ASAF says no. <span className="text-gradient">Every time.</span></>}
+        subtitle="ASAF checks, runs, verifies, and signs every action your AI agents take. If something goes wrong, it reverses the action on its own. It runs inside your own walls, even fully offline. It never defaults to yes."
       />
 
       <section className="border-b border-border/60">
@@ -32,17 +32,17 @@ function AsafPage() {
           <div className="lg:col-span-5">
             <Eyebrow>Layer model</Eyebrow>
             <h2 className="mt-4 text-3xl md:text-4xl font-semibold tracking-tight">
-              Hover a layer to trace its role.
+              Six checks stand between your data and a rogue agent.
             </h2>
             <p className="mt-4 text-muted-foreground leading-relaxed">
-              ASAF holds six kernel responsibilities: Authorization (policy + Adinkra symbol brokering), Actuation (fail-closed execution), Verification (pre/post state equality), Attestation (ML-DSA-65 signature), Rollback (deterministic reversal on failure), and Continuous Governance (ongoing state re-authorization).
+              ASAF does six jobs: it checks permission, runs the action safely, checks the result matches what was promised, signs it (ML-DSA-65, a crypto lock even quantum computers can't break), undoes it if something breaks, and keeps rechecking forever.
             </p>
             <div className="mt-8 grid grid-cols-2 gap-3">
               {[
-                ["Kernel model", "Privileged governance runtime"],
-                ["Execution", "Fail-closed, rollback-armed"],
-                ["Attestation", "ML-DSA-65 over canonical bytes"],
-                ["Sovereignty", "Air-gap-capable, no phone-home"],
+                ["Kernel model", "The system that decides yes or no"],
+                ["Execution", "Blocks by default, undoes mistakes fast"],
+                ["Attestation", "Every action signed and locked"],
+                ["Sovereignty", "Runs fully offline, stays in your walls"],
               ].map(([k, v]) => (
                 <div key={k} className="surface-card p-3">
                   <div className="font-mono text-[11px] text-primary/80">{k}</div>
@@ -61,8 +61,8 @@ function AsafPage() {
         <div className="container-x py-20">
           <SectionHeading
             eyebrow="Governance Graph"
-            title="Every GST becomes an AEO on the Proof Ledger."
-            subtitle="Intent flows into policy, policy into privilege, privilege into actuation, actuation into verification and attestation — each edge cryptographically anchored on the append-only Proof Ledger."
+            title="Every action leaves a signed record you can't erase."
+            subtitle="Each step an agent takes, from asking permission to finishing the job, gets locked to the one before it. Nothing gets deleted. Nothing gets faked."
           />
           <div className="mt-10 surface-card p-4 md:p-8">
             <TrustGraph />
@@ -72,15 +72,15 @@ function AsafPage() {
 
       <section className="border-b border-border/60">
         <div className="container-x py-20">
-          <EgyptianDivider label="Design invariants" />
+          <EgyptianDivider label="Rules that never bend" />
           <div className="mt-10 grid md:grid-cols-3 gap-4">
             {[
-              ["Bounded privilege", "No unbounded agent authority. Every privilege is a scoped Adinkra symbol brokered by the kernel."],
-              ["Fail-closed", "No default-allow. If intent, policy, or verification does not resolve, actuation is refused."],
-              ["Canonical serialization", "AEOs are deterministically encoded so any verifier reproduces the same bytes and hash."],
-              ["Independent replay", "The customer-run verifier reproduces the full GST chain from the Proof Ledger alone."],
-              ["Sovereign deployment", "Runs identically on customer infrastructure, Kubernetes, SSH, or a local daemon. No cloud dependency."],
-              ["Post-quantum", "ML-DSA-65 signatures over canonical GST bytes. Crypto-agile envelope for future rotation."],
+              ["Bounded privilege", "No agent gets a blank check. Every permission is limited and controlled by the kernel."],
+              ["Fail-closed", "When in doubt, it says no. If anything is unclear, the action is blocked."],
+              ["Canonical serialization", "Every record is built the same way every time, so anyone can check it and get the same answer."],
+              ["Independent replay", "You can replay the whole chain of events yourself. You don't have to trust us."],
+              ["Sovereign deployment", "Runs the same on your own servers, Kubernetes, SSH, or a local machine. No cloud needed."],
+              ["Post-quantum", "Locked with ML-DSA-65, a signature future quantum computers can't crack. Built to swap in new locks later."],
             ].map(([t, d]) => (
               <Card key={t}>
                 <div className="font-display text-lg font-semibold">{t}</div>
@@ -95,13 +95,13 @@ function AsafPage() {
         <div className="container-x py-20">
           <SectionHeading
             eyebrow="Deployment topology"
-            title="Run it as SaaS, hybrid, or fully sovereign."
+            title="Choose how much control you keep. We recommend all of it."
           />
           <div className="mt-10 grid md:grid-cols-3 gap-4">
             {[
-              { t: "Sovereign", d: "Full ASAF Runtime + Proof Ledger in your environment. Air-gap-capable. Independent verifier ships with the release. Default posture for CUI, ITAR, and regulated workloads.", tag: "Regulated" },
-              { t: "Hybrid", d: "Control plane managed by KHEPRA. ASAF Runtime and Proof Ledger in your VPC. Keys held on your HSMs.", tag: "Recommended" },
-              { t: "Validation adapters", d: "Optional external harnesses (e.g. HackerAI) used only to demonstrate and certify ASAF behavior. Never a runtime dependency.", tag: "PoC" },
+              { t: "Sovereign", d: "Everything runs inside your own walls, even fully offline. You get your own checker tool too. Best choice if you handle CUI, ITAR, or other regulated data.", tag: "Regulated" },
+              { t: "Hybrid", d: "KHEPRA manages the controls. ASAF and your evidence stay in your own cloud. You hold the keys.", tag: "Recommended" },
+              { t: "Validation adapters", d: "Optional outside tools (like HackerAI) used just to test and prove ASAF works. Never required to run it.", tag: "PoC" },
             ].map((o) => (
               <Card key={o.t}>
                 <div className="font-mono text-[11px] uppercase tracking-widest text-primary/80">{o.tag}</div>

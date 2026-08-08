@@ -12,7 +12,7 @@ export function SiteFooter() {
             <span className="font-display font-semibold">KHEPRA</span>
           </div>
           <p className="mt-3 text-sm text-muted-foreground max-w-xs">
-            Cryptographic governance for autonomous systems. See. Control. Prove.
+            Find every AI agent. Control it. Prove it. See. Control. Prove.
           </p>
           <p className="mt-4 text-xs text-muted-foreground/80 max-w-xs leading-relaxed">
             SecRed Knowledge Inc. d/b/a NouchiX — veteran-led cybersecurity and sovereign

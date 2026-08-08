@@ -12,17 +12,17 @@ function EvidenceBriefPage() {
         eyebrow="Proprietary / Prospect-Shareable"
         title={
           <>
-            KHEPRA ASAF — Complete Forensic <span className="text-gradient">Chain of Custody</span> & Executive Evidence Brief
+            KHEPRA — The Full <span className="text-gradient">Chain of Proof</span>, Start to Finish
           </>
         }
-        subtitle="A complete, unbroken chain of custody from the moment we connected to the external test environment through every tool execution, every policy decision, every cryptographic seal."
+        subtitle="Every step, signed and unbroken. From the moment we connected to the test system, through every tool used, every decision made, every seal applied."
       />
 
       <section className="border-b border-border/60">
         <div className="container-x py-16">
           <SectionHeading
-            eyebrow="Evaluation Metadata"
-            title="Execution Context"
+            eyebrow="What We Tested"
+            title="The Setup"
           />
           <div className="mt-8 grid md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm font-mono">
              <Card>
@@ -48,15 +48,15 @@ function EvidenceBriefPage() {
       <section className="border-b border-border/60">
         <div className="container-x py-16">
           <div className="max-w-4xl">
-            <h2 className="text-2xl font-semibold mb-6">Part I: Why This Matters — The Business Case</h2>
+            <h2 className="text-2xl font-semibold mb-6">Part I: Why This Should Scare You</h2>
             <p className="text-muted-foreground leading-relaxed mb-6">
-              Your company uses AI agents. Those agents have credentials. Those credentials give them access to databases, file systems, APIs, and customer records. <strong>Right now, nobody is watching what those agents actually do with that access.</strong>
+              Your company uses AI agents. Those agents have logins. Those logins reach your databases, files, APIs, and customer records. <strong>Right now, nobody is watching what those agents actually do with that access.</strong>
             </p>
             <p className="text-muted-foreground leading-relaxed mb-8">
-              When an AI agent misuses access — whether tricked by a malicious document or hallucinating a bad decision — you have nothing. No logs. No proof. No defense. That gap is a financial exposure problem.
+              If an AI agent misuses that access, tricked by a bad file or just wrong, you have nothing. No logs. No proof. No defense. That gap can cost you real money.
             </p>
             
-            <h3 className="text-xl font-semibold mb-4">The FAIR Risk Math</h3>
+            <h3 className="text-xl font-semibold mb-4">The Risk, By the Numbers (FAIR)</h3>
             <div className="overflow-x-auto rounded-lg border border-border bg-background/50">
               <table className="w-full text-left text-sm">
                 <thead className="bg-muted/50 text-muted-foreground">
@@ -98,8 +98,8 @@ function EvidenceBriefPage() {
         <div className="container-x py-16">
            <SectionHeading
             eyebrow="Target 2: PentestGPT"
-            title="Complete AEO Chain of Custody"
-            subtitle="7 Events: Agent Registration → Exfiltration Attempt → Session Isolation & Attestation"
+            title="The Full Signed Record"
+            subtitle="7 events, start to finish: agent signs in, tries to steal data, gets locked down, gets proven."
           />
           <div className="mt-8 space-y-4">
              {[
@@ -124,10 +124,10 @@ function EvidenceBriefPage() {
         <div className="container-x py-16">
           <SectionHeading
             eyebrow="Attestations"
-            title="Machine-Ingestible OSCAL & CycloneDX Evidence"
+            title="Proof Your Auditor's Software Can Read"
           />
           <p className="mt-4 text-muted-foreground max-w-3xl">
-             Our cryptographic evidence chains are fully exportable to standard defense-grade compliance formats. This includes full mapping to NIST SP 800-53, CMMC 2.0, and Post-Quantum guarantees under FIPS 204.
+             You can export our signed proof straight into the formats your auditors already use. That means full mapping to NIST SP 800-53, CMMC 2.0 (the defense contractor security rulebook), and quantum-safe signatures under FIPS 204.
           </p>
           <div className="mt-8 p-6 bg-[#0f172a] rounded-xl border border-slate-800 text-emerald-400 font-mono text-xs overflow-x-auto whitespace-pre">
 {`"attestations": [
@@ -158,8 +158,8 @@ function EvidenceBriefPage() {
         <div className="container-x py-16">
           <SectionHeading
             eyebrow="Interactive"
-            title="3D Forensic Visualization (FAIR DAG)"
-            subtitle="Interact with the full forensic chains of custody below. Click, drag, and rotate the nodes. Hover over events to view cryptographic details."
+            title="See the Whole Attack, In 3D"
+            subtitle="Click, drag, and spin the chain below to explore it yourself. Hover any event to see the signed details."
           />
           <div className="mt-8 space-y-12">
             <div>

@@ -6,9 +6,9 @@ export const Route = createFileRoute("/connectors")({
   head: () => ({
     meta: [
       { title: "Certified Connectors — KHEPRA Trust Network" },
-      { name: "description", content: "Certified Connectors for the KHEPRA Trust Network. Signed, capability-scoped integration connectors across cloud, identity, data, model, and workflow providers." },
+      { name: "description", content: "Certified connectors that link your tools to KHEPRA safely, with signed proof for every call." },
       { property: "og:title", content: "Certified Connectors — KHEPRA Trust Network" },
-      { property: "og:description", content: "Certified Connectors for the KHEPRA Trust Network. Signed, capability-scoped integration connectors across cloud, identity, data, model, and workflow providers." },
+      { property: "og:description", content: "Certified connectors that link your tools to KHEPRA safely, with signed proof for every call." },
     ],
   }),
   component: ConnectorsPage,
@@ -93,15 +93,15 @@ function ConnectorsPage() {
       <PageHero
         eyebrow="Certified Connectors"
         title={<>Certified Connectors — <span className="text-gradient">KHEPRA</span> Trust Network</>}
-        subtitle="Every KHEPRA connector ships with a signed manifest, declared capability scope, and per-call attestation. Your systems participate on the trust network without changing their APIs."
+        subtitle="Every KHEPRA connector comes signed, with a clear list of what it can touch, and proof for every call it makes. Your systems join the trust network with no code changes."
       />
 
       <section className="border-b border-border/60">
         <div className="container-x py-16 grid md:grid-cols-3 gap-4">
           {[
-            ["Signed manifests", "Every connector version is publisher-signed and independently verifiable."],
-            ["Capability scopes", "Manifests declare exactly which resources and actions the connector can touch."],
-            ["Per-call attestation", "Each invocation emits a KHEPRA envelope with inputs, outputs, and policy decision."],
+            ["Signed manifests", "Every connector version is signed by its maker. Anyone can check it."],
+            ["Capability scopes", "Each connector spells out exactly what it can touch and what it can do."],
+            ["Proof on every call", "Every single call creates a signed record with what went in, what came out, and why it was allowed."],
           ].map(([t, d]) => (
             <Card key={t}>
               <div className="flex items-start gap-3">
@@ -146,9 +146,9 @@ function ConnectorsPage() {
         <div className="container-x py-16">
           <div className="surface-card p-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
             <div>
-              <h2 className="text-2xl font-semibold tracking-tight">Ship your own certified connector.</h2>
+              <h2 className="text-2xl font-semibold tracking-tight">Build your own certified connector.</h2>
               <p className="mt-2 text-sm text-muted-foreground max-w-xl">
-                The connector SDK lets you publish signed, scoped integrations to the KHEPRA Marketplace.
+                Use the connector SDK to publish signed, scoped integrations to the KHEPRA Marketplace.
               </p>
             </div>
             <Link to="/developers" className="inline-flex items-center gap-2 rounded-md bg-primary px-5 py-3 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors">

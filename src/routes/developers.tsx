@@ -6,9 +6,9 @@ export const Route = createFileRoute("/developers")({
   head: () => ({
     meta: [
       { title: "Developer Portal — KHEPRA Trust Network" },
-      { name: "description", content: "Developer Portal for the KHEPRA Trust Network. Access SDKs, pre-built connectors, protocol specifications, API keys, and alpha developer resources." },
+      { name: "description", content: "Build with KHEPRA. Get SDKs, connectors, and docs to prove what your AI agents do." },
       { property: "og:title", content: "Developer Portal — KHEPRA Trust Network" },
-      { property: "og:description", content: "Developer Portal for the KHEPRA Trust Network. Access SDKs, pre-built connectors, protocol specifications, API keys, and alpha developer resources." },
+      { property: "og:description", content: "Build with KHEPRA. Get SDKs, connectors, and docs to prove what your AI agents do." },
     ],
   }),
   component: DevPage,
@@ -20,16 +20,16 @@ function DevPage() {
       <PageHero
         eyebrow="Developer Portal"
         title={<>Developer Portal — <span className="text-gradient">KHEPRA</span> Trust Network</>}
-        subtitle="SDKs, signed connector kits, policy bundles, and reference implementations. Everything you need to attach your stack to the KHEPRA Trust Network."
+        subtitle="SDKs, signed connector kits, and policy bundles. Everything you need to plug your stack into the KHEPRA Trust Network and start proving what your agents do."
       />
 
       <section className="border-b border-border/60">
         <div className="container-x py-16 grid md:grid-cols-2 lg:grid-cols-4 gap-4">
           {[
-            { Icon: Terminal, t: "SDKs", d: "TypeScript, Python, Go. Attest actions, verify envelopes, mediate tools." },
-            { Icon: Package, t: "Connector Kit", d: "Author signed connectors with declarative manifests and capability scopes." },
-            { Icon: Code2, t: "Policy Studio", d: "Write, test, and version OPA/Rego bundles against replayed evidence." },
-            { Icon: Book, t: "Protocol Docs", d: "Envelope schema, delegation graph, DAG verification reference." },
+            { Icon: Terminal, t: "SDKs", d: "TypeScript, Python, Go. Sign every action, check every record, control every tool." },
+            { Icon: Package, t: "Connector Kit", d: "Build signed connectors that only reach what you say they can." },
+            { Icon: Code2, t: "Policy Studio", d: "Write and test your rules against real past evidence before you trust them." },
+            { Icon: Book, t: "Protocol Docs", d: "How records are built, checked, and locked so they hold up in an audit." },
           ].map(({ Icon, t, d }) => (
             <Card key={t}>
               <span className="inline-flex h-9 w-9 items-center justify-center rounded-md bg-primary/10 text-primary ring-1 ring-primary/30">
@@ -44,7 +44,7 @@ function DevPage() {
 
       <section className="border-b border-border/60">
         <div className="container-x py-16">
-          <SectionHeading eyebrow="Quickstart" title="Attest an action in under 20 lines." />
+          <SectionHeading eyebrow="Quickstart" title="Prove one action in under 20 lines of code." />
           <div className="mt-8 surface-card p-0 overflow-hidden">
             <div className="flex items-center justify-between px-5 py-3 border-b border-border/60 bg-background/40">
               <div className="font-mono text-xs text-muted-foreground">attest.ts</div>
@@ -75,7 +75,7 @@ if (decision.allow) {
 
       <section>
         <div className="container-x py-16">
-          <SectionHeading eyebrow="Request access" title="Alpha SDKs by invitation." />
+          <SectionHeading eyebrow="Request access" title="Get early access to the SDKs." />
           <form
             className="mt-10 max-w-xl grid gap-4"
             onSubmit={(e) => {
@@ -96,7 +96,7 @@ if (decision.allow) {
               <span className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground">Use case</span>
               <textarea
                 rows={4}
-                placeholder="Tell us about the agents or systems you want to attest…"
+                placeholder="Tell us which agents or systems you want to keep in check…"
                 className="rounded-md border border-border bg-input px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/60"
               />
             </label>
@@ -104,7 +104,7 @@ if (decision.allow) {
               type="submit"
               className="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-5 py-3 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors glow-ring w-fit"
             >
-              Request alpha access <ArrowRight className="h-4 w-4" />
+              Request early access <ArrowRight className="h-4 w-4" />
             </button>
           </form>
         </div>

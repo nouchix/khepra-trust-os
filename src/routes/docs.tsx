@@ -7,9 +7,9 @@ export const Route = createFileRoute("/docs")({
   head: () => ({
     meta: [
       { title: "Documentation — KHEPRA Trust Network" },
-      { name: "description", content: "Explore documentation for the KHEPRA Trust Network. Access protocol specifications, SDK integration guides, connector authoring manuals, and API references." },
+      { name: "description", content: "Docs for the KHEPRA Trust Network. Guides, SDKs, and API references to keep your AI agents in check." },
       { property: "og:title", content: "Documentation — KHEPRA Trust Network" },
-      { property: "og:description", content: "Explore documentation for the KHEPRA Trust Network. Access protocol specifications, SDK integration guides, connector authoring manuals, and API references." },
+      { property: "og:description", content: "Docs for the KHEPRA Trust Network. Guides, SDKs, and API references to keep your AI agents in check." },
     ],
   }),
   component: DocsPage,
@@ -19,54 +19,54 @@ const nav = [
   {
     title: "Get started",
     items: [
-      { t: "Quickstart", d: "Attest your first action in under 10 minutes." },
-      { t: "Core concepts", d: "Actors, envelopes, the DAG, and policy bundles." },
-      { t: "Install SDKs", d: "TypeScript, Python, Go — with signed release checksums." },
+      { t: "Quickstart", d: "Sign and prove your first action in under 10 minutes." },
+      { t: "Core concepts", d: "Actors, records, the DAG (tamper-proof chain), and rule bundles." },
+      { t: "Install SDKs", d: "TypeScript, Python, Go — every release signed and checksum-verified." },
     ],
     Icon: FileText,
   },
   {
     title: "Protocol",
     items: [
-      { t: "Envelope schema", d: "Canonical fields, hashing, and signature layout." },
-      { t: "DID method (did:khepra)", d: "Actor identifiers and delegation graph." },
-      { t: "DAG semantics", d: "Parent linkage, anchoring, and verification." },
+      { t: "Envelope schema", d: "The exact fields, hashing, and signature layout we use." },
+      { t: "DID method (did:khepra)", d: "How agents and users get identified and linked." },
+      { t: "DAG semantics", d: "How records link, anchor, and get verified." },
     ],
     Icon: GitBranch,
   },
   {
     title: "Identity",
     items: [
-      { t: "PQC-hybrid keys", d: "ML-DSA-65 + Ed25519 with rotation guidance." },
-      { t: "HSM integration", d: "PKCS#11 and cloud KMS roots of trust." },
-      { t: "Delegation", d: "On-behalf-of chains for humans, agents, workloads." },
+      { t: "Quantum-safe keys", d: "ML-DSA-65 plus Ed25519, with guidance on rotating them safely." },
+      { t: "HSM integration", d: "Connect hardware key vaults and cloud key managers." },
+      { t: "Delegation", d: "Track who acted on whose behalf — human, agent, or workload." },
     ],
     Icon: KeyRound,
   },
   {
     title: "Policy",
     items: [
-      { t: "Authoring bundles", d: "OPA/Rego style, version pinning, testing." },
-      { t: "Obligations", d: "Attach masking, review, quorum to allow decisions." },
-      { t: "Simulation", d: "Replay historical evidence against new bundles." },
+      { t: "Authoring bundles", d: "Write, pin, and test your rules before they go live." },
+      { t: "Obligations", d: "Add masking, human review, or approval before something is allowed." },
+      { t: "Simulation", d: "Test new rules against real past evidence before trusting them." },
     ],
     Icon: Shield,
   },
   {
     title: "Runtime & Agents",
     items: [
-      { t: "Agent sessions", d: "Session lifecycle, context, and attestation hooks." },
-      { t: "Tool mediation", d: "Signed tool manifests and I/O redaction." },
-      { t: "Sidecar mode", d: "gRPC / HTTP sidecar for polyglot runtimes." },
+      { t: "Agent sessions", d: "How a session starts, runs, and gets proven." },
+      { t: "Tool mediation", d: "Signed tool lists and how sensitive data gets hidden." },
+      { t: "Sidecar mode", d: "Run KHEPRA next to any app, in any language." },
     ],
     Icon: Cpu,
   },
   {
     title: "Connectors",
     items: [
-      { t: "Author a connector", d: "Manifest, capability scope, signing, publishing." },
-      { t: "Testing kit", d: "Golden envelope tests and replay verification." },
-      { t: "Publishing to Marketplace", d: "Review, certification, distribution." },
+      { t: "Author a connector", d: "Build, scope, sign, and publish your connector." },
+      { t: "Testing kit", d: "Test your connector against known-good records." },
+      { t: "Publishing to Marketplace", d: "Get reviewed, certified, and listed." },
     ],
     Icon: Boxes,
   },
@@ -78,7 +78,7 @@ function DocsPage() {
       <PageHero
         eyebrow="Documentation"
         title={<>Documentation — <span className="text-gradient">KHEPRA</span> Trust Network</>}
-        subtitle="Protocol reference, SDK guides, and API documentation. Written for the engineer who has to make it work in production on Monday."
+        subtitle="Protocol reference, SDK guides, and API docs. Written for the engineer who has to make it work by Monday."
       />
 
       <section className="border-b border-border/60">
@@ -127,7 +127,7 @@ function DocsPage() {
         <div className="container-x py-16">
           <Eyebrow>API reference</Eyebrow>
           <h2 className="mt-4 text-3xl font-semibold tracking-tight">
-            Attest an action across languages.
+            Prove one action in any language.
           </h2>
           <div className="mt-10">
             <CodeTabs
@@ -214,7 +214,7 @@ Content-Type: application/json
         <div className="container-x py-16 grid md:grid-cols-2 gap-4">
           <Card>
             <div className="font-display text-lg font-semibold">Have questions?</div>
-            <p className="mt-2 text-sm text-muted-foreground">Join the developer community on Discord or open an issue in the reference implementation.</p>
+            <p className="mt-2 text-sm text-muted-foreground">Join the developer community on Discord or open an issue in the reference code.</p>
             <div className="mt-4 flex gap-2">
               <a href="#" className="rounded-md border border-border px-3 py-2 text-sm">Discord</a>
               <a href="#" className="rounded-md border border-border px-3 py-2 text-sm">GitHub</a>
@@ -222,7 +222,7 @@ Content-Type: application/json
           </Card>
           <Card>
             <div className="font-display text-lg font-semibold">Enterprise support</div>
-            <p className="mt-2 text-sm text-muted-foreground">Named architects, SLA-backed response, and design partnership for regulated deployments.</p>
+            <p className="mt-2 text-sm text-muted-foreground">Get a named architect, fast SLA-backed support, and hands-on help for regulated deployments.</p>
             <Link to="/pricing" className="mt-4 inline-flex items-center gap-1.5 text-sm text-primary">
               See enterprise plans <ArrowRight className="h-3.5 w-3.5" />
             </Link>

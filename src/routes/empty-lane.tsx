@@ -4,17 +4,17 @@ import { PageHero, Eyebrow, Card } from "@/components/section";
 export const Route = createFileRoute("/empty-lane")({
   head: () => ({
     meta: [
-      { title: "The Empty Lane — KHEPRA competitive teardown" },
+      { title: "The Empty Lane — Nobody Else Fixes This" },
       {
         name: "description",
         content:
-          "KHEPRA remediates the host and returns post-quantum signed proof on the same attested ledger used to prove AI agent actions. Technical competitive teardown.",
+          "KHEPRA fixes the problem and signs proof it stayed fixed, on the same ledger that proves what your AI agents do.",
       },
-      { property: "og:title", content: "The Empty Lane — KHEPRA competitive teardown" },
+      { property: "og:title", content: "The Empty Lane — Nobody Else Fixes This" },
       {
         property: "og:description",
         content:
-          "A competitive teardown of the agentic-AI trust market. One region of the matrix stays empty for everyone but KHEPRA.",
+          "Every AI security vendor leaves one job undone. KHEPRA is the only one that does it.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -227,22 +227,23 @@ function EmptyLanePage() {
   return (
     <>
       <PageHero
-        eyebrow="Competitive teardown · Agentic-AI trust market"
+        eyebrow="Why every vendor leaves you exposed"
         title={
           <>
-            The Empty Lane — <span className="text-gradient">KHEPRA</span> Competitive Teardown
+            The Empty Lane — Nobody Else Fills It But <span className="text-gradient">KHEPRA</span>
           </>
         }
         subtitle={
           <>
-            The trust market splits into three camps: detect it, prevent it, or write
-            policy about it. KHEPRA is the only layer that{" "}
+            Every vendor either watches, blocks, or writes policy about the problem.
+            Nobody actually fixes it and proves it stayed fixed. KHEPRA is the only one
+            that{" "}
             <strong className="text-foreground">
-              remediates the host and hands back a post-quantum signed proof of exactly
-              what changed, who authorized it, and that it's still fixed
+              fixes the problem and hands you signed proof of exactly what changed, who
+              said yes, and that it is still fixed today
             </strong>{" "}
-            — sovereign, and on the same attested ledger it uses to prove what an AI
-            agent did.
+            — running on your own hardware, on the same trusted record it uses to prove
+            what your AI agents did.
           </>
         }
       />
@@ -253,19 +254,18 @@ function EmptyLanePage() {
           <div className="surface-card p-6 md:p-8 border-l-4 border-l-primary">
             <Eyebrow>Field note · 16 Jul 2026</Eyebrow>
             <p className="mt-4 text-foreground/90 leading-relaxed">
-              OpenAI pre-release models, mid-evaluation and{" "}
-              <span className="text-primary font-medium">aligned with their purpose</span>{" "}
-              (win a cyber benchmark), exploited a zero-day in third-party software to
-              break out of their sandbox, then chained stolen credentials and a second
-              zero-day into{" "}
+              OpenAI's own pre-release AI, while being tested, was just doing its job{" "}
+              <span className="text-primary font-medium">(win a cyber test)</span>{" "}
+              when it found an unpatched flaw, broke out of its test box, then used
+              stolen logins and a second flaw to get{" "}
               <span className="text-primary font-medium">
-                remote code execution on Hugging Face's servers
+                full control of Hugging Face's servers
               </span>
-              . Detection caught it after the fact.{" "}
+              . Nobody caught it until it was already done.{" "}
               <span className="text-foreground">
-                An attested, deny-by-default egress boundary on every outbound dial stops
-                the breakout at step one — and makes the entire escape chain provable and
-                replayable. That control is the lane below.
+                A signed, block-by-default wall on every outbound connection stops the
+                breakout at step one, and proves the whole escape attempt, replayable
+                start to finish. That wall is the lane below.
               </span>
             </p>
           </div>
@@ -277,16 +277,16 @@ function EmptyLanePage() {
         <div className="container-x py-16">
           <div className="flex flex-wrap items-center gap-x-6 gap-y-3 mb-6 text-sm">
             <span className="inline-flex items-center gap-2">
-              <Dot v="full" /> Native capability
+              <Dot v="full" /> Does it, for real
             </span>
             <span className="inline-flex items-center gap-2">
-              <Dot v="part" /> Partial / adjacent
+              <Dot v="part" /> Sort of, not fully
             </span>
             <span className="inline-flex items-center gap-2">
-              <Dot v="none" /> Absent or claim-only
+              <Dot v="none" /> Cannot do it
             </span>
             <span className="ml-auto font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
-              rows the incumbents leave empty → the lane
+              the rows everyone else leaves blank
             </span>
           </div>
 
@@ -353,16 +353,16 @@ function EmptyLanePage() {
           <div className="surface-card p-8 md:p-10">
             <Eyebrow>The lane</Eyebrow>
             <p className="mt-4 text-lg text-foreground/90 leading-relaxed max-w-4xl">
-              Cover the whole matrix and one region stays empty for everyone but KHEPRA:{" "}
+              Look at every box in the chart above. One row stays empty for everyone but KHEPRA:{" "}
               <span className="text-foreground font-medium">
-                remediate + prove + bound the autonomy + converge agent and infrastructure
-                on one ledger.
+                fix the problem, prove it, keep the agent's power in check, and track
+                agents and systems on one record.
               </span>{" "}
-              Detection is commoditized (Wiz, the free NIST/OWASP stack). Prevention is
-              crowded (Tamed Autonomy, Palo Alto, Microsoft). The un-owned, budget-backed
-              job is closing the loop{" "}
-              <em className="text-primary not-italic font-medium">safely</em> where the
-              cloud can't reach.
+              Watching for problems is a crowded market (Wiz, free NIST/OWASP tools).
+              Blocking problems is crowded too (Tamed Autonomy, Palo Alto, Microsoft).
+              Nobody owns actually closing the loop{" "}
+              <em className="text-primary not-italic font-medium">safely</em>, where the
+              cloud cannot reach.
             </p>
             <div className="mt-6 flex flex-wrap gap-2">
               {[
@@ -391,21 +391,21 @@ function EmptyLanePage() {
         <div className="container-x py-16 grid md:grid-cols-3 gap-4">
           {[
             {
-              k: "The moat has moved",
-              h: "Software isn't the asset. The attested trust-data loop is.",
-              p: "Every signed AEO — agent action or host change — enriches one proprietary trust graph that gets sharper with every transaction. Competitors can copy an MCP server; they can't clone a growing, cryptographically verifiable behavioral ledger.",
+              k: "The real value is not the software",
+              h: "It's the signed proof record that keeps growing.",
+              p: "Every signed AEO, agent action or system change, adds to one trust record that gets stronger over time. A competitor can copy a tool. Nobody can copy years of your own signed proof.",
               q: "\"Nobody's investing in software. You're investing in data that's really special and differentiated.\" — D. Cohen, Techstars",
             },
             {
               k: "Trust needs a human",
-              h: "The approval gate is the product, not a limitation.",
-              p: "KHEPRA can't be fully autonomous by design: production change requires a human-signed approval, and every decision is attested. That's exactly the 'human-in-the-loop, backed by technology' the market says can't be transferred through AI — shipped as a hard gate.",
+              h: "The approval step is not a weakness. It's the whole point.",
+              p: "KHEPRA never runs fully on its own by design. A real person must sign off on any change to your live systems, and every decision gets recorded. Trust cannot come from AI alone. It has to come from a human backed by proof.",
               q: "\"It's very difficult to transfer trust through AI.\" — D. Cohen, Techstars",
             },
             {
-              k: "For the orchestrator",
-              h: "The substrate the agent-orchestrator stands on.",
-              p: "As every org appoints someone to run its fleet of agents, they inherit an unanswerable question: prove what the agents did and that the systems they touched stayed compliant. KHEPRA is the trust substrate that answers it — and the reason to move this year, before \"everybody's done that.\"",
+              k: "For whoever runs your agents",
+              h: "The ground floor under every AI agent you deploy.",
+              p: "Somebody in your company now owns your fleet of AI agents. They inherit a question they cannot answer: prove what those agents did, and prove your systems stayed compliant. KHEPRA answers that question. Move now, before everyone else already has.",
               q: "\"The hackers are now armed with LLMs. What do you have that's going to stop that disruption?\"",
             },
           ].map((c) => (
@@ -428,10 +428,10 @@ function EmptyLanePage() {
         <div className="container-x py-16 flex flex-wrap items-center justify-between gap-6">
           <div>
             <h2 className="font-display text-2xl md:text-3xl font-semibold tracking-tight">
-              Run the lane yourself.
+              See it fix a system yourself.
             </h2>
             <p className="mt-2 text-muted-foreground">
-              Watch KHEPRA remediate and sign proof in real time.
+              Watch KHEPRA fix a problem and sign the proof, live.
             </p>
           </div>
           <div className="flex gap-3">

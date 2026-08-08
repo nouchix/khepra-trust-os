@@ -7,9 +7,9 @@ export const Route = createFileRoute("/trust-network")({
   head: () => ({
     meta: [
       { title: "The Trust Network — Federated Attestation | KHEPRA" },
-      { name: "description", content: "The KHEPRA Trust Network federates cryptographic attestation and governance policies seamlessly across organizations, cloud vendors, and jurisdictions." },
+      { name: "description", content: "The KHEPRA Trust Network links signed proof and rules across companies, vendors, and borders." },
       { property: "og:title", content: "The Trust Network — Federated Attestation | KHEPRA" },
-      { property: "og:description", content: "The KHEPRA Trust Network federates cryptographic attestation and governance policies seamlessly across organizations, cloud vendors, and jurisdictions." },
+      { property: "og:description", content: "The KHEPRA Trust Network links signed proof and rules across companies, vendors, and borders." },
     ],
   }),
   component: TrustNetworkPage,
@@ -22,10 +22,10 @@ const partners = [
 ];
 
 const programs = [
-  { Icon: Award, t: "Certified Publisher", d: "Vet connectors, policy bundles, and agent skills for signed distribution on the KHEPRA Marketplace." },
-  { Icon: ShieldCheck, t: "Attested Auditor", d: "Independent audit firms trained on ASAF evidence packages and reviewer workflows." },
-  { Icon: Globe2, t: "Regional Anchor", d: "Operate a regional attestation anchor in your jurisdiction with sovereign key custody." },
-  { Icon: Network, t: "Federation Peer", d: "Cross-tenant attestation exchange with contractual and cryptographic guarantees." },
+  { Icon: Award, t: "Certified Publisher", d: "Check connectors, rule bundles, and agent skills before they go live on the KHEPRA Marketplace." },
+  { Icon: ShieldCheck, t: "Attested Auditor", d: "Independent audit firms trained to read ASAF evidence packages and review findings." },
+  { Icon: Globe2, t: "Regional Anchor", d: "Run a local proof anchor in your own region, holding your own keys." },
+  { Icon: Network, t: "Federation Peer", d: "Exchange proof across companies with real contracts and real cryptographic guarantees." },
 ];
 
 function TrustNetworkPage() {
@@ -34,7 +34,7 @@ function TrustNetworkPage() {
       <PageHero
         eyebrow="The Trust Network"
         title={<>The Trust Network — Federated Attestation | <span className="text-gradient">KHEPRA</span></>}
-        subtitle="KHEPRA is more than a product. It's a growing network of organizations, auditors, and vendors that emit and verify signed evidence on a shared protocol — no privileged intermediary required."
+        subtitle="KHEPRA is more than a product. It's a growing network of companies, auditors, and vendors that create and check signed proof on one shared system — no middleman needed."
       />
 
       <section className="border-b border-border/60">
@@ -42,10 +42,10 @@ function TrustNetworkPage() {
           <div className="lg:col-span-5">
             <Eyebrow>How federation works</Eyebrow>
             <h2 className="mt-4 text-3xl md:text-4xl font-semibold tracking-tight">
-              Attestation, without a middleman.
+              Proof, without a middleman.
             </h2>
             <p className="mt-4 text-muted-foreground leading-relaxed">
-              Every network participant anchors its own ledger and publishes verifiable envelopes. Cross-tenant exchanges reference each other by content hash, not by trusted API — so lineage crosses organizational boundaries without breaking.
+              Every company on the network keeps its own ledger and publishes records anyone can check. Records link to each other by a content hash, not a trusted API. That means the proof holds up even across company lines.
             </p>
           </div>
           <div className="lg:col-span-7 surface-card p-4 md:p-8">
@@ -56,7 +56,7 @@ function TrustNetworkPage() {
 
       <section className="border-b border-border/60">
         <div className="container-x py-20">
-          <SectionHeading eyebrow="Certification programs" title="Four ways to participate." />
+          <SectionHeading eyebrow="Certification programs" title="Four ways to join." />
           <div className="mt-10 grid md:grid-cols-2 lg:grid-cols-4 gap-4">
             {programs.map(({ Icon, t, d }) => (
               <Card key={t}>
@@ -94,8 +94,8 @@ function TrustNetworkPage() {
         <div className="container-x py-20">
           <div className="surface-card p-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
             <div>
-              <h2 className="text-2xl font-semibold tracking-tight">Apply to the Trust Network.</h2>
-              <p className="mt-2 text-sm text-muted-foreground max-w-xl">Certification review, technical onboarding, and go-to-market alignment.</p>
+              <h2 className="text-2xl font-semibold tracking-tight">Apply to join the Trust Network.</h2>
+              <p className="mt-2 text-sm text-muted-foreground max-w-xl">We review your fit, onboard you, and help plan your launch.</p>
             </div>
             <Link to="/contact" className="inline-flex items-center gap-2 rounded-md bg-primary px-5 py-3 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors">
               Start application <ArrowRight className="h-4 w-4" />
