@@ -5,10 +5,10 @@ import { Check, ArrowRight } from "lucide-react";
 export const Route = createFileRoute("/pricing")({
   head: () => ({
     meta: [
-      { title: "Pricing — Enterprise & Alpha | KHEPRA" },
-      { name: "description", content: "Transparent pricing for the KHEPRA Trust Network. Flexible deployment tiers for alpha developers, scaling teams, and enterprise autonomous systems." },
-      { property: "og:title", content: "Pricing — Enterprise & Alpha | KHEPRA" },
-      { property: "og:description", content: "Transparent pricing for the KHEPRA Trust Network. Flexible deployment tiers for alpha developers, scaling teams, and enterprise autonomous systems." },
+      { title: "KHEPRA Pricing — Alpha, Growth, Enterprise" },
+      { name: "description", content: "Simple, clear pricing to find and prove control over your AI agents. Plans for early testers, growing teams, and enterprises." },
+      { property: "og:title", content: "KHEPRA Pricing — Alpha, Growth, Enterprise" },
+      { property: "og:description", content: "Simple, clear pricing to find and prove control over your AI agents." },
     ],
   }),
   component: PricingPage,
@@ -20,7 +20,7 @@ const plans = [
     tag: "By invitation",
     price: "Free",
     period: "during alpha",
-    body: "Design-partner access to the KHEPRA protocol, one product (AdinKhepra or SouHimBou), and shared support.",
+    body: "Get early access to KHEPRA. Help us build it. Use one product (AdinKhepra or SouHimBou) and get shared support.",
     features: [
       "1 environment · 5 seats",
       "Managed KHEPRA Cloud (US or EU)",
@@ -35,7 +35,7 @@ const plans = [
     tag: "Q4 2026",
     price: "From $2,900",
     period: "per month",
-    body: "For teams shipping autonomous workflows into production with full attestation and evidence exports.",
+    body: "For teams putting AI agents into real production, with full proof and evidence you can export.",
     features: [
       "3 environments · 25 seats",
       "Both AdinKhepra + SouHimBou",
@@ -51,7 +51,7 @@ const plans = [
     tag: "Custom",
     price: "Talk to us",
     period: "annual contract",
-    body: "Sovereign or hybrid deployments, dedicated infrastructure, and named architects for regulated operations.",
+    body: "For regulated companies. Run it on your own systems or hybrid, with dedicated help and a named expert on your account.",
     features: [
       "Unlimited environments & seats",
       "Hybrid, sovereign, or air-gapped topology",
@@ -70,8 +70,8 @@ function PricingPage() {
     <>
       <PageHero
         eyebrow="Pricing & Tiers"
-        title={<>Pricing — Enterprise & Alpha | <span className="text-gradient">KHEPRA</span></>}
-        subtitle="KHEPRA is metered on signed attestations and connectors, not per-user tax. Alpha access is free for design partners; enterprise deployments are quoted for the topology you actually run."
+        title={<>Simple Pricing. No Guessing. <span className="text-gradient">KHEPRA</span></>}
+        subtitle="You pay for signed proof and connections, not a tax on every seat. Alpha access is free for early testers. Enterprise plans are quoted for how you actually run."
       />
 
       <section className="border-b border-border/60">
@@ -118,12 +118,12 @@ function PricingPage() {
 
       <section>
         <div className="container-x py-16">
-          <SectionHeading eyebrow="What counts as an attestation?" title="Straightforward metering." />
+          <SectionHeading eyebrow="What counts as an attestation?" title="No confusing math." />
           <div className="mt-8 grid md:grid-cols-3 gap-4">
             {[
-              ["Signed envelopes", "Any authorized action written to the DAG counts as one attestation."],
-              ["Bundled reviews", "Reviewer actions and evidence exports are unmetered."],
-              ["No seat tax", "Add auditors, engineers, and partners without per-seat billing surprises."],
+              ["Signed envelopes", "Every approved action that gets written to the record counts as one attestation."],
+              ["Bundled reviews", "Reviewing actions and exporting evidence never costs you extra."],
+              ["No seat tax", "Add auditors, engineers, and partners. No surprise bill for extra seats."],
             ].map(([t, d]) => (
               <Card key={t}>
                 <div className="font-display font-semibold">{t}</div>

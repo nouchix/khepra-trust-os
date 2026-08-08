@@ -7,9 +7,9 @@ export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
       { title: "Company — SecRed Knowledge Inc. (NouchiX) | KHEPRA" },
-      { name: "description", content: "SecRed Knowledge Inc. d/b/a NouchiX is a veteran-led cybersecurity and sovereign engineering firm building post-quantum compliance and agentic security infrastructure for the DIB, federal agencies, and critical infrastructure." },
+      { name: "description", content: "Veteran-led team building proof that your AI agents are safe and audit-ready." },
       { property: "og:title", content: "Company — SecRed Knowledge Inc. (NouchiX) | KHEPRA" },
-      { property: "og:description", content: "Veteran-led. Patent-pending PQC attestation, 36,195 reproducible control mappings, sovereign and SaaS delivery. Auditor-ready evidence — not slide decks." },
+      { property: "og:description", content: "Veteran-led. Patent-pending signed proof, 36,195 control mappings, evidence auditors trust — not slide decks." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -41,7 +41,7 @@ function AboutPage() {
       <PageHero
         eyebrow="Company overview & credibility"
         title={<>SecRed Knowledge Inc. <span className="text-gradient">d/b/a NouchiX</span></>}
-        subtitle="A veteran-led cybersecurity and sovereign engineering firm building the post-quantum compliance and agentic security infrastructure required by the Defense Industrial Base, federal agencies, and critical infrastructure operators. We deliver Compliance-as-a-Service, post-quantum cryptographic controls, and AI-agent attestation platforms that produce auditor-ready evidence — not slide decks."
+        subtitle="A veteran-led team building the tools defense contractors and federal agencies need to stay safe from quantum threats and rogue AI agents. We deliver Compliance-as-a-Service, quantum-safe controls, and AI-agent proof that holds up with real auditors. No slide decks."
       />
 
       {/* Registrations */}
@@ -66,15 +66,15 @@ function AboutPage() {
         <div className="container-x py-20">
           <SectionHeading
             eyebrow="What no competitor can buy"
-            title={<>Four things that are not <span className="text-gradient">procurable</span>.</>}
-            subtitle="The core stack — KHEPRA Protocol, AdinKhepra ASAF, SouHimBou AI, and the open PQC-01-STIG — is grounded in production code, reproducible control mappings, and live deployments."
+            title={<>Four things no one else can sell you.</>}
+            subtitle="The core stack — KHEPRA Protocol, AdinKhepra ASAF, SouHimBou AI, and the open PQC-01-STIG (a public standard for quantum-safe crypto) — runs on real code, real mappings, and live systems today."
           />
           <div className="mt-12 grid md:grid-cols-2 gap-4">
             {[
-              ["Patent-pending PQC attestation", "KHEPRA/ASAF produces ML-DSA-65 signed, DAG-anchored evidence objects — mathematical proof instead of narrative checklists."],
-              ["Government & DoD depth", "Active Secret clearance, GS-2210 federal experience, 100% CCRI compliance success, and working familiarity with DISA STIGs, CMMC, and the DoD PQC Strategy deadlines."],
-              ["Reproducible control mappings", "36,000+ STIG ↔ NIST 800-53 ↔ CCI ↔ CMMC mappings maintained in production code, with runtime validation and public methodology."],
-              ["Sovereign + SaaS dual profile", "Air-gap-capable FIPS 140-3 binaries for DIB and CUI environments, alongside a developer-friendly SaaS for rapid assessment."],
+              ["Patent-pending signed proof", "KHEPRA/ASAF signs every action with ML-DSA-65 (quantum-safe crypto) and locks it to a DAG (tamper-proof record chain). Math proves it, not a checklist someone wrote by hand."],
+              ["Deep government & DoD experience", "Active Secret clearance. Real federal work. 100% CCRI compliance success. We know DISA STIGs, CMMC, and the DoD quantum-safe deadlines cold."],
+              ["Control mappings you can check", "36,000+ STIG, NIST 800-53, CCI, and CMMC mappings live in real code. We check them at runtime and publish how we did it."],
+              ["Works locked-down or in the cloud", "Air-gap-ready FIPS 140-3 (federal crypto standard) builds for defense and CUI environments, plus a fast, easy SaaS option for quick checks."],
             ].map(([t, d]) => (
               <Card key={t}>
                 <div className="font-display text-lg font-semibold">{t}</div>
@@ -90,7 +90,7 @@ function AboutPage() {
         <div className="container-x py-20">
           <SectionHeading
             eyebrow="Traction & past performance"
-            title={<>Measured, not marketed.</>}
+            title={<>The numbers. Not the pitch.</>}
           />
           <div className="mt-10 grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
@@ -112,11 +112,11 @@ function AboutPage() {
 
           <div className="mt-10 grid md:grid-cols-2 gap-4">
             {[
-              ["PQC-01-STIG-V1R1", "Authored and published the first publicly available DoD-style STIG for post-quantum cryptography."],
+              ["PQC-01-STIG-V1R1", "We wrote and published the first public DoD-style security standard for quantum-safe cryptography."],
               ["SUNY Research Foundation", "Active CMMC readiness support."],
-              ["Smart-grid / DOE ecosystem", "Licensed a critical OT network security framework and provide laboratory AI security monitoring for smart-grid operators."],
+              ["Smart-grid / DOE ecosystem", "We licensed a key OT network security framework and monitor AI security in the lab for smart-grid operators."],
               ["NSF I-Corps", "Completed the cohort via SUNY Albany's Innovation Center & ETEC."],
-              ["Open source", "nouchix/PQC-Khepra-MCP on GitHub, with active multi-contributor development."],
+              ["Open source", "nouchix/PQC-Khepra-MCP is on GitHub. Real contributors, real activity — check it yourself."],
               ["Recognition", "Pitch Pulse Defense & Security — Top 10 Finalist."],
             ].map(([t, d]) => (
               <Card key={t}>
@@ -155,8 +155,8 @@ function AboutPage() {
           <div className="lg:col-span-5 space-y-4">
             <Eyebrow>Advisory network</Eyebrow>
             {[
-              ["Donnie Yancey", "GTM & operational scaling advisor — scaled a SaaS company from $0 to $15M ARR."],
-              ["Dorian Cougias (OpenControl)", "DISA STIG platform and exclusive API access."],
+              ["Donnie Yancey", "Growth advisor who helped scale a SaaS company from $0 to $15M in yearly revenue."],
+              ["Dorian Cougias (OpenControl)", "Gives us the DISA STIG (defense security standard) platform and exclusive API access."],
             ].map(([n, d]) => (
               <Card key={n}>
                 <div className="font-display text-lg font-semibold">{n}</div>
@@ -201,12 +201,12 @@ function AboutPage() {
           <SectionHeading eyebrow="Principles" title="How we build." />
           <div className="mt-10 grid md:grid-cols-2 gap-4">
             {[
-              ["Protocol over product", "Our long-term contribution is the standard. Products earn their keep by proving it works."],
-              ["Sovereignty is table stakes", "Customers must be able to hold their own keys, run their own ledger, and verify without us."],
-              ["Evidence, not vibes", "Every claim is anchored to a replayable artifact — including our own product claims."],
-              ["Boring cryptography", "Primitives that regulators, auditors, and standards bodies will still respect in ten years."],
-              ["Open by default", "Specifications, verifiers, and reference implementations are open. Value accrues to operations and ecosystem."],
-              ["Ship with discipline", "Alpha means alpha. Production means we'd bet the company on it."],
+              ["The standard comes first", "Our real contribution is the standard itself. Our products just have to prove it works."],
+              ["You keep control", "You hold your own keys. You run your own ledger. You can verify it all without us."],
+              ["Proof, not promises", "Every claim ties to a record you can replay and check yourself. Ours too."],
+              ["Simple, trusted cryptography", "We use methods that auditors and regulators will still trust ten years from now."],
+              ["Open by default", "Our specs, checkers, and reference code are open for anyone to see. We earn our keep by running it well."],
+              ["We only ship what we trust", "Alpha means alpha. Production means we'd bet the company on it."],
             ].map(([t, d]) => (
               <Card key={t}>
                 <div className="font-display text-lg font-semibold">{t}</div>
@@ -221,10 +221,10 @@ function AboutPage() {
         <div className="container-x py-16">
           <div className="surface-card p-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
             <div>
-              <h2 className="text-2xl font-semibold tracking-tight">Book a briefing.</h2>
+              <h2 className="text-2xl font-semibold tracking-tight">Find out what your agents can reach.</h2>
               <p className="mt-2 text-sm text-muted-foreground max-w-xl">
-                Validation partners, MSPs/MSSPs, and teams shipping AI agents — we'll model your agent
-                authority surface against an enforcement boundary.
+                Validation partners, MSPs, MSSPs, and teams running AI agents — book a call.
+                We'll show you exactly what your agents can access and how to lock it down.
               </p>
             </div>
             <Link to="/contact" className="inline-flex items-center gap-2 rounded-md bg-primary px-5 py-3 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors">

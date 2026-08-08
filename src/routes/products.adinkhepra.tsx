@@ -8,10 +8,10 @@ import { JsonLd, buildSoftwareAppSchema } from "@/components/seo-json-ld";
 export const Route = createFileRoute("/products/adinkhepra")({
   head: () => ({
     meta: [
-      { title: "AdinKhepra ASAF Stargate — Sovereign CMMC Compliance Engine" },
-      { name: "description", content: "Sovereign, bare-metal CMMC compliance: continuous control monitoring, auto-generated SSPs and POA&Ms, and cryptographic attestation of every control state across 36,195 reproducible mappings." },
-      { property: "og:title", content: "AdinKhepra ASAF Stargate — Sovereign CMMC Compliance Engine" },
-      { property: "og:description", content: "Continuous control monitoring, auto-generated SSPs, and ML-DSA-65 attestation of every control state. Air-gap capable, FIPS 140-3." },
+      { title: "AdinKhepra: Stop Failing CMMC Audits" },
+      { name: "description", content: "One weak control can cost you a defense contract. AdinKhepra watches every control and signs the proof, 24/7." },
+      { property: "og:title", content: "AdinKhepra: Stop Failing CMMC Audits" },
+      { property: "og:description", content: "Watch every control. Sign every finding. Never walk into an audit blind again." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -25,24 +25,24 @@ function AdinKhepraPage() {
       <JsonLd
         data={buildSoftwareAppSchema({
           name: "AdinKhepra",
-          description: "Continuous CMMC control monitoring with signed evidence, auto-generated SSPs, and cryptographic attestation of every control state.",
+          description: "AdinKhepra watches every CMMC control, signs the evidence, and writes your SSP for you.",
           url: "https://adinkhepra.com/products/adinkhepra",
           applicationCategory: "SecurityApplication",
         })}
       />
       <PageHero
         eyebrow="Product 03 · AdinKhepra — ASAF Stargate"
-        title={<>Sovereign, bare-metal <span className="text-gradient">CMMC compliance</span> engine.</>}
-        subtitle="Continuous control monitoring with signed evidence and auto-generated SSPs. Every control state is attested on the KHEPRA DAG — reviewer-ready, always. Air-gap capable FIPS 140-3 binaries for DIB and CUI environments, alongside SaaS for rapid assessment."
+        title={<>One failed control can lose you the contract. <span className="text-gradient">AdinKhepra</span> won't let that happen.</>}
+        subtitle="A missed control is a lost contract. AdinKhepra watches every control, all day, every day. It signs the proof so no one can argue with it. Your SSP writes itself. FIPS 140-3 (the government's crypto standard) keeps it locked down, even offline."
       />
 
       <section className="border-b border-border/60">
         <div className="container-x py-12 grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
-            ["36,195", "STIG ↔ NIST 800-53 ↔ CCI ↔ CMMC mappings"],
-            ["PQC-01-STIG", "first public DoD-style STIG for post-quantum crypto"],
-            ["FIPS 140-3", "air-gap capable, no phone-home"],
-            ["ML-DSA-65", "signature over every control state"],
+            ["36,195", "checks mapped from STIG to NIST to CMMC, done for you"],
+            ["PQC-01-STIG", "the first public defense-grade rule for future-proof crypto"],
+            ["FIPS 140-3", "runs fully offline, nothing ever leaves your walls"],
+            ["ML-DSA-65", "a digital lock on every single control, so no one can fake it"],
           ].map(([k, v]) => (
             <div key={v} className="surface-card p-5">
               <div className="font-mono text-xl md:text-2xl text-primary tracking-tight">{k}</div>
@@ -60,15 +60,15 @@ function AdinKhepraPage() {
           <div className="lg:col-span-6">
             <Eyebrow>What it does</Eyebrow>
             <h2 className="mt-4 text-3xl md:text-4xl font-semibold tracking-tight">
-              From framework to evidence in one loop.
+              Stop chasing evidence. Let it come to you.
             </h2>
             <ul className="mt-6 space-y-3">
               {[
-                "Continuous evidence collection across cloud, identity, and endpoint.",
-                "Signed control-state attestations, timestamped on the trust DAG.",
-                "Auto-generated System Security Plans (SSP) and POA&M.",
-                "Reviewer portal with per-control replay of collected evidence.",
-                "Mapped to CMMC L1/L2, NIST 800-171, 800-53, and ISO 27001.",
+                "Watches your cloud, logins, and devices, all day, every day.",
+                "Signs and time-stamps every control, so it can't be faked.",
+                "Writes your SSP and POA&M for you. No more late nights.",
+                "Auditors can replay any control, any time. No guessing.",
+                "Already mapped to CMMC L1/L2, NIST 800-171, 800-53, and ISO 27001.",
               ].map((t) => (
                 <li key={t} className="flex items-start gap-3">
                   <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-0.5" />
@@ -84,8 +84,8 @@ function AdinKhepraPage() {
         <div className="container-x py-20">
           <SectionHeading
             eyebrow="Stargate console"
-            title="STARGATE — the live compliance graph."
-            subtitle="Real capture from the AdinKhepra ASAF Stargate console: the CMMC journey rail, live finding graph, and APDL protocol snippet with ML-DSA-65 / ML-KEM-768 ready."
+            title="See your CMMC risk before an auditor does."
+            subtitle="This is a real screenshot of the STARGATE console. It shows your CMMC path, live findings, and the crypto locks (ML-DSA-65 / ML-KEM-768) that seal every result."
           />
           <figure className="mt-10 surface-card overflow-hidden">
             <img
@@ -105,15 +105,15 @@ function AdinKhepraPage() {
 
       <section className="border-b border-border/60">
         <div className="container-x py-20">
-          <SectionHeading eyebrow="Capabilities" title="Built for regulated operations." />
+          <SectionHeading eyebrow="Capabilities" title="Everything an auditor will ask for, ready before they ask." />
           <div className="mt-10 grid md:grid-cols-3 gap-4">
             {[
-              ["Control library", "Prebuilt mappings for CMMC L1/L2 with delta tracking as frameworks evolve."],
-              ["Evidence collectors", "Signed collectors for AWS, Azure, GCP, Okta, GitHub, CrowdStrike, and more."],
-              ["Attested SSP", "Every SSP section anchored to underlying DAG evidence — no more copy-paste narratives."],
-              ["POA&M workflows", "Auto-open findings with owners, deadlines, and cryptographic closure receipts."],
-              ["Auditor mode", "Read-only reviewer portal with replay of every control state at any point in time."],
-              ["Continuous ATO", "Post-authorization drift detection with attested remediation history."],
+              ["Control library", "Every CMMC L1/L2 control mapped for you. Updated the moment rules change."],
+              ["Evidence collectors", "Pulls signed proof straight from AWS, Azure, GCP, Okta, GitHub, CrowdStrike, and more."],
+              ["Attested SSP", "Your SSP is locked to real evidence. No more copy-paste stories an auditor can pick apart."],
+              ["POA&M workflows", "Opens findings on its own, sets owners and deadlines, and signs proof when fixed."],
+              ["Auditor mode", "Give auditors a locked-down view. They can replay any control, any time. No surprises."],
+              ["Continuous ATO", "Catches drift the moment it happens, after you're approved. Fixes are signed and tracked."],
             ].map(([t, d]) => (
               <Card key={t}>
                 <div className="font-display text-lg font-semibold">{t}</div>
@@ -128,8 +128,8 @@ function AdinKhepraPage() {
         <div className="container-x py-20">
           <div className="surface-card p-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
             <div>
-              <h2 className="text-2xl font-semibold tracking-tight">Preparing for a CMMC assessment?</h2>
-              <p className="mt-2 text-sm text-muted-foreground max-w-xl">Join the AdinKhepra pilot cohort. Design-partner slots include implementation support and reviewer onboarding.</p>
+              <h2 className="text-2xl font-semibold tracking-tight">Is your CMMC assessment coming up fast?</h2>
+              <p className="mt-2 text-sm text-muted-foreground max-w-xl">Don't wait for a failed audit to find your gaps. Join the AdinKhepra pilot now. Design-partner slots include hands-on setup help and reviewer onboarding.</p>
             </div>
             <Link to="/developers" className="inline-flex items-center gap-2 rounded-md bg-primary px-5 py-3 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors">
               Join pilot <ArrowRight className="h-4 w-4" />

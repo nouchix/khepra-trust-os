@@ -43,7 +43,7 @@ function ProtocolPage() {
               ["Bounded privilege", "No unbounded agent authority. The Adinkra symbol hierarchy brokers every privilege acquisition."],
               ["Fail-closed actuation", "The ASAF Runtime refuses to execute unless intent, policy, and privilege all resolve. There is no default-allow."],
               ["Canonical serialization", "Every AEO is deterministically encoded so any verifier reproduces the same bytes and signature check."],
-              ["Independently verifiable", "No phone-home. A customer-run verifier can replay any AEO chain from the Proof Ledger alone."],
+              ["Independently verifiable", "You don't have to trust us. You can run your own checker and replay any chain of proof yourself."],
               ["Post-quantum by design", "ML-DSA-65 signatures over canonical GST bytes. Crypto-agile envelope for future FIPS 203/204/205 rotation."],
             ].map(([t, d]) => (
               <Card key={t}>

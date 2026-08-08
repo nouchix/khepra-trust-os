@@ -7,10 +7,10 @@ import { JsonLd, buildSoftwareAppSchema } from "@/components/seo-json-ld";
 export const Route = createFileRoute("/products/souhimbou")({
   head: () => ({
     meta: [
-      { title: "SouHimBou AI — Agentic SOC: Hub & Fleet Runtime Enforcement" },
-      { name: "description", content: "Authorize or refuse every agent tool call before execution, contain agents that drift, and prove the decision with signed, replayable evidence." },
-      { property: "og:title", content: "SouHimBou AI — Agentic SOC: Hub & Fleet" },
-      { property: "og:description", content: "Runtime enforcement, containment, and flight recorder for AI agents. See what agents are doing, control what they may do, prove what happened." },
+      { title: "SouHimBou AI: Stop Rogue AI Agents Now" },
+      { name: "description", content: "Your AI agents can act without you knowing. SouHimBou AI blocks bad actions and signs the proof." },
+      { property: "og:title", content: "SouHimBou AI: Stop Rogue AI Agents Now" },
+      { property: "og:description", content: "See every agent. Block bad moves before they happen. Prove it in court if you have to." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -24,28 +24,28 @@ function SouHimBouPage() {
       <JsonLd
         data={buildSoftwareAppSchema({
           name: "SouHimBou AI",
-          description: "Record every prompt, retrieval, tool call, and mutation as a replayable signed timeline. Detect drift, prove intent, reconstruct incidents.",
+          description: "SouHimBou AI records every move your AI agents make and blocks the ones that break the rules.",
           url: "https://adinkhepra.com/products/souhimbou",
           applicationCategory: "SecurityApplication",
         })}
       />
       <PageHero
         eyebrow="Product 02 · SouHimBou AI — Agentic SOC · Hub & Fleet"
-        title={<>See it. <span className="text-gradient">Control</span> it. Prove it.</>}
-        subtitle="SouHimBou AI is the privileged enforcement and proof plane at the agent-action boundary. It authorizes or refuses each tool call before execution, contains agents whose behavior changes, and records the entire decision chain as signed, replayable evidence. The security camera and flight recorder are what it leaves behind — the daemon is what it does."
+        title={<>Your AI agents can act with no record. <span className="text-gradient">Not anymore.</span></>}
+        subtitle="Every day you wait, your agents act with no one watching. SouHimBou AI checks every action before it runs. It blocks the bad ones and locks down agents that go off script. Every decision gets signed and saved, so you can replay it later and prove exactly what happened."
       />
 
       <section className="border-b border-border/60">
         <div className="container-x py-16">
           <SectionHeading
             eyebrow="Three functions, one architecture"
-            title={<>Detection tells you an agent crossed the line. <br />Enforcement is what keeps it from crossing.</>}
+            title={<>Knowing an agent broke the rules is too late. <br />Stop it before it happens.</>}
           />
           <div className="mt-10 grid md:grid-cols-3 gap-4">
             {[
-              ["01 · See", "Discover agentic systems, map their tools and reachable data, baseline behavior, and flag drift and injection indicators."],
-              ["02 · Control", "Evaluate each action before execution and rule: ALLOW → CONSTRAIN → REQUIRE APPROVAL → DENY → QUARANTINE → LOCK. Denied calls never run."],
-              ["03 · Prove", "Every ruling — including the ones that refused an action — becomes a signed, hash-chained evidence object you can replay and export."],
+              ["01 · See", "Find every AI agent in your systems. See what tools and data they can touch. Flag anything strange fast."],
+              ["02 · Control", "Check every action before it runs. Allow it, limit it, hold it for approval, or shut it down. Blocked actions never run."],
+              ["03 · Prove", "Every decision, even a block, gets signed and saved. Play it back any time. Hand it to an auditor with confidence."],
             ].map(([t, d]) => (
               <Card key={t} className="hover:border-primary/40 transition-colors">
                 <div className="font-mono text-[11px] uppercase tracking-widest text-primary/80">{t}</div>
@@ -55,8 +55,8 @@ function SouHimBouPage() {
           </div>
           <div className="mt-8 surface-card p-6">
             <p className="text-base text-foreground/90 leading-relaxed max-w-3xl">
-              Other platforms tell you what an agent did. SouHimBou AI is designed to control what the
-              agent is permitted to do — and prove the control was enforced.
+              Other tools tell you what an agent already did. That's too late.
+              SouHimBou AI stops the bad action before it happens, and proves it stopped.
             </p>
           </div>
         </div>
@@ -67,15 +67,15 @@ function SouHimBouPage() {
           <div className="lg:col-span-6">
             <Eyebrow>Why it matters</Eyebrow>
             <h2 className="mt-4 text-3xl md:text-4xl font-semibold tracking-tight">
-              You can't govern what you can't stop — or replay.
+              If you can't stop an agent, you don't control it.
             </h2>
             <ul className="mt-6 space-y-3">
               {[
-                "Interdiction in the call path: a denied tool call is never invoked, and unapproved egress fails at the transport.",
-                "Adaptive containment: normal, elevated, restricted, quarantined, locked — escalation is monotonic, reinstatement is explicit.",
-                "Human-in-the-loop gates: held actions queue for a named approver, and the approver's identity lands in the evidence.",
-                "Full-fidelity capture: prompts, retrievals, tool I/O, external mutations, and every policy ruling.",
-                "Signed, tamper-evident timeline on the KHEPRA DAG, with forensic replay of any session.",
+                "A blocked action never runs. Period. Bad data never leaves your walls.",
+                "Agents that act strange get locked down step by step. No one gets their access back without a signed OK.",
+                "Risky actions wait for a real person to say yes. That person's name goes on the record.",
+                "Every prompt, every file touched, every rule applied gets captured. Nothing is missed.",
+                "The full timeline is signed and can't be altered. Replay any session, any time.",
               ].map((t) => (
                 <li key={t} className="flex items-start gap-3">
                   <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-0.5" />
@@ -92,17 +92,17 @@ function SouHimBouPage() {
 
       <section className="border-b border-border/60">
         <div className="container-x py-20">
-          <SectionHeading eyebrow="What gets recorded" title="Every step of the agent, signed." />
+          <SectionHeading eyebrow="What gets recorded" title="Nothing your agents do goes unrecorded." />
           <div className="mt-10 grid md:grid-cols-2 lg:grid-cols-4 gap-4">
             {[
-              ["Session identity", "Actor DID, on-behalf-of chain, policy bundle version, runtime fingerprint."],
-              ["Prompt & context", "Full prompt, system messages, retrieved chunks with source hashes."],
-              ["Tool invocations", "Signed connector calls, arguments, latency, decision, and obligations applied."],
-              ["External effects", "Every downstream mutation with pre/post hashes and reversal metadata."],
-              ["Model responses", "Complete model output, token stream digest, safety classifications."],
-              ["Policy decisions", "Every allow/deny with rule references and applied obligations."],
-              ["Drift signals", "Detected deltas in prompts, tools, or model behavior vs. baseline."],
-              ["Reviewer actions", "Who accessed what evidence, when, and under which authorization."],
+              ["Session identity", "Who the agent is, who it acted for, and what rules it was running under."],
+              ["Prompt & context", "The full prompt and every piece of data the agent pulled in, source and all."],
+              ["Tool invocations", "Every tool call the agent made, what it asked for, and what was decided."],
+              ["External effects", "Every change the agent made outside itself, before and after, so you can undo it."],
+              ["Model responses", "The full answer the model gave, and whether it was flagged as risky."],
+              ["Policy decisions", "Every yes and no the system made, and exactly which rule caused it."],
+              ["Drift signals", "Any time an agent starts acting different from normal, you get an alert."],
+              ["Reviewer actions", "Who looked at the evidence, when they looked, and why they were allowed to."],
             ].map(([t, d]) => (
               <Card key={t}>
                 <div className="font-display text-base font-semibold">{t}</div>
@@ -117,8 +117,8 @@ function SouHimBouPage() {
         <div className="container-x py-20">
           <div className="surface-card p-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
             <div>
-              <h2 className="text-2xl font-semibold tracking-tight">Deploying agents to production?</h2>
-              <p className="mt-2 text-sm text-muted-foreground max-w-xl">SouHimBou AI drops into your runtime with SDKs for Python, TS, and gRPC sidecar. Alpha access is open to a limited cohort.</p>
+              <h2 className="text-2xl font-semibold tracking-tight">Are your agents already live? You need this now.</h2>
+              <p className="mt-2 text-sm text-muted-foreground max-w-xl">SouHimBou AI drops into your systems with SDKs for Python, TS, and a gRPC sidecar. Alpha access is open to a limited number of teams. Don't wait for an incident to sign up.</p>
             </div>
             <Link to="/developers" className="inline-flex items-center gap-2 rounded-md bg-primary px-5 py-3 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors">
               Request alpha <ArrowRight className="h-4 w-4" />

@@ -5,9 +5,9 @@ export const Route = createFileRoute("/roadmap")({
   head: () => ({
     meta: [
       { title: "Roadmap — KHEPRA Trust Network" },
-      { name: "description", content: "Explore the official KHEPRA protocol and product roadmap covering cryptographic identity, attestation, agent runtime, marketplace, and open standards." },
+      { name: "description", content: "See what KHEPRA is building next to keep your AI agents safe, proven, and audit-ready." },
       { property: "og:title", content: "Roadmap — KHEPRA Trust Network" },
-      { property: "og:description", content: "Explore the official KHEPRA protocol and product roadmap covering cryptographic identity, attestation, agent runtime, marketplace, and open standards." },
+      { property: "og:description", content: "See what KHEPRA is building next to keep your AI agents safe, proven, and audit-ready." },
     ],
   }),
   component: RoadmapPage,
@@ -69,7 +69,7 @@ function RoadmapPage() {
       <PageHero
         eyebrow="Roadmap"
         title={<>Roadmap — <span className="text-gradient">KHEPRA</span> Trust Network</>}
-        subtitle="KHEPRA ships in the open. This roadmap tracks protocol milestones, product releases, and ecosystem work."
+        subtitle="KHEPRA builds in the open. This page tracks every milestone, release, and new tool we ship."
       />
 
       <section>

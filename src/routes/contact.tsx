@@ -6,10 +6,10 @@ import { Mail, Phone, CalendarClock, Globe, ArrowRight } from "lucide-react";
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
-      { title: "Book a Briefing — KHEPRA / SecRed Knowledge Inc." },
-      { name: "description", content: "Talk to the KHEPRA team about an AI Agent Authority Assessment, sovereign CMMC deployment, MSP/MSSP resale, or a validation partnership with early access and a case study." },
-      { property: "og:title", content: "Book a Briefing — KHEPRA / SecRed Knowledge Inc." },
-      { property: "og:description", content: "AI Agent Authority Assessment, sovereign CMMC deployment, MSP/MSSP resale, and validation partnerships." },
+      { title: "Book a Call — KHEPRA / SecRed Knowledge Inc." },
+      { name: "description", content: "Find out what your AI agents can access before someone else does. Book a call with the KHEPRA team today." },
+      { property: "og:title", content: "Book a Call — KHEPRA / SecRed Knowledge Inc." },
+      { property: "og:description", content: "See what your AI agents can reach. Get proof your auditors and lawyers will accept." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -23,9 +23,9 @@ function ContactPage() {
   return (
     <>
       <PageHero
-        eyebrow="Book a briefing"
-        title={<>Model your own attack path against an <span className="text-gradient">enforcement boundary</span>.</>}
-        subtitle="We map where your agents operate, what they can reach, where authority is inherited or excessive, and where prompt injection becomes tool execution — then show exactly where enforcement and proof are missing today."
+        eyebrow="Book a call now"
+        title={<>See what your AI agents can really reach.</>}
+        subtitle="We find every agent running in your company. We show you what each one can touch, where it has too much access, and where a bad prompt could turn into a real breach. Then we show you exactly what's missing to stop it."
       />
 
       <section className="border-b border-border/60">
@@ -88,7 +88,7 @@ function ContactPage() {
               <h2 className="mt-3 text-2xl font-semibold tracking-tight">Tell us what your agents can reach.</h2>
               {submitted ? (
                 <div className="mt-8 rounded-md border border-primary/40 bg-primary/5 p-6 text-sm text-foreground/90">
-                  Thanks — we've got it. Someone from the KHEPRA team will follow up within one business day.
+                  Got it. Someone from the KHEPRA team will call you within one business day.
                 </div>
               ) : (
                 <form
@@ -128,7 +128,7 @@ function ContactPage() {
                       name="message"
                       rows={5}
                       required
-                      placeholder="Which agents are in production, and what can they reach today?"
+                      placeholder="Which agents are running today, and what can they reach?"
                       className="rounded-md border border-border bg-input px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/60"
                     />
                   </div>
@@ -149,13 +149,13 @@ function ContactPage() {
         <div className="container-x py-20">
           <SectionHeading
             eyebrow="What we're asking partners for"
-            title={<>Warm introductions to one or two named decision-makers — <br />not a mass list.</>}
+            title={<>Introduce us to one or two real decision-makers — <br />not a mass list.</>}
           />
           <div className="mt-10 grid md:grid-cols-3 gap-4">
             {[
-              ["Priority 01", "A validation partner", "Willing to run a real assessment in exchange for early access and a published case study."],
-              ["Priority 02", "MSPs & MSSPs", "Providers who want to resell an AI control layer their clients are already asking for."],
-              ["Priority 03", "SaaS & AI teams", "Teams shipping agents into production — plus any other partnership fit worth flagging."],
+              ["Priority 01", "A validation partner", "Run a real assessment with us. Get early access and a published case study in return."],
+              ["Priority 02", "MSPs & MSSPs", "Sell your clients the AI control layer they are already asking you for."],
+              ["Priority 03", "SaaS & AI teams", "Teams running agents in production. Any other good partner fit, tell us too."],
             ].map(([k, t, d]) => (
               <Card key={k}>
                 <div className="font-mono text-[11px] uppercase tracking-widest text-primary/80">{k}</div>
