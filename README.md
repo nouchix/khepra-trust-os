@@ -86,15 +86,9 @@ This is the KTOS product monorepo (private).
 Per [`docs/architecture/ARCH-010-convergence-and-public-split.md`](docs/architecture/ARCH-010-convergence-and-public-split.md),
 KTOS is converging behind a deliberate public/private split:
 
-- **`nouchix/khepra-trust-os` (this repo, private)** is the authoritative landing
-  zone — console, Go planes, deployment profiles, guard suite, and architecture
-  docs all live here.
-- **`nouchix/PQC-Khepra-MCP` (public)** is being re-scoped to the open-source
-  post-quantum **MCP kernel** only (~5 of 75 packages): manifest pinning,
-  injection guards, risk-classed sandboxing, PQC attestation — a focused,
-  auditable artifact.
-- **Dependency direction is one-way:** private `core/` may import the public
-  kernel as a tagged Go module; the public repo never imports anything private.
+- **`nouchix/khepra-trust-os` (this repo, private)** is the **Fully Commercial, Closed-Source Version**. It is the authoritative commercial landing zone serving enterprise and defense customers. Beyond the baseline open-source kernel, it introduces advanced AI Governance, Runtime Security, Actuation policies (Privileged Enforcement Daemon), and complete AEO (Agentic Evidence Object) management.
+- **`nouchix/PQC-Khepra-MCP` (public)** is the **Open-Source Reference Implementation**, provided as a national security contribution to the community. It is strictly scoped to the foundational post-quantum MCP kernel.
+- **Dependency direction is one-way:** private `core/` (Trust OS) imports the public kernel as a tagged Go module; the open-source repository never imports any private commercial capabilities.
 
 Product planes migrate from the public repo into `core/` one at a time, each a
 paired PR (add private / remove public), guards green on both sides — see
