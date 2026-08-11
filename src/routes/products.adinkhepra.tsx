@@ -3,7 +3,35 @@ import { PageHero, SectionHeading, Card, Eyebrow } from "@/components/section";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 import adinImg from "@/assets/adinkhepra.jpg";
 import stargateShot from "@/assets/adinkhepra-stargate-console.png.asset.json";
-import { JsonLd, buildSoftwareAppSchema } from "@/components/seo-json-ld";
+import { JsonLd, buildSoftwareAppSchema, buildFaqSchema, buildBreadcrumbSchema } from "@/components/seo-json-ld";
+import { AnswerBlock, Byline, LastUpdated, FaqBlock, type Faq } from "@/components/seo-blocks";
+
+const FAQS: Faq[] = [
+  {
+    question: "What happens if I fail a CMMC control?",
+    answer: "One failed control can sink your whole assessment and cost you the contract. AdinKhepra watches every control 24/7 so a gap gets caught and fixed long before an auditor ever sees it.",
+  },
+  {
+    question: "How many controls does AdinKhepra check?",
+    answer: "It maps 36,195 checks straight from STIG to NIST to CMMC, already done for you. Nothing is left for you to figure out by hand.",
+  },
+  {
+    question: "Does AdinKhepra write my SSP for me?",
+    answer: "Yes. It writes your System Security Plan and POA&M directly from signed evidence, so the document matches what your systems actually do, not a story someone typed up.",
+  },
+  {
+    question: "Can AdinKhepra run fully offline?",
+    answer: "Yes. It's FIPS 140-3 certified and can run completely offline, so nothing about your controls or evidence ever has to leave your walls.",
+  },
+  {
+    question: "How does AdinKhepra prove evidence wasn't faked?",
+    answer: "Every control is signed with ML-DSA-65, a cryptographic lock. Auditors can replay any control at any time and get the same signed result, so no one can argue with it.",
+  },
+  {
+    question: "Which frameworks does AdinKhepra already map to?",
+    answer: "CMMC Level 1 and Level 2, NIST 800-171, NIST 800-53, and ISO 27001 are already mapped, so you don't start from a blank spreadsheet.",
+  },
+];
 
 export const Route = createFileRoute("/products/adinkhepra")({
   head: () => ({
@@ -14,6 +42,10 @@ export const Route = createFileRoute("/products/adinkhepra")({
       { property: "og:description", content: "Watch every control. Sign every finding. Never walk into an audit blind again." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+    ],
+    links: [{ rel: "canonical", href: "https://adinkhepra.com/products/adinkhepra" }],
+    scripts: [
+      { type: "application/ld+json", children: JSON.stringify(buildFaqSchema(FAQS)) },
     ],
   }),
   component: AdinKhepraPage,
@@ -30,11 +62,30 @@ function AdinKhepraPage() {
           applicationCategory: "SecurityApplication",
         })}
       />
+      <JsonLd
+        data={buildBreadcrumbSchema([
+          { name: "Home", url: "https://adinkhepra.com/" },
+          { name: "Products", url: "https://adinkhepra.com/products/adinkhepra" },
+          { name: "AdinKhepra", url: "https://adinkhepra.com/products/adinkhepra" },
+        ])}
+      />
       <PageHero
         eyebrow="Product 03 · AdinKhepra — ASAF Stargate"
-        title={<>One failed control can lose you the contract. <span className="text-gradient">AdinKhepra</span> won't let that happen.</>}
+        title={<>What stops one failed control from losing your CMMC contract? <span className="text-gradient">AdinKhepra</span> does.</>}
         subtitle="A missed control is a lost contract. AdinKhepra watches every control, all day, every day. It signs the proof so no one can argue with it. Your SSP writes itself. FIPS 140-3 (the government's crypto standard) keeps it locked down, even offline."
       />
+
+      <section className="border-b border-border/60">
+        <div className="container-x py-8">
+          <AnswerBlock>
+            AdinKhepra is CMMC compliance software that watches every control 24/7, signs the evidence with ML-DSA-65, and writes your SSP and POA&M for you. It runs FIPS 140-3 certified, even fully offline, so a missed control never turns into a lost contract.
+          </AnswerBlock>
+          <Byline updated="August 2026" />
+          <div className="mt-4">
+            <LastUpdated date="August 2026" />
+          </div>
+        </div>
+      </section>
 
       <section className="border-b border-border/60">
         <div className="container-x py-12 grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -60,7 +111,7 @@ function AdinKhepraPage() {
           <div className="lg:col-span-6">
             <Eyebrow>What it does</Eyebrow>
             <h2 className="mt-4 text-3xl md:text-4xl font-semibold tracking-tight">
-              Stop chasing evidence. Let it come to you.
+              How do you stop chasing evidence before every audit?
             </h2>
             <ul className="mt-6 space-y-3">
               {[
@@ -84,7 +135,7 @@ function AdinKhepraPage() {
         <div className="container-x py-20">
           <SectionHeading
             eyebrow="Stargate console"
-            title="See your CMMC risk before an auditor does."
+            title="How do you see your CMMC risk before an auditor does?"
             subtitle="This is a real screenshot of the STARGATE console. It shows your CMMC path, live findings, and the crypto locks (ML-DSA-65 / ML-KEM-768) that seal every result."
           />
           <figure className="mt-10 surface-card overflow-hidden">
@@ -105,7 +156,7 @@ function AdinKhepraPage() {
 
       <section className="border-b border-border/60">
         <div className="container-x py-20">
-          <SectionHeading eyebrow="Capabilities" title="Everything an auditor will ask for, ready before they ask." />
+          <SectionHeading eyebrow="Capabilities" title="What will an auditor ask for, and is it ready?" />
           <div className="mt-10 grid md:grid-cols-3 gap-4">
             {[
               ["Control library", "Every CMMC L1/L2 control mapped for you. Updated the moment rules change."],
@@ -123,6 +174,8 @@ function AdinKhepraPage() {
           </div>
         </div>
       </section>
+
+      <FaqBlock items={FAQS} title="Questions people ask before an audit" />
 
       <section>
         <div className="container-x py-20">

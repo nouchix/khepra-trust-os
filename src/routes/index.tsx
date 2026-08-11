@@ -4,18 +4,71 @@ import heroImg from "@/assets/hero-scarab.jpg";
 import { Eyebrow, SectionHeading, Card } from "@/components/section";
 import { TrustGraph } from "@/components/trust-graph";
 import { EgyptianDivider } from "@/components/egyptian-divider";
+import { AnswerBlock, Byline, LastUpdated, FaqBlock, type Faq } from "@/components/seo-blocks";
+import { buildFaqSchema, buildSoftwareAppSchema } from "@/components/seo-json-ld";
+
+const FAQS: Faq[] = [
+  {
+    question: "How do you stop an AI agent from doing something it should not?",
+    answer:
+      "You check the action before it runs. KHEPRA ASAF sits between your agents and your tools, data, and systems. Every action gets one of six answers: allow, limit, ask a human, deny, quarantine, or lock. Each answer is signed proof you can show later.",
+  },
+  {
+    question: "What is AI agent runtime security?",
+    answer:
+      "It is control at the moment an agent acts, not a report after the fact. Scanners tell you what an agent could do. Runtime security decides what it is allowed to do right now, blocks the rest, and keeps a signed record of both.",
+  },
+  {
+    question: "How do I find AI agents already running in my company?",
+    answer:
+      "KHEPRA scans for AI models, tools, and agent traffic across your systems and lists what it finds. You get a plain list of every agent, what it can reach, and where it has more access than it needs.",
+  },
+  {
+    question: "Can KHEPRA run in an air-gapped or classified environment?",
+    answer:
+      "Yes. KHEPRA runs fully inside your own walls, with no internet needed. Signing uses ML-DSA-65, a post-quantum signature, and the stack is built for FIPS 140-3 encryption and air-gapped deployment.",
+  },
+  {
+    question: "Does KHEPRA help with CMMC and STIG audits?",
+    answer:
+      "Yes. AdinKhepra maps signed agent evidence to CMMC practices and STIG findings, then exports an audit package. Your proof comes from real recorded actions, not a spreadsheet someone filled in by hand.",
+  },
+  {
+    question: "How is this different from Wiz, Purview, or Drata?",
+    answer:
+      "Those tools see and report. They do not stand between an AI agent and the action. KHEPRA enforces at runtime and signs every decision, so you can prove what was blocked, not just what was found.",
+  },
+];
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "KHEPRA — Find Every AI Agent. Prove It Was Controlled." },
-      { name: "description", content: "KHEPRA finds every AI agent, controls what it can do, and signs proof for auditors. See. Control. Prove." },
-      { property: "og:title", content: "KHEPRA — Find Every AI Agent. Prove It Was Controlled." },
+      { title: "AI Agent Runtime Security & Proof | KHEPRA" },
+      { name: "description", content: "How do you stop a rogue AI agent? KHEPRA checks every agent action before it runs, blocks what breaks policy, and signs proof for auditors." },
+      { property: "og:title", content: "AI Agent Runtime Security & Proof | KHEPRA" },
       { property: "og:description", content: "Your AI agents move faster than your controls. KHEPRA checks every agent action first: allow, limit, ask a human, deny, quarantine, or lock. Every decision is signed proof." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [{ rel: "canonical", href: "https://adinkhepra.com/" }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify(buildFaqSchema(FAQS)),
+      },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify(
+          buildSoftwareAppSchema({
+            name: "KHEPRA ASAF",
+            description:
+              "Runtime enforcement and signed evidence for AI agents: allow, limit, ask a human, deny, quarantine, or lock every agent action.",
+            url: "https://adinkhepra.com/",
+            applicationCategory: "SecurityApplication",
+          }),
+        ),
+      },
+    ],
   }),
   component: Home,
 });
@@ -38,11 +91,20 @@ function Home() {
         <div className="container-x relative py-24 md:py-36">
           <Eyebrow>Stop Rogue AI Agents</Eyebrow>
           <h1 className="mt-6 text-5xl md:text-7xl font-semibold tracking-tight leading-[1.02] max-w-4xl">
-            KHEPRA — Your AI agent was never <br />supposed to reach <span className="text-gradient">production</span>.
+            How do you stop a rogue AI agent? <span className="text-gradient">You check every action before it runs.</span>
           </h1>
           <p className="mt-5 font-display text-2xl md:text-3xl text-foreground/85">
-            It got in anyway.
+            You walk away with one list of every agent, a hard stop on what it can do, and signed proof for your auditor.
           </p>
+          <div className="mt-7">
+            <AnswerBlock>
+              KHEPRA is AI agent runtime security. It sits between your agents and your tools, data,
+              and systems. Before any action runs, KHEPRA answers: allow, limit, ask a human, deny,
+              quarantine, or lock. Every answer is signed with a post-quantum key, so you can prove
+              later what your agent did and what you blocked.
+            </AnswerBlock>
+          </div>
+          <Byline updated="August 2026" />
           <p className="mt-7 text-lg text-muted-foreground max-w-2xl leading-relaxed">
             In July 2026, AI models broke out of a locked-down test. They found weak spots, stole
             higher access, moved sideways, grabbed stolen passwords, and ran their own code. They
@@ -62,6 +124,9 @@ function Home() {
             agents. It sits between your agents and the tools, data, and systems they touch, and it
             signs proof of every decision.
           </p>
+          <div className="mt-6">
+            <LastUpdated date="August 2026" />
+          </div>
 
           <div className="mt-10 flex flex-wrap gap-3">
             <Link

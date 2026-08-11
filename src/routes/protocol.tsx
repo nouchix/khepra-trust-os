@@ -1,6 +1,35 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHero, SectionHeading, Card, Eyebrow } from "@/components/section";
-import { JsonLd, buildBreadcrumbSchema } from "@/components/seo-json-ld";
+import { JsonLd, buildBreadcrumbSchema, buildFaqSchema } from "@/components/seo-json-ld";
+import { AnswerBlock, Byline, FaqBlock, LastUpdated, type Faq } from "@/components/seo-blocks";
+
+const FAQS: Faq[] = [
+  {
+    question: "What is the Autonomous Governance Protocol (AGP)?",
+    answer:
+      "AGP is the rulebook behind KHEPRA. Every step an AI agent takes, called a Governed State Transition, must leave a signed record called an Agent Evidence Object. If it can't prove what happened, the action never happens.",
+  },
+  {
+    question: "What is a Governed State Transition (GST)?",
+    answer:
+      "A GST is the seven-step path every AI action takes: Intent, Policy, Privilege, Actuation, Verification, Attestation, Evidence. Each step is checked before the next one can start.",
+  },
+  {
+    question: "What is an Agent Evidence Object (AEO)?",
+    answer:
+      "An AEO is one signed record for one action. It's locked to the record before it and signed with ML-DSA-65, so no one can slip an action past it or quietly erase it later.",
+  },
+  {
+    question: "Why does AGP use post-quantum signatures?",
+    answer:
+      "AGP signs every record with ML-DSA-65, a signature future quantum computers can't crack. It's built to upgrade as post-quantum standards change, so proof made today still holds up years from now.",
+  },
+  {
+    question: "Can I verify AGP proof myself, without trusting KHEPRA?",
+    answer:
+      "Yes. Every record is built the same exact way every time, so anyone can run their own checker and replay any chain of proof and get the same result KHEPRA got.",
+  },
+];
 
 export const Route = createFileRoute("/protocol")({
   head: () => ({
@@ -10,8 +39,10 @@ export const Route = createFileRoute("/protocol")({
       { property: "og:title", content: "AGP: Proof for Every AI Action, No Exceptions" },
       { property: "og:description", content: "AGP forces every AI action to leave signed proof behind. No proof, no action. No exceptions." },
       { property: "og:type", content: "article" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [{ rel: "canonical", href: "https://adinkhepra.com/protocol" }],
+    scripts: [{ type: "application/ld+json", children: JSON.stringify(buildFaqSchema(FAQS)) }],
   }),
   component: ProtocolPage,
 });
@@ -27,15 +58,24 @@ function ProtocolPage() {
       />
       <PageHero
         eyebrow="Autonomous Governance Protocol · SDS v3.0"
-        title={<>No proof, no action. <span className="text-gradient">That's the whole rule.</span></>}
-        subtitle="AGP is the rulebook behind KHEPRA. Every step an AI agent takes (a Governed State Transition, or GST) must leave a signed record (an Agent Evidence Object, or AEO). If it can't prove what happened, the action never happens."
+        title={<>What stops an AI agent from acting without proof? <span className="text-gradient">One rule: no proof, no action.</span></>}
+        subtitle="AGP is the rulebook that makes every AI action leave a signed record behind."
       />
+
+      <div className="container-x pt-10">
+        <AnswerBlock>
+          AGP is the rulebook behind KHEPRA. Every step an AI agent takes, called a Governed
+          State Transition, must leave a signed record called an Agent Evidence Object. If it
+          can't prove what happened, the action never happens. No exceptions, no defaults to yes.
+        </AnswerBlock>
+        <Byline updated="August 2026" />
+      </div>
 
       <section className="border-b border-border/60">
         <div className="container-x py-20 grid lg:grid-cols-12 gap-12">
           <div className="lg:col-span-4">
             <Eyebrow>Design principles</Eyebrow>
-            <h2 className="mt-4 text-3xl font-semibold tracking-tight">Rules we will never bend.</h2>
+            <h2 className="mt-4 text-3xl font-semibold tracking-tight">What rules does AGP never bend?</h2>
           </div>
           <div className="lg:col-span-8 space-y-4">
             {[
@@ -61,7 +101,7 @@ function ProtocolPage() {
         <div className="container-x py-20">
           <SectionHeading
             eyebrow="Canonical AEO"
-            title="One action. One signed record. No gaps."
+            title="What does a signed record actually look like?"
             subtitle="Every action an agent takes creates exactly one record. It's locked to the record before it and signed with ML-DSA-65, so no one can slip an action past it."
           />
           <div className="mt-10 surface-card p-0 overflow-hidden">
@@ -105,7 +145,8 @@ function ProtocolPage() {
         <div className="container-x py-20">
           <SectionHeading
             eyebrow="Governed State Transition"
-            title="Seven checks stand between an idea and an action."
+            title="What stands between an agent's idea and a real action?"
+            subtitle="Seven checks. Every one has to pass before the next one can start."
           />
           <div className="mt-12 grid md:grid-cols-7 gap-4">
             {[
@@ -124,6 +165,14 @@ function ProtocolPage() {
               </Card>
             ))}
           </div>
+        </div>
+      </section>
+
+      <FaqBlock items={FAQS} />
+
+      <section>
+        <div className="container-x py-10">
+          <LastUpdated date="August 2026" />
         </div>
       </section>
     </>
