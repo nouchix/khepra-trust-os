@@ -1,16 +1,18 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHero, Eyebrow, Card } from "@/components/section";
+import { AnswerBlock, Byline, FaqBlock, LastUpdated } from "@/components/seo-blocks";
+import { buildFaqSchema, buildBreadcrumbSchema } from "@/components/seo-json-ld";
 
 export const Route = createFileRoute("/empty-lane")({
   head: () => ({
     meta: [
-      { title: "The Empty Lane — Nobody Else Fixes This" },
+      { title: "Who Fixes AI Drift and Proves It Stayed Fixed?" },
       {
         name: "description",
         content:
           "KHEPRA fixes the problem and signs proof it stayed fixed, on the same ledger that proves what your AI agents do.",
       },
-      { property: "og:title", content: "The Empty Lane — Nobody Else Fixes This" },
+      { property: "og:title", content: "Who Fixes AI Drift and Proves It Stayed Fixed?" },
       {
         property: "og:description",
         content:
@@ -19,9 +21,50 @@ export const Route = createFileRoute("/empty-lane")({
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
+    links: [{ rel: "canonical", href: "https://adinkhepra.com/empty-lane" }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify(
+          buildBreadcrumbSchema([
+            { name: "Home", url: "https://adinkhepra.com/" },
+            { name: "The Empty Lane", url: "https://adinkhepra.com/empty-lane" },
+          ])
+        ),
+      },
+      { type: "application/ld+json", children: JSON.stringify(buildFaqSchema(FAQS)) },
+    ],
   }),
   component: EmptyLanePage,
 });
+
+const FAQS = [
+  {
+    question: "Why does no AI security vendor fix drift and prove it stayed fixed?",
+    answer:
+      "Most vendors only watch for problems or block them at runtime. Fixing the underlying issue and signing proof that it stayed fixed falls between categories, so nobody owns it. KHEPRA is built to close that exact gap.",
+  },
+  {
+    question: "What is bounded autonomy and why does it matter?",
+    answer:
+      "Bounded autonomy means an AI agent's actions are staged, approved, and denied by default unless a human signs off. Without it, an agent can act on bad instructions with no one stopping it in time.",
+  },
+  {
+    question: "Can KHEPRA run on my own hardware, air-gapped?",
+    answer:
+      "Yes. KHEPRA runs over a Unix socket with FIPS-validated cryptography and no phone-home requirement, so it works in sovereign or air-gapped environments where cloud tools cannot reach.",
+  },
+  {
+    question: "Is the proof KHEPRA generates cryptographically signed?",
+    answer:
+      "Yes. Every attestation is signed with ML-DSA-65, a post-quantum algorithm under FIPS 204, and written to a tamper-evident DAG that can be independently verified.",
+  },
+  {
+    question: "How is KHEPRA different from tools like Wiz or Vanta?",
+    answer:
+      "Wiz and similar tools detect problems. Vanta and Drata manage compliance workflow. Neither remediates the host and signs proof it stayed fixed. KHEPRA does both, on one attested ledger that also covers your AI agents.",
+  },
+];
 
 type Mark = "full" | "part" | "none";
 
@@ -230,7 +273,7 @@ function EmptyLanePage() {
         eyebrow="Why every vendor leaves you exposed"
         title={
           <>
-            The Empty Lane — Nobody Else Fills It But <span className="text-gradient">KHEPRA</span>
+            Who Fixes AI Drift and Proves It Stayed Fixed? Only <span className="text-gradient">KHEPRA</span>.
           </>
         }
         subtitle={
@@ -247,6 +290,18 @@ function EmptyLanePage() {
           </>
         }
       />
+
+      <section className="border-b border-border/60">
+        <div className="container-x py-12">
+          <AnswerBlock>
+            Vendors either watch for problems, block them, or write policy about them — nobody actually
+            fixes the underlying issue and signs proof it stayed fixed. KHEPRA is the only vendor that
+            remediates the host, signs cryptographic proof, and tracks AI agents and infrastructure on
+            one attested ledger.
+          </AnswerBlock>
+          <Byline updated="August 2026" />
+        </div>
+      </section>
 
       {/* Field note */}
       <section className="border-b border-border/60">
@@ -423,6 +478,8 @@ function EmptyLanePage() {
         </div>
       </section>
 
+      <FaqBlock items={FAQS} />
+
       {/* CTA */}
       <section>
         <div className="container-x py-16 flex flex-wrap items-center justify-between gap-6">
@@ -433,6 +490,9 @@ function EmptyLanePage() {
             <p className="mt-2 text-muted-foreground">
               Watch KHEPRA fix a problem and sign the proof, live.
             </p>
+            <div className="mt-3">
+              <LastUpdated date="August 2026" />
+            </div>
           </div>
           <div className="flex gap-3">
             <Link

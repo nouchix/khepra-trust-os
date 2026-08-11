@@ -1,19 +1,21 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHero, SectionHeading, Card, Eyebrow } from "@/components/section";
 import { EgyptianDivider } from "@/components/egyptian-divider";
-import { JsonLd, buildBreadcrumbSchema } from "@/components/seo-json-ld";
+import { JsonLd, buildBreadcrumbSchema, buildFaqSchema } from "@/components/seo-json-ld";
+import { AnswerBlock, Byline, LastUpdated, FaqBlock } from "@/components/seo-blocks";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
-      { title: "Company — SecRed Knowledge Inc. (NouchiX) | KHEPRA" },
+      { title: "Who Is KHEPRA? SecRed Knowledge Inc. (NouchiX)" },
       { name: "description", content: "Veteran-led team building proof that your AI agents are safe and audit-ready." },
-      { property: "og:title", content: "Company — SecRed Knowledge Inc. (NouchiX) | KHEPRA" },
+      { property: "og:title", content: "Who Is KHEPRA? SecRed Knowledge Inc. (NouchiX)" },
       { property: "og:description", content: "Veteran-led. Patent-pending signed proof, 36,195 control mappings, evidence auditors trust — not slide decks." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [{ rel: "canonical", href: "https://adinkhepra.com/about" }],
+    scripts: [{ type: "application/ld+json", children: JSON.stringify(buildFaqSchema(FAQS)) }],
   }),
   component: AboutPage,
 });
@@ -29,6 +31,29 @@ const registrations = [
 
 const naics = ["541512", "541511", "541519", "561621", "SIN 54151HACS"];
 
+const FAQS = [
+  {
+    question: "Who runs KHEPRA?",
+    answer: "SecRed Knowledge Inc., doing business as NouchiX. It's a veteran-led company founded by Souhimbou \"Spencer\" Kone, a combat veteran with an active DoD Secret clearance.",
+  },
+  {
+    question: "Is KHEPRA a real company or just an idea?",
+    answer: "It's real. We have a DUNS number, a SAM.gov UEI, active federal registrations, a patent-pending application, and 36,195 live STIG/NIST/CMMC control mappings running in code today.",
+  },
+  {
+    question: "Does KHEPRA have government or defense experience?",
+    answer: "Yes. Our founder holds an active DoD Secret clearance and has 100% CCRI compliance success. We know DISA STIGs, CMMC, and the DoD's quantum-safe crypto deadlines cold.",
+  },
+  {
+    question: "What proof backs KHEPRA's claims?",
+    answer: "Every action gets signed with quantum-safe ML-DSA-65 and locked into a tamper-proof record chain (a DAG). You can verify it yourself instead of trusting a slide deck.",
+  },
+  {
+    question: "Who advises KHEPRA?",
+    answer: "Donnie Yancey, a growth advisor who helped scale a SaaS company from $0 to $15M a year, and Dorian Cougias of OpenControl, who gives us DISA STIG platform and API access.",
+  },
+];
+
 function AboutPage() {
   return (
     <>
@@ -40,9 +65,26 @@ function AboutPage() {
       />
       <PageHero
         eyebrow="Company overview & credibility"
-        title={<>SecRed Knowledge Inc. <span className="text-gradient">d/b/a NouchiX</span></>}
+        title={<>Who is behind KHEPRA? <span className="text-gradient">SecRed Knowledge Inc.</span> (NouchiX)</>}
         subtitle="A veteran-led team building the tools defense contractors and federal agencies need to stay safe from quantum threats and rogue AI agents. We deliver Compliance-as-a-Service, quantum-safe controls, and AI-agent proof that holds up with real auditors. No slide decks."
       />
+
+      <section className="border-b border-border/60">
+        <div className="container-x py-10">
+          <Byline updated="August 2026" />
+          <div className="mt-6">
+            <AnswerBlock>
+              KHEPRA is built by SecRed Knowledge Inc. (d/b/a NouchiX), a veteran-led company with an
+              active DoD Secret clearance, a DUNS/UEI registration, and a patent-pending application.
+              We ship signed, quantum-safe proof of what AI agents do — 36,195 real control mappings,
+              not a slide deck.
+            </AnswerBlock>
+          </div>
+          <div className="mt-4">
+            <LastUpdated date="August 2026" />
+          </div>
+        </div>
+      </section>
 
       {/* Registrations */}
       <section className="border-b border-border/60">
@@ -66,7 +108,7 @@ function AboutPage() {
         <div className="container-x py-20">
           <SectionHeading
             eyebrow="What no competitor can buy"
-            title={<>Four things no one else can sell you.</>}
+            title={<>What can no one else sell you?</>}
             subtitle="The core stack — KHEPRA Protocol, AdinKhepra ASAF, SouHimBou AI, and the open PQC-01-STIG (a public standard for quantum-safe crypto) — runs on real code, real mappings, and live systems today."
           />
           <div className="mt-12 grid md:grid-cols-2 gap-4">
@@ -198,7 +240,7 @@ function AboutPage() {
       {/* Principles */}
       <section className="border-b border-border/60">
         <div className="container-x py-20">
-          <SectionHeading eyebrow="Principles" title="How we build." />
+          <SectionHeading eyebrow="Principles" title="How do we build?" />
           <div className="mt-10 grid md:grid-cols-2 gap-4">
             {[
               ["The standard comes first", "Our real contribution is the standard itself. Our products just have to prove it works."],
@@ -216,6 +258,8 @@ function AboutPage() {
           </div>
         </div>
       </section>
+
+      <FaqBlock items={FAQS} />
 
       <section>
         <div className="container-x py-16">
