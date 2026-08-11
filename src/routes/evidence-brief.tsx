@@ -1,7 +1,66 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { PageHero, SectionHeading, Card, Eyebrow } from "@/components/section";
+import { PageHero, SectionHeading, Card } from "@/components/section";
+import { AnswerBlock, Byline, FaqBlock, LastUpdated } from "@/components/seo-blocks";
+import { buildFaqSchema, buildBreadcrumbSchema } from "@/components/seo-json-ld";
+
+const FAQS = [
+  {
+    question: "What is a KHEPRA evidence chain?",
+    answer:
+      "It is a signed, unbroken record of every step an AI agent took — from the tool it called to the decision made and the seal applied. Each event is cryptographically linked so nothing can be altered without breaking the chain.",
+  },
+  {
+    question: "How was this test set up?",
+    answer:
+      "We connected to a real test target, a Hostinger VPS, and logged every action under a signed evaluator identity. The guard status stayed intact through the full test.",
+  },
+  {
+    question: "What happened in the PentestGPT incident?",
+    answer:
+      "An agent registered, declared its intent, ran an approved scan, then ingested a poisoned document that tried to override its instructions. KHEPRA intercepted the exfiltration attempt, revoked the session, and signed the full record.",
+  },
+  {
+    question: "Can my auditors read this proof?",
+    answer:
+      "Yes. Attestations export into formats your auditors already use, mapped to NIST SP 800-53 and CMMC 2.0, and signed with quantum-safe ML-DSA-65 signatures under FIPS 204.",
+  },
+  {
+    question: "Can I explore the evidence myself?",
+    answer:
+      "Yes. Each incident has an interactive 3D chain you can click, drag, and spin. Hover any event to see its signed details.",
+  },
+];
 
 export const Route = createFileRoute("/evidence-brief")({
+  head: () => ({
+    meta: [
+      { title: "How Does KHEPRA Prove an AI Agent's Actions?" },
+      {
+        name: "description",
+        content: "See the full signed chain of proof from a real KHEPRA test: every tool call, decision, and seal, start to finish.",
+      },
+      { property: "og:title", content: "How Does KHEPRA Prove an AI Agent's Actions?" },
+      {
+        property: "og:description",
+        content: "Every step, signed and unbroken. The full chain of proof from connection to seal.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+    links: [{ rel: "canonical", href: "https://adinkhepra.com/evidence-brief" }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify(
+          buildBreadcrumbSchema([
+            { name: "Home", url: "https://adinkhepra.com/" },
+            { name: "Evidence Brief", url: "https://adinkhepra.com/evidence-brief" },
+          ])
+        ),
+      },
+      { type: "application/ld+json", children: JSON.stringify(buildFaqSchema(FAQS)) },
+    ],
+  }),
   component: EvidenceBriefPage,
 });
 
@@ -12,11 +71,23 @@ function EvidenceBriefPage() {
         eyebrow="Proprietary / Prospect-Shareable"
         title={
           <>
-            KHEPRA — The Full <span className="text-gradient">Chain of Proof</span>, Start to Finish
+            How Does KHEPRA Prove What an AI Agent Did? The Full <span className="text-gradient">Chain of Proof</span>
           </>
         }
         subtitle="Every step, signed and unbroken. From the moment we connected to the test system, through every tool used, every decision made, every seal applied."
       />
+
+      <section className="border-b border-border/60">
+        <div className="container-x py-12">
+          <AnswerBlock>
+            KHEPRA proves what an AI agent did by signing every tool call, decision, and outcome into an
+            unbroken evidence chain. This brief walks through a real test: an agent that tried to steal
+            data, got intercepted, and had its whole attempt captured, replayable start to finish, in a
+            format your auditors can read.
+          </AnswerBlock>
+          <Byline updated="August 2026" />
+        </div>
+      </section>
 
       <section className="border-b border-border/60">
         <div className="container-x py-16">
@@ -165,22 +236,30 @@ function EvidenceBriefPage() {
             <div>
                <h3 className="text-xl font-bold mb-4">Target 1: DVWS (Control)</h3>
                <div className="rounded-xl overflow-hidden border border-border bg-background aspect-[21/9]">
-                  <iframe src="/dvws-fair-dag.html" className="w-full h-full border-0" />
+                  <iframe src="/dvws-fair-dag.html" className="w-full h-full border-0" title="DVWS control incident evidence chain" />
                </div>
             </div>
             <div>
                <h3 className="text-xl font-bold mb-4">Target 2: PentestGPT Incident</h3>
                <div className="rounded-xl overflow-hidden border border-border bg-background aspect-[21/9]">
-                  <iframe src="/pentestgpt-fair-dag.html" className="w-full h-full border-0" />
+                  <iframe src="/pentestgpt-fair-dag.html" className="w-full h-full border-0" title="PentestGPT incident evidence chain" />
                </div>
             </div>
             <div>
                <h3 className="text-xl font-bold mb-4">Target 3: HackGPT Prompt Security</h3>
                <div className="rounded-xl overflow-hidden border border-border bg-background aspect-[21/9]">
-                  <iframe src="/hackgpt-fair-dag.html" className="w-full h-full border-0" />
+                  <iframe src="/hackgpt-fair-dag.html" className="w-full h-full border-0" title="HackGPT prompt security incident evidence chain" />
                </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      <FaqBlock items={FAQS} />
+
+      <section>
+        <div className="container-x py-16">
+          <LastUpdated date="August 2026" />
         </div>
       </section>
     </>

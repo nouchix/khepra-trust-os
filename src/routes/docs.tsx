@@ -2,15 +2,21 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHero, Eyebrow, Card } from "@/components/section";
 import { CodeTabs } from "@/components/code-tabs";
 import { Search, FileText, Cpu, Shield, KeyRound, Boxes, GitBranch, ArrowRight } from "lucide-react";
+import { JsonLd, buildBreadcrumbSchema, buildFaqSchema } from "@/components/seo-json-ld";
+import { AnswerBlock, Byline, LastUpdated, FaqBlock } from "@/components/seo-blocks";
 
 export const Route = createFileRoute("/docs")({
   head: () => ({
     meta: [
-      { title: "Documentation — KHEPRA Trust Network" },
+      { title: "Where Are the KHEPRA Docs? Documentation" },
       { name: "description", content: "Docs for the KHEPRA Trust Network. Guides, SDKs, and API references to keep your AI agents in check." },
-      { property: "og:title", content: "Documentation — KHEPRA Trust Network" },
+      { property: "og:title", content: "Where Are the KHEPRA Docs? Documentation" },
       { property: "og:description", content: "Docs for the KHEPRA Trust Network. Guides, SDKs, and API references to keep your AI agents in check." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
+    links: [{ rel: "canonical", href: "https://adinkhepra.com/docs" }],
+    scripts: [{ type: "application/ld+json", children: JSON.stringify(buildFaqSchema(FAQS)) }],
   }),
   component: DocsPage,
 });
@@ -72,14 +78,60 @@ const nav = [
   },
 ];
 
+const FAQS = [
+  {
+    question: "Where are the KHEPRA docs?",
+    answer: "Right here. Use the search bar above or browse by topic — get started, protocol, identity, policy, runtime, and connectors — to find the guide or API reference you need.",
+  },
+  {
+    question: "How do I sign my first action?",
+    answer: "Follow the Quickstart guide. It walks you through signing and proving your first action in under 10 minutes using the TypeScript, Python, or Go SDK.",
+  },
+  {
+    question: "What is did:khepra?",
+    answer: "It's KHEPRA's DID method — a way to identify and link agents and users so every signed record ties back to a real actor, not an anonymous process.",
+  },
+  {
+    question: "Can I test policy rules before they go live?",
+    answer: "Yes. The Policy section covers authoring bundles, adding obligations like masking or human review, and simulating new rules against real past evidence first.",
+  },
+  {
+    question: "How do I get help if the docs don't answer my question?",
+    answer: "Join the developer community on Discord, open an issue in the reference code on GitHub, or contact enterprise support for a named architect and SLA-backed help.",
+  },
+];
+
 function DocsPage() {
   return (
     <>
+      <JsonLd
+        data={buildBreadcrumbSchema([
+          { name: "Home", url: "https://adinkhepra.com/" },
+          { name: "Docs", url: "https://adinkhepra.com/docs" },
+        ])}
+      />
       <PageHero
         eyebrow="Documentation"
-        title={<>Documentation — <span className="text-gradient">KHEPRA</span> Trust Network</>}
+        title={<>Where are the <span className="text-gradient">KHEPRA</span> docs?</>}
         subtitle="Protocol reference, SDK guides, and API docs. Written for the engineer who has to make it work by Monday."
       />
+
+      <section className="border-b border-border/60">
+        <div className="container-x py-10">
+          <Byline updated="August 2026" />
+          <div className="mt-6">
+            <AnswerBlock>
+              KHEPRA's documentation covers get-started guides, the full protocol spec, identity
+              and key management, policy authoring, agent runtime, and connectors — all on this
+              page. Search below or jump straight into the API reference in TypeScript, Python,
+              Go, or REST.
+            </AnswerBlock>
+          </div>
+          <div className="mt-4">
+            <LastUpdated date="August 2026" />
+          </div>
+        </div>
+      </section>
 
       <section className="border-b border-border/60">
         <div className="container-x py-10">
@@ -210,7 +262,7 @@ Content-Type: application/json
         </div>
       </section>
 
-      <section>
+      <section className="border-b border-border/60">
         <div className="container-x py-16 grid md:grid-cols-2 gap-4">
           <Card>
             <div className="font-display text-lg font-semibold">Have questions?</div>
@@ -229,6 +281,8 @@ Content-Type: application/json
           </Card>
         </div>
       </section>
+
+      <FaqBlock items={FAQS} />
     </>
   );
 }

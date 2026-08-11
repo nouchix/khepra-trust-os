@@ -1,27 +1,78 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHero, SectionHeading, Card, Eyebrow } from "@/components/section";
 import { ArrowRight, Book, Code2, Package, Terminal } from "lucide-react";
+import { JsonLd, buildBreadcrumbSchema, buildFaqSchema } from "@/components/seo-json-ld";
+import { AnswerBlock, Byline, LastUpdated, FaqBlock } from "@/components/seo-blocks";
 
 export const Route = createFileRoute("/developers")({
   head: () => ({
     meta: [
-      { title: "Developer Portal — KHEPRA Trust Network" },
+      { title: "How Do I Build on KHEPRA? Developer Portal" },
       { name: "description", content: "Build with KHEPRA. Get SDKs, connectors, and docs to prove what your AI agents do." },
-      { property: "og:title", content: "Developer Portal — KHEPRA Trust Network" },
+      { property: "og:title", content: "How Do I Build on KHEPRA? Developer Portal" },
       { property: "og:description", content: "Build with KHEPRA. Get SDKs, connectors, and docs to prove what your AI agents do." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
+    links: [{ rel: "canonical", href: "https://adinkhepra.com/developers" }],
+    scripts: [{ type: "application/ld+json", children: JSON.stringify(buildFaqSchema(FAQS)) }],
   }),
   component: DevPage,
 });
 
+const FAQS = [
+  {
+    question: "How do I start building on KHEPRA?",
+    answer: "Request early access below, then install the TypeScript, Python, or Go SDK. You can sign and prove your first action against the KHEPRA Trust Network in under 20 lines of code.",
+  },
+  {
+    question: "What languages does the KHEPRA SDK support?",
+    answer: "TypeScript, Python, and Go today, plus a plain REST API for anything else. Every release ships signed and checksum-verified so you know the code you're running is real.",
+  },
+  {
+    question: "What is a connector kit?",
+    answer: "A signed package that limits exactly what an agent or tool can reach. You build it once, sign it, and it only touches what you say it can — nothing more.",
+  },
+  {
+    question: "Can I test my policy rules before going live?",
+    answer: "Yes. Policy Studio lets you write rules and run them against real past evidence first, so you catch a bad rule before it blocks — or allows — the wrong thing in production.",
+  },
+  {
+    question: "Is the KHEPRA protocol documented anywhere?",
+    answer: "Yes. Protocol docs cover exactly how records get built, signed, and checked so the evidence holds up in a real audit — not just in a demo.",
+  },
+];
+
 function DevPage() {
   return (
     <>
+      <JsonLd
+        data={buildBreadcrumbSchema([
+          { name: "Home", url: "https://adinkhepra.com/" },
+          { name: "Developers", url: "https://adinkhepra.com/developers" },
+        ])}
+      />
       <PageHero
         eyebrow="Developer Portal"
-        title={<>Developer Portal — <span className="text-gradient">KHEPRA</span> Trust Network</>}
+        title={<>How do I build on KHEPRA? <span className="text-gradient">SDKs</span>, connectors, and docs.</>}
         subtitle="SDKs, signed connector kits, and policy bundles. Everything you need to plug your stack into the KHEPRA Trust Network and start proving what your agents do."
       />
+
+      <section className="border-b border-border/60">
+        <div className="container-x py-10">
+          <Byline updated="August 2026" />
+          <div className="mt-6">
+            <AnswerBlock>
+              Install the KHEPRA SDK in TypeScript, Python, or Go, sign every agent action with
+              quantum-safe crypto, and check it against a tamper-proof record chain. Request early
+              access below and you can prove your first action in under 20 lines of code.
+            </AnswerBlock>
+          </div>
+          <div className="mt-4">
+            <LastUpdated date="August 2026" />
+          </div>
+        </div>
+      </section>
 
       <section className="border-b border-border/60">
         <div className="container-x py-16 grid md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -73,7 +124,7 @@ if (decision.allow) {
         </div>
       </section>
 
-      <section>
+      <section className="border-b border-border/60">
         <div className="container-x py-16">
           <SectionHeading eyebrow="Request access" title="Get early access to the SDKs." />
           <form
@@ -109,6 +160,8 @@ if (decision.allow) {
           </form>
         </div>
       </section>
+
+      <FaqBlock items={FAQS} />
     </>
   );
 }
