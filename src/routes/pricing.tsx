@@ -1,14 +1,59 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHero, SectionHeading, Card } from "@/components/section";
+import { AnswerBlock, Byline, FaqBlock, LastUpdated } from "@/components/seo-blocks";
+import { buildFaqSchema, buildBreadcrumbSchema } from "@/components/seo-json-ld";
 import { Check, ArrowRight } from "lucide-react";
+
+const FAQS = [
+  {
+    question: "How much does KHEPRA cost?",
+    answer:
+      "Alpha access is free while we build with early testers. Growth plans start from $2,900 a month once the product is generally available. Enterprise is a custom quote based on how you run — cloud, hybrid, or air-gapped.",
+  },
+  {
+    question: "What counts as an attestation?",
+    answer:
+      "Every approved action written to the signed record counts as one attestation. Reviewing actions and exporting evidence never costs extra, and there is no per-seat tax.",
+  },
+  {
+    question: "Do I have to pay per seat?",
+    answer:
+      "No. Add auditors, engineers, and partners without a surprise bill. You pay for signed proof and connections, not for every person who needs to see it.",
+  },
+  {
+    question: "Can I try KHEPRA before I pay?",
+    answer:
+      "Yes. Apply for the free Alpha tier to get one environment, five seats, and up to 1M attestations a month while we build the product together.",
+  },
+  {
+    question: "What's included in Enterprise plans?",
+    answer:
+      "Unlimited environments and seats, hybrid or air-gapped deployment, your own HSM or KMS, FedRAMP-aligned options, 24×7 support, a named architect, and an independent verifier for audit-ready evidence.",
+  },
+];
 
 export const Route = createFileRoute("/pricing")({
   head: () => ({
     meta: [
       { title: "KHEPRA Pricing — Alpha, Growth, Enterprise" },
-      { name: "description", content: "Simple, clear pricing to find and prove control over your AI agents. Plans for early testers, growing teams, and enterprises." },
+      { name: "description", content: "See KHEPRA pricing: free Alpha access, Growth from $2,900/mo, and custom Enterprise plans with no per-seat tax." },
       { property: "og:title", content: "KHEPRA Pricing — Alpha, Growth, Enterprise" },
-      { property: "og:description", content: "Simple, clear pricing to find and prove control over your AI agents." },
+      { property: "og:description", content: "You pay for signed proof and connections, not a tax on every seat." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+    links: [{ rel: "canonical", href: "https://adinkhepra.com/pricing" }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify(
+          buildBreadcrumbSchema([
+            { name: "Home", url: "https://adinkhepra.com/" },
+            { name: "Pricing", url: "https://adinkhepra.com/pricing" },
+          ])
+        ),
+      },
+      { type: "application/ld+json", children: JSON.stringify(buildFaqSchema(FAQS)) },
     ],
   }),
   component: PricingPage,
@@ -70,9 +115,35 @@ function PricingPage() {
     <>
       <PageHero
         eyebrow="Pricing & Tiers"
-        title={<>Simple Pricing. No Guessing. <span className="text-gradient">KHEPRA</span></>}
+        title={<>How Much Does <span className="text-gradient">KHEPRA</span> Cost? Free Alpha, Then Plans That Fit How You Run.</>}
         subtitle="You pay for signed proof and connections, not a tax on every seat. Alpha access is free for early testers. Enterprise plans are quoted for how you actually run."
       />
+
+      <section className="border-b border-border/60">
+        <div className="container-x py-12">
+          <AnswerBlock>
+            Alpha access is free right now for early testers. Growth plans start at $2,900 a month once
+            KHEPRA is generally available. Enterprise is a custom quote for regulated teams that need
+            hybrid or air-gapped deployment. There is no per-seat tax — you pay for signed proof, not
+            for who gets to see it.
+          </AnswerBlock>
+          <Byline updated="August 2026" />
+        </div>
+      </section>
+
+      <section className="border-b border-border/60">
+        <div className="container-x py-16">
+          <SectionHeading
+            eyebrow="Why pricing confuses buyers"
+            title="Most vendors charge you for every seat. That gets expensive fast."
+          />
+          <p className="mt-6 max-w-2xl text-sm text-muted-foreground leading-relaxed">
+            Teams tell us the same thing: they need auditors, engineers, and partners to see proof, but
+            per-seat pricing punishes them for including the right people. That gap costs real budget and
+            slows down every review. KHEPRA charges for attestations, not people.
+          </p>
+        </div>
+      </section>
 
       <section className="border-b border-border/60">
         <div className="container-x py-16 grid md:grid-cols-3 gap-4">
@@ -116,7 +187,7 @@ function PricingPage() {
         </div>
       </section>
 
-      <section>
+      <section className="border-b border-border/60">
         <div className="container-x py-16">
           <SectionHeading eyebrow="What counts as an attestation?" title="No confusing math." />
           <div className="mt-8 grid md:grid-cols-3 gap-4">
@@ -131,6 +202,26 @@ function PricingPage() {
               </Card>
             ))}
           </div>
+        </div>
+      </section>
+
+      <FaqBlock items={FAQS} />
+
+      <section>
+        <div className="container-x py-16 flex flex-wrap items-center justify-between gap-6">
+          <div>
+            <h2 className="font-display text-2xl md:text-3xl font-semibold tracking-tight">
+              Ready to see your price?
+            </h2>
+            <p className="mt-2 text-muted-foreground">Apply free, or ask for a quote that matches how you run.</p>
+            <LastUpdated date="August 2026" />
+          </div>
+          <Link
+            to="/contact"
+            className="inline-flex items-center rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
+          >
+            Talk to sales
+          </Link>
         </div>
       </section>
     </>

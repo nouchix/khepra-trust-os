@@ -2,7 +2,31 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHero, SectionHeading, Card, Eyebrow } from "@/components/section";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 import souImg from "@/assets/souhimbou.jpg";
-import { JsonLd, buildSoftwareAppSchema } from "@/components/seo-json-ld";
+import { JsonLd, buildSoftwareAppSchema, buildFaqSchema, buildBreadcrumbSchema } from "@/components/seo-json-ld";
+import { AnswerBlock, Byline, LastUpdated, FaqBlock, type Faq } from "@/components/seo-blocks";
+
+const FAQS: Faq[] = [
+  {
+    question: "How do I stop a rogue AI agent before it acts?",
+    answer: "SouHimBou AI checks every action before it runs. It allows, limits, holds for approval, or shuts down an agent, so a bad action is stopped before it happens instead of found after the damage is done.",
+  },
+  {
+    question: "Can I prove what my AI agents did?",
+    answer: "Yes. Every decision, even a block, is signed and saved. You can replay any session at any time and hand the record to an auditor or a court with confidence.",
+  },
+  {
+    question: "What happens when an agent starts acting strange?",
+    answer: "SouHimBou AI locks it down step by step. No one gets access back without a signed approval from a real person, so drift never turns into a breach.",
+  },
+  {
+    question: "What gets recorded for every agent action?",
+    answer: "Session identity, the full prompt and context, every tool call, external effects, model responses, policy decisions, drift signals, and reviewer actions. Nothing your agents do goes unrecorded.",
+  },
+  {
+    question: "How fast can I add SouHimBou AI to my stack?",
+    answer: "It drops into your systems with SDKs for Python and TypeScript, plus a gRPC sidecar. Alpha access is open now to a limited number of teams.",
+  },
+];
 
 export const Route = createFileRoute("/products/souhimbou")({
   head: () => ({
@@ -13,6 +37,10 @@ export const Route = createFileRoute("/products/souhimbou")({
       { property: "og:description", content: "See every agent. Block bad moves before they happen. Prove it in court if you have to." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+    ],
+    links: [{ rel: "canonical", href: "https://adinkhepra.com/products/souhimbou" }],
+    scripts: [
+      { type: "application/ld+json", children: JSON.stringify(buildFaqSchema(FAQS)) },
     ],
   }),
   component: SouHimBouPage,
@@ -29,17 +57,36 @@ function SouHimBouPage() {
           applicationCategory: "SecurityApplication",
         })}
       />
+      <JsonLd
+        data={buildBreadcrumbSchema([
+          { name: "Home", url: "https://adinkhepra.com/" },
+          { name: "Products", url: "https://adinkhepra.com/products/souhimbou" },
+          { name: "SouHimBou AI", url: "https://adinkhepra.com/products/souhimbou" },
+        ])}
+      />
       <PageHero
         eyebrow="Product 02 · SouHimBou AI — Agentic SOC · Hub & Fleet"
-        title={<>Your AI agents can act with no record. <span className="text-gradient">Not anymore.</span></>}
+        title={<>How do you stop an AI agent that acts with no record? <span className="text-gradient">SouHimBou AI.</span></>}
         subtitle="Every day you wait, your agents act with no one watching. SouHimBou AI checks every action before it runs. It blocks the bad ones and locks down agents that go off script. Every decision gets signed and saved, so you can replay it later and prove exactly what happened."
       />
+
+      <section className="border-b border-border/60">
+        <div className="container-x py-8">
+          <AnswerBlock>
+            SouHimBou AI is an agentic SOC that checks every AI agent action before it runs, blocks the ones that break the rules, and signs the decision so you can replay it later. It stops rogue behavior before it happens instead of just reporting it after.
+          </AnswerBlock>
+          <Byline updated="August 2026" />
+          <div className="mt-4">
+            <LastUpdated date="August 2026" />
+          </div>
+        </div>
+      </section>
 
       <section className="border-b border-border/60">
         <div className="container-x py-16">
           <SectionHeading
             eyebrow="Three functions, one architecture"
-            title={<>Knowing an agent broke the rules is too late. <br />Stop it before it happens.</>}
+            title={<>Isn't it too late to know an agent broke the rules? <br />Stop it before it happens.</>}
           />
           <div className="mt-10 grid md:grid-cols-3 gap-4">
             {[
@@ -67,7 +114,7 @@ function SouHimBouPage() {
           <div className="lg:col-span-6">
             <Eyebrow>Why it matters</Eyebrow>
             <h2 className="mt-4 text-3xl md:text-4xl font-semibold tracking-tight">
-              If you can't stop an agent, you don't control it.
+              If you can't stop an agent, do you really control it?
             </h2>
             <ul className="mt-6 space-y-3">
               {[
@@ -92,7 +139,7 @@ function SouHimBouPage() {
 
       <section className="border-b border-border/60">
         <div className="container-x py-20">
-          <SectionHeading eyebrow="What gets recorded" title="Nothing your agents do goes unrecorded." />
+          <SectionHeading eyebrow="What gets recorded" title="What exactly does SouHimBou AI capture on every agent?" />
           <div className="mt-10 grid md:grid-cols-2 lg:grid-cols-4 gap-4">
             {[
               ["Session identity", "Who the agent is, who it acted for, and what rules it was running under."],
@@ -112,6 +159,8 @@ function SouHimBouPage() {
           </div>
         </div>
       </section>
+
+      <FaqBlock items={FAQS} title="Questions people ask before they trust an AI agent" />
 
       <section>
         <div className="container-x py-20">

@@ -774,6 +774,8 @@ function Home() {
         </div>
       </section>
 
+      <FaqBlock items={FAQS} />
+
       {/* CTA */}
       <section>
         <div className="container-x py-24">
