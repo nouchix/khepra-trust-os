@@ -1,6 +1,36 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import { PageHero, SectionHeading, Card, Eyebrow } from "@/components/section";
+import { JsonLd, buildBreadcrumbSchema, buildFaqSchema } from "@/components/seo-json-ld";
+import { AnswerBlock, Byline, FaqBlock, LastUpdated, type Faq } from "@/components/seo-blocks";
+
+const FAQS: Faq[] = [
+  {
+    question: "What is the KHEPRA threat model based on?",
+    answer:
+      "Two real, public AI agent incidents: the OpenAI / Hugging Face red-team breakout and the NemoClaw prompt-injection failure. We mapped each step against a live enforcement wall to show exactly where it would have stepped in.",
+  },
+  {
+    question: "Would KHEPRA have stopped both attacks completely?",
+    answer:
+      "We're not claiming that. We don't know every inside detail of either incident. What we show is five or more real moments in each attack where a live enforcement wall, backed by signed rules, would have made the agent stop and ask first.",
+  },
+  {
+    question: "What is Controlled Autonomous Actuation (CAA)?",
+    answer:
+      "CAA is a five-state ladder for agent power: Normal, Elevated, Restricted, Quarantined, Locked. Power only goes down during a threat, never back up by accident. Only a human can restore it.",
+  },
+  {
+    question: "What is the ASAF engine?",
+    answer:
+      "ASAF is KHEPRA's patent-pending agent enforcement system. Every ruling in the case studies below, like Constrain, Deny, or Quarantine, maps to a real rule inside ASAF, not a hypothetical.",
+  },
+  {
+    question: "How is a blocked action turned into proof?",
+    answer:
+      "Every ruling, allowed or blocked, is signed and locked into an Agent Evidence Object. Investigators can replay the exact sequence step by step, including the actions that never happened because they got stopped.",
+  },
+];
 
 export const Route = createFileRoute("/threat-model")({
   head: () => ({
@@ -13,6 +43,7 @@ export const Route = createFileRoute("/threat-model")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [{ rel: "canonical", href: "https://adinkhepra.com/threat-model" }],
+    scripts: [{ type: "application/ld+json", children: JSON.stringify(buildFaqSchema(FAQS)) }],
   }),
   component: ThreatModelPage,
 });
@@ -180,11 +211,27 @@ function StageList({ stages }: { stages: typeof openaiStages }) {
 function ThreatModelPage() {
   return (
     <>
+      <JsonLd
+        data={buildBreadcrumbSchema([
+          { name: "Home", url: "https://adinkhepra.com/" },
+          { name: "Threat Model", url: "https://adinkhepra.com/threat-model" },
+        ])}
+      />
       <PageHero
         eyebrow="Real attack patterns, plain language"
-        title={<>2 attacks. 2 open doors. <br />1 <span className="text-gradient">missing wall</span> could have stopped both.</>}
-        subtitle="We are not saying these attacks were guaranteed to be stopped. We are showing you, step by step, exactly where a live enforcement wall would have made the agent stop and ask first."
+        title={<>Could a live enforcement wall have stopped these AI attacks? <span className="text-gradient">Here is where it would have stepped in.</span></>}
+        subtitle="Two real AI agent incidents, mapped step by step against a live enforcement wall."
       />
+
+      <div className="container-x pt-10">
+        <AnswerBlock>
+          We are not saying these attacks were guaranteed to be stopped. We mapped two real AI
+          agent incidents, the OpenAI / Hugging Face breakout and the NemoClaw failure, against
+          a live enforcement wall. Below, you can see exactly where it would have made the
+          agent stop and ask first.
+        </AnswerBlock>
+        <Byline updated="August 2026" />
+      </div>
 
       <section className="border-b border-border/60">
         <div className="container-x py-14 grid md:grid-cols-2 gap-4">
@@ -223,7 +270,7 @@ function ThreatModelPage() {
         <div className="container-x py-20">
           <SectionHeading
             eyebrow="Case 01 · step by step"
-            title="Where the wall would have stopped it."
+            title="Where would the wall have stopped the OpenAI breakout?"
             subtitle="More power, more access, sideways moves, stolen logins, proof. Five moments. Five chances to say no."
           />
           <StageList stages={openaiStages} />
@@ -278,6 +325,8 @@ function ThreatModelPage() {
           </div>
         </div>
       </section>
+
+      <FaqBlock items={FAQS} />
 
       <section>
         <div className="container-x py-20">
