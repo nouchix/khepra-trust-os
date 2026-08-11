@@ -286,7 +286,7 @@ function ThreatModelPage() {
         <div className="container-x py-20">
           <SectionHeading
             eyebrow="Case 02 · step by step"
-            title={<>One bad instruction should never become a real action.</>}
+            title={<>Can one bad instruction ever become a real action?</>}
             subtitle="Normal tools log it, spot it, and alert your team. By then, your files are gone. Here is the same attack against a live enforcement wall."
           />
           <StageList stages={nemoStages} />
@@ -341,6 +341,9 @@ function ThreatModelPage() {
                 We find where your agents have too much power, where a bad file could become
                 a real attack, and exactly where you have no proof today.
               </p>
+              <div className="mt-4">
+                <LastUpdated date="August 2026" />
+              </div>
             </div>
             <Link
               to="/contact"

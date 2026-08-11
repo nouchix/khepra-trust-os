@@ -2,31 +2,80 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { PageHero, Eyebrow, Card, SectionHeading } from "@/components/section";
 import { Mail, Phone, CalendarClock, Globe, ArrowRight } from "lucide-react";
+import { JsonLd, buildBreadcrumbSchema, buildFaqSchema } from "@/components/seo-json-ld";
+import { AnswerBlock, Byline, LastUpdated, FaqBlock } from "@/components/seo-blocks";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
-      { title: "Book a Call — KHEPRA / SecRed Knowledge Inc." },
+      { title: "How Do I Book a Call With KHEPRA? Contact Us" },
       { name: "description", content: "Find out what your AI agents can access before someone else does. Book a call with the KHEPRA team today." },
-      { property: "og:title", content: "Book a Call — KHEPRA / SecRed Knowledge Inc." },
+      { property: "og:title", content: "How Do I Book a Call With KHEPRA? Contact Us" },
       { property: "og:description", content: "See what your AI agents can reach. Get proof your auditors and lawyers will accept." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [{ rel: "canonical", href: "https://adinkhepra.com/contact" }],
+    scripts: [{ type: "application/ld+json", children: JSON.stringify(buildFaqSchema(FAQS)) }],
   }),
   component: ContactPage,
 });
+
+const FAQS = [
+  {
+    question: "How do I book a call with KHEPRA?",
+    answer: "Email cybersouhimbou@secredknowledgeinc.tech, call +1-518-528-4019, or grab time directly at calendly.com/cybersouhimbou. Someone from the KHEPRA team will call you back within one business day.",
+  },
+  {
+    question: "Who should reach out to KHEPRA?",
+    answer: "MSPs and MSSPs managing multiple clients, organizations with a live or past CMMC requirement, SaaS or eCommerce teams shipping AI agents, and IT or security leaders who own vendor risk.",
+  },
+  {
+    question: "What happens after I submit the contact form?",
+    answer: "We read every message. If it's a fit, a real person from the KHEPRA team calls you within one business day to talk through what your agents can reach and what to do about it.",
+  },
+  {
+    question: "Does KHEPRA work with validation partners?",
+    answer: "Yes. Validation partners run a real assessment with us, get early access to the product, and get a published case study in return. We're actively looking for one or two right now.",
+  },
+  {
+    question: "Is KHEPRA a real, registered company?",
+    answer: "Yes. SAM.gov UEI 24M6XQCZLYM7, a pending SDVOSB filing, a patent-pending application (USPTO #73565085), Claude Partner Network membership, and HPE Tier-2 Solutions Provider status.",
+  },
+];
 
 function ContactPage() {
   const [submitted, setSubmitted] = useState(false);
   return (
     <>
+      <JsonLd
+        data={buildBreadcrumbSchema([
+          { name: "Home", url: "https://adinkhepra.com/" },
+          { name: "Contact", url: "https://adinkhepra.com/contact" },
+        ])}
+      />
       <PageHero
         eyebrow="Book a call now"
-        title={<>See what your AI agents can really reach.</>}
+        title={<>How do I see what my AI agents can really reach? Book a call.</>}
         subtitle="We find every agent running in your company. We show you what each one can touch, where it has too much access, and where a bad prompt could turn into a real breach. Then we show you exactly what's missing to stop it."
       />
+
+      <section className="border-b border-border/60">
+        <div className="container-x py-10">
+          <Byline updated="August 2026" />
+          <div className="mt-6">
+            <AnswerBlock>
+              Email, call, or book time on Calendly directly with our founder. We'll walk through
+              which AI agents are running in your company today, what they can touch, and where a
+              bad prompt could turn into a breach — then hand you a plan to lock it down before an
+              auditor or attacker finds it first.
+            </AnswerBlock>
+          </div>
+          <div className="mt-4">
+            <LastUpdated date="August 2026" />
+          </div>
+        </div>
+      </section>
 
       <section className="border-b border-border/60">
         <div className="container-x py-16 grid lg:grid-cols-12 gap-10">
@@ -145,7 +194,7 @@ function ContactPage() {
         </div>
       </section>
 
-      <section>
+      <section className="border-b border-border/60">
         <div className="container-x py-20">
           <SectionHeading
             eyebrow="What we're asking partners for"
@@ -166,6 +215,8 @@ function ContactPage() {
           </div>
         </div>
       </section>
+
+      <FaqBlock items={FAQS} />
     </>
   );
 }
