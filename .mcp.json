@@ -3,10 +3,10 @@
   "mcpServers": {
     "pqc-khepra-mcp": {
       "_comment": "Post-Quantum Cryptography MCP Kernel Server",
-      "command": "go",
+      "command": "bash",
       "args": [
-        "run",
-        "/Applications/Whitebox/PQC-Khepra-MCP/cmd/khepra-mcp/main.go"
+        "-c",
+        "cd /Applications/Whitebox/PQC-Khepra-MCP && GOWORK=off exec go run ./cmd/khepra-mcp"
       ],
       "env": {
         "KHEPRA_MODE": "sovereign",
@@ -16,10 +16,10 @@
     },
     "ktos-mcp": {
       "_comment": "KTOS Trust Plane MCP Server (AEOs, Agent Passports, Trust Scores, Attestation)",
-      "command": "go",
+      "command": "bash",
       "args": [
-        "run",
-        "/Applications/Whitebox/khepra-trust-os/core/cmd/ktos-mcp/main.go"
+        "-c",
+        "cd /Applications/Whitebox/khepra-trust-os/core && GOWORK=off GOFLAGS=-mod=vendor exec go run ./cmd/ktos-mcp"
       ],
       "env": {
         "KHEPRA_MODE": "sovereign",
@@ -35,13 +35,13 @@
         "@hostinger/mcp-server"
       ],
       "env": {
-        "HOSTINGER_API_TOKEN": "EYKsdycekoOPTsLXtguX5OGLKchHvmj5zYHtgRnqe5ea8be8"
+        "HOSTINGER_API_TOKEN": "${HOSTINGER_API_TOKEN}"
       }
     },
     "cloudflare": {
       "url": "https://mcp.cloudflare.com/mcp",
       "env": {
-        "CLOUDFLARE_API_TOKEN": "cfut_occcvkRNiay5V0Z97NYJhDrOMq35E2aYiUCKU1Buc5aa29fa"
+        "CLOUDFLARE_API_TOKEN": "${CLOUDFLARE_API_TOKEN}"
       }
     },
     "cloudflare-docs": {
@@ -50,19 +50,19 @@
     "cloudflare-bindings": {
       "url": "https://bindings.mcp.cloudflare.com/mcp",
       "env": {
-        "CLOUDFLARE_API_TOKEN": "cfut_occcvkRNiay5V0Z97NYJhDrOMq35E2aYiUCKU1Buc5aa29fa"
+        "CLOUDFLARE_API_TOKEN": "${CLOUDFLARE_API_TOKEN}"
       }
     },
     "cloudflare-builds": {
       "url": "https://builds.mcp.cloudflare.com/mcp",
       "env": {
-        "CLOUDFLARE_API_TOKEN": "cfut_pTfwMEZHrXiupRp7rVS7guyOUdc2wrf6wpQJwUsC6fe1f242"
+        "CLOUDFLARE_API_TOKEN": "${CLOUDFLARE_API_TOKEN}"
       }
     },
     "cloudflare-observability": {
       "url": "https://observability.mcp.cloudflare.com/mcp",
       "env": {
-        "CLOUDFLARE_API_TOKEN": "cfut_occcvkRNiay5V0Z97NYJhDrOMq35E2aYiUCKU1Buc5aa29fa"
+        "CLOUDFLARE_API_TOKEN": "${CLOUDFLARE_API_TOKEN}"
       }
     }
   }
