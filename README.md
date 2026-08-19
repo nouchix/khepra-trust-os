@@ -81,6 +81,33 @@ This is the KTOS product monorepo (private).
 | `PQC-Khepra-MCP` | Reference to the public post-quantum MCP kernel |
 | `supabase/` | Console backend config + migrations |
 
+## Premium Tiers
+
+| Tier | Price | License Key | Tools | Egress |
+|------|-------|-------------|-------|--------|
+| **Enterprise** | $499/mo | ✅ Required | All 80 tools | Zero |
+| **Sovereign** | Custom — [Contact Sales](https://khepra.nouchix.com/) | ✅ Required | All 80 tools + air-gap/offline licensing + HSM | Zero |
+
+> [!NOTE]
+> **Open-Source Kernel**: The Community (Free) and Pro ($19/mo) tiers are served exclusively via the public [PQC-Khepra-MCP](https://github.com/nouchix/PQC-Khepra-MCP) repository. This private repository is the commercial landing zone containing the advanced capabilities detailed below.
+
+---
+
+## Tool Matrix
+
+### Enterprise & Sovereign (Included in KTOS)
+*Focus: Distributed orchestration, active defense, and CMMC compliance.*
+- **All 80 Tools from the Open-Source Kernel**
+- `khepra_edge_exec` (Bolt Edge Node remote execution)
+- `khepra_bolt_scan` (Remote threat scanning)
+- `cmmc_assess`
+- `dag_attestation`
+- `kasa_crypto_agent`
+- `kasa_forensics`
+- **Hub & Fleet Architecture** (Orchestrate Sentinels globally)
+- **AI Evidence Objects (AEO)** (Immutable forensic trails)
+- **Privileged Enforcement Daemon** (Actuation and remote quarantine)
+
 ## Architecture & trajectory
 
 Per [`docs/architecture/ARCH-010-convergence-and-public-split.md`](docs/architecture/ARCH-010-convergence-and-public-split.md),
