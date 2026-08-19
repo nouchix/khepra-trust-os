@@ -42,3 +42,7 @@ dist-ssr
 license.adinkhepra
 .mcp.json.local
 
+# Compiled binaries
+bin/
+core/ktos-mint
+
